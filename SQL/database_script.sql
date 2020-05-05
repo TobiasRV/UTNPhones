@@ -1,102 +1,84 @@
 create database utnphones;
 use utnphones;
 
-CREATE TABLE `Roles` (
-  `id_role` int,
-  `rol_name` varchar(50),
-  PRIMARY KEY (`id_role`)
+create table provinces(
+  id_province int unsigned auto_increment,
+  province_name varchar(50),
+  constraint pk_province primary key (id_province),
+  constraint unq_province_name_provinces unique (province_name)
 );
 
-CREATE TABLE `Cities` (
-  `id_city` int,
-  `city_name` varchar(50),
-  `province` int,
-  PRIMARY KEY (`id_city`),
-  KEY `FK` (`province`)
+create table cities(
+  id_city int unsigned auto_increment,
+  city_name varchar(50),
+  id_province int unsigned,
+  prefix varchar(5),
+  constraint pk_cities primary key (id_city),
+  constraint fk_id_province_cities foreign key (id_province) references provinces(id_province),
+  constraint unq_prefix_cities unique (prefix)
 );
 
-CREATE TABLE `Provinces` (
-  `id_province` int,
-  `province_name` varchar(50),
-  PRIMARY KEY (`id_province`)
+create table users(
+  id_user int unsigned auto_increment,
+  username varchar(50),
+  password varchar(50),
+  name varchar(50),
+  lastname varchar(50),
+  dni int,
+  id_city int unsigned,
+  role varchar(50),
+  constraint pk_user primary key (id_user),
+  constraint fk_id_city_user foreign key (id_city) references cities(id_city),
+  constraint unq_username_users unique (username),
+  constraint unq_dni_users unique (dni)
 );
 
-CREATE TABLE `Users` (
-  `id_user` int,
-  `name` varchar(50),
-  `lastname` varchar(50),
-  `dni` int,
-  `id_city` int,
-  `id_role` int,
-  PRIMARY KEY (`id_user`),
-  KEY `UNQ` (`dni`),
-  KEY `FK` (`id_city`, `id_role`)
+create table rates(
+  id_rate int unsigned auto_increment,
+  id_origin_city int unsigned,
+  id_destination_city int unsigned,
+  cost_per_minute double,
+  constraint pk_rates primary key (id_rate),
+  constraint fk_id_origin_city_rates foreign key (id_origin_city) references cities(id_city),
+  constraint fk_id_destination_city_rates foreign key (id_destination_city) references cities(id_city)
 );
 
-CREATE TABLE `Lines` (
-  `id_line` int,
-  `id_user` int,
-  `id_prefix` int,
-  `phone_number` int,
-  `line_type` int,
-  `id_status` int,
-  PRIMARY KEY (`id_line`),
-  KEY `FK` (`id_user`, `id_prefix`, `line_type`, `id_status`),
-  KEY `UNQ` (`phone_number`)
+create table phone_lines(
+  id_line int unsigned auto_increment,
+  id_user int unsigned,
+  id_city int unsigned,
+  phone_number varchar(50),
+  line_type varchar(50),
+  status varchar(50),
+  constraint pk_lines primary key (id_line),
+  constraint fk_id_user_lines foreign key (id_user) references users(id_user),
+  constraint pk_id_city_cities foreign key (id_city) references cities(id_city),
+  constraint unq_phone_number_lines unique (phone_number)
 );
 
-CREATE TABLE `Prefixes` (
-  `id_prefix` int,
-  `id_city` int,
-  `prefix` int,
-  PRIMARY KEY (`id_prefix`),
-  KEY `FK` (`id_city`),
-  KEY `UNQ` (`prefix`)
+create table calls(
+  id_call int unsigned auto_increment,
+  id_origin_line int unsigned,
+  id_destination_line int unsigned,
+  call_date date,
+  id_rate int unsigned,
+  call_duration int,
+  call_cost double,
+  call_price double,
+  constraint pk_id_call primary key (id_call),
+  constraint fk_id_origin_line_lines_calls foreign key (id_origin_line) references phone_lines(id_line),
+  constraint fk_id_destination_line_lines_calls foreign key (id_destination_line) references phone_lines(id_line),
+  constraint fk_id_rate_rates_calls foreign key (id_rate) references rates(id_rate)
 );
 
-CREATE TABLE `Line_types` (
-  `id_line_types` int,
-  `name` varchar(50),
-  PRIMARY KEY (`id_line_types`),
-  KEY `UNQ` (`name`)
+create table bills(
+  id_bill int unsigned auto_increment,
+  id_line int unsigned,
+  total_production_cost double,
+  total_price double,
+  issue_date date,
+  expiration_date date,
+  paid boolean,
+  constraint pk_bills primary key (id_bill),
+  constraint fk_id_line_bills foreign key (id_line) references phone_lines(id_line)  
 );
-
-CREATE TABLE `Calls` (
-  `id_call` int,
-  `id_origin_line` int,
-  `id_destination_line` int,
-  `call_date` date,
-  `id_rate` int,
-  `call_duration` int,
-  PRIMARY KEY (`id_call`),
-  KEY `FK` (`id_origin_line`, `id_destination_line`, `id_rate`)
-);
-
-CREATE TABLE `Rates` (
-  `id_rate` int,
-  `id_origin_prefix` int,
-  `id_destination_prefix` int,
-  `cost_per_minute` double,
-  PRIMARY KEY (`id_rate`),
-  KEY `FK` (`id_origin_prefix`, `id_destination_prefix`)
-);
-
-CREATE TABLE `Bills` (
-  `id_bill` int,
-  `id_line` int,
-  `production_cost` double,
-  `total` double,
-  `issue_date` date,
-  `expiration_date` date,
-  `paid` boolean,
-  PRIMARY KEY (`id_bill`),
-  KEY `FK` (`id_line`)
-);
-
-CREATE TABLE `Statuses` (
-  `id_status` int,
-  `status_name` varchar(50),
-  PRIMARY KEY (`id_status`),
-  KEY `UNQ` (`status_name`)
-);
-
