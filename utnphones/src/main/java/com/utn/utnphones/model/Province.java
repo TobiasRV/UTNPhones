@@ -1,17 +1,19 @@
 package com.utn.utnphones.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
+@Table(name = "provinces")
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -20,9 +22,13 @@ import javax.validation.constraints.NotNull;
 public class Province {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_province")
     private Integer idProvince;
 
-    @NotNull
+    @Column(name = "province_name", nullable = false, length = 50)
     private String provinceName;
+
+    @OneToMany(mappedBy = "province")
+    private List<City> cities;
 }

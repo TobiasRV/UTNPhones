@@ -1,6 +1,7 @@
 package com.utn.utnphones.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.utn.utnphones.model.enums.LineStatus;
 import com.utn.utnphones.model.enums.LineType;
 import lombok.AllArgsConstructor;
@@ -8,12 +9,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "phone_lines")
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -21,23 +22,30 @@ import javax.validation.constraints.NotNull;
 
 public class Line {
 
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_line")
     private Integer idLine;
 
-    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_user")
+    @JsonBackReference
     private User user;
 
-    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_city", nullable = false)
     private City city;
 
-    @NotNull
+    @Column(name = "phone_number", length = 50)
     private String phoneNumber;
 
-    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "line_type", nullable = false)
     private LineType lineType;
 
-    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     private LineStatus lineStatus;
 
 }

@@ -6,12 +6,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "rates")
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -20,16 +20,19 @@ import javax.validation.constraints.NotNull;
 public class Rate {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_rate")
     private Integer idRate;
 
-    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_origin_city", nullable = false)
     private City originCity;
 
-    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_destination_city", nullable = false)
     private City destinationCity;
 
-    @NotNull
+    @Column(name = "cost_per_minute", nullable = false)
     private Double costPerMinute;
 
 }

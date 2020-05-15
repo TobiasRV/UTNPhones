@@ -5,14 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @Entity
+@Table(name = "calls")
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -20,30 +21,34 @@ import java.sql.Timestamp;
 
 public class Call {
 
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_call")
     private Integer idCall;
 
-    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_origin_line", nullable = false)
     private Line originLine;
 
-    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_destination_line", nullable = false)
     private Line destinationLine;
 
-    @NotNull
+    @CreationTimestamp
     private Timestamp callDate;
 
-    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_rate")
     private Rate rate;
 
-    @NotNull
+    @Column(name = "call_duration", nullable = false)
     private Integer callDuration;
 
-    @NotNull
+    @Column(name = "call_cost")
     private Double callCost;
 
-    @NotNull
+    @Column(name = "call_price")
     private Double callPrice;
-
 
 }

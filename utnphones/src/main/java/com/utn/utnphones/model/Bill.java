@@ -5,13 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 
 @Entity
+@Table(name = "bills")
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -20,22 +20,24 @@ import java.sql.Timestamp;
 public class Bill {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_bill")
     private Integer idBill;
 
-    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_line")
     private Line line;
 
-    @NotNull
+    @Column(name = "total_production_cost")
     private Double totalProductionCost;
 
-    @NotNull
+    @Column(name = "total_price")
     private Double totalPrice;
 
-    @NotNull
+    @Column(name = "issue_date")
     private Timestamp issueDate;
 
-    @NotNull
+    @Column(name = "expiration_date")
     private Timestamp expirationDate;
 
     @NotNull
