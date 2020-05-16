@@ -27,7 +27,7 @@ create table users(
   lastname varchar(50),
   dni int,
   id_city int unsigned,
-  role varchar(50),
+  role enum('ADMIN','CLIENT','EMPLOYEE','INFRAESTRUCTURE'),
   constraint pk_user primary key (id_user),
   constraint fk_id_city_user foreign key (id_city) references cities(id_city),
   constraint unq_username_users unique (username),
@@ -49,13 +49,13 @@ create table phone_lines(
   id_line int unsigned auto_increment,
   id_user int unsigned,
   id_city int unsigned,
-  phone_number varchar(50),
-  line_type varchar(50),
-  status varchar(50),
+  phone_number varchar(10),
+  line_type enum('RESIDENTIAL','MOBILE'),
+  status enum('ACTIVE','DELETED','SUSPENDED'),
   constraint pk_lines primary key (id_line),
   constraint fk_id_user_lines foreign key (id_user) references users(id_user),
-  constraint pk_id_city_cities foreign key (id_city) references cities(id_city),
-  constraint unq_phone_number_lines unique (phone_number)
+  constraint fk_id_city_phone_lines foreign key (id_city) references cities(id_city),
+  constraint unq_phone_number_lines unique (id_city, phone_number)
 );
 
 create table calls(
@@ -64,7 +64,7 @@ create table calls(
   id_destination_line int unsigned,
   call_date datetime,
   id_rate int unsigned default null,
-  call_duration int,
+  call_duration int unsigned,
   call_cost double default null,
   call_price double default null,
   constraint pk_id_call primary key (id_call),
@@ -78,8 +78,8 @@ create table bills(
   id_line int unsigned,
   total_production_cost double,
   total_price double,
-  issue_date date,
-  expiration_date date,
+  issue_date datetime,
+  expiration_date datetime,
   paid boolean,
   constraint pk_bills primary key (id_bill),
   constraint fk_id_line_bills foreign key (id_line) references phone_lines(id_line)  
