@@ -1,12 +1,15 @@
 package com.utn.utnphones.controller;
 
 import com.utn.utnphones.model.Bill;
-import com.utn.utnphones.model.Call;
 import com.utn.utnphones.service.BillService;
-import com.utn.utnphones.service.CallService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
@@ -25,13 +28,14 @@ public class BillController {
         return billService.getAll();
     }
 
-    @GetMapping("/{billId}")
-    public void payBill(@PathVariable Integer billId){
-        billService.payBill(billId);
-    }
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<Bill>> getBillsByDate(@PathVariable Integer userId, @RequestParam Date fromDate, @RequestParam Date toDate) {
+        List<Bill> bills = billService.getBillsByDate(userId,fromDate,toDate);
 
-//    @PostMapping("/")
-//    public void addBill(@RequestBody Bill b) {
-//        billService.addBill(b);
-//    }
+        if (bills.size() > 0) {
+            return ResponseEntity.ok(bills);
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+    }
 }

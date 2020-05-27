@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/utnphones?serverTimezone=UTC
     username: root
-    password: tobiasrv
+    password: pastrana
   jpa:
     properties:
       hibernate.format_sql: true

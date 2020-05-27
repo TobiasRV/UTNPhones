@@ -7,6 +7,7 @@ import com.utn.utnphones.repository.CallRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,17 +25,7 @@ public class BillService {
         return billRepository.findAll();
     }
 
-    public void addBill(final Bill b) {
-        billRepository.save(b);
-    }
-
-    public void payBill(Integer billId) {
-        Optional<Bill> b = billRepository.findById(billId);
-
-        b.ifPresent( (Bill result) -> {
-            result.setPaid(true);
-            billRepository.save(result);
-        });
-
+    public List<Bill> getBillsByDate(Integer userId, Date fromDate, Date toDate) {
+       return billRepository.getBillsByDate(userId,fromDate,toDate);
     }
 }
