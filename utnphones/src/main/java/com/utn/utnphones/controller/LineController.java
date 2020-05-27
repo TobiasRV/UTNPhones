@@ -1,12 +1,15 @@
 package com.utn.utnphones.controller;
 
+import com.utn.utnphones.exceptions.LineNotFoundException;
 import com.utn.utnphones.model.Line;
 import com.utn.utnphones.model.Province;
 import com.utn.utnphones.service.LineService;
 import com.utn.utnphones.service.ProvinceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -29,4 +32,14 @@ public class LineController {
     public void addLine(@RequestBody Line l) {
         lineService.addLine(l);
     }
+
+    @PutMapping("/{lineId}")
+    public ResponseEntity updateLine(@PathVariable Integer lineId, @Valid @RequestBody Line line) throws LineNotFoundException {
+
+
+
+        return ResponseEntity.ok(lineService.updateLine(lineId, line));
+    }
+
+
 }
