@@ -1,5 +1,6 @@
 package com.utn.utnphones.controller;
 
+import com.utn.utnphones.exceptions.UserNotExistsException;
 import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.service.BillService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,8 @@ public class BillController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Bill>> getBillsByDate(@PathVariable Integer userId, @RequestParam Date fromDate, @RequestParam Date toDate) {
-        List<Bill> bills = billService.getBillsByDate(userId,fromDate,toDate);
+    public ResponseEntity<List<Bill>> getBillsByDate(@PathVariable Integer userId, @RequestParam Date fromDate, @RequestParam Date toDate) throws UserNotExistsException {
+        List<Bill> bills = billService.getBillsByDate(userId, fromDate, toDate);
 
         if (bills.size() > 0) {
             return ResponseEntity.ok(bills);
