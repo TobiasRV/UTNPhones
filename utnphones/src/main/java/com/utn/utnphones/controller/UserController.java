@@ -6,14 +6,11 @@ import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.service.UserService;
-import com.utn.utnphones.session.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 import java.util.List;
 
 @RestController
@@ -24,16 +21,8 @@ public class UserController {
 
 
     @Autowired
-    public UserController(UserService userService, SessionManager sessionManager) {
+    public UserController(UserService userService) {
         this.userService = userService;
-    }
-
-    public User login(String username, String password) throws UserNotExistsException, ValidationException {
-        if ((username != null) && (password != null)) {
-            return userService.login(username, password);
-        } else {
-            throw new ValidationException("username and password must have a value");
-        }
     }
 
     @GetMapping("/")
