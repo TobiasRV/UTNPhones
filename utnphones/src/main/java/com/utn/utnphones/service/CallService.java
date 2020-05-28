@@ -39,4 +39,12 @@ public class CallService {
             throw new UserNotExistsException();
         }
     }
+
+    public List<Call> getTop10Destinations(Integer userId) throws UserNotExistsException {
+        if (userRepository.existsById(userId)){
+            return callRepository.getTop10Destinations(userId);
+        }else{
+            throw new UserNotExistsException();
+        }
+    }
 }

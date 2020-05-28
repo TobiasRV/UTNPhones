@@ -42,4 +42,15 @@ public class CallController {
         }else
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+    @GetMapping("/top10Destinations/{userId}")
+    public ResponseEntity<List<Call>> getTop10Destinations(@PathVariable Integer userId) throws UserNotExistsException {
+        List<Call> lc = callService.getTop10Destinations(userId);
+
+        if(lc.size() > 0){
+            return ResponseEntity.ok(lc);
+        }else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+    }
 }
