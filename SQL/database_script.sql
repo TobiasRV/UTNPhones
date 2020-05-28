@@ -83,11 +83,11 @@ create table bills(
   expiration_date datetime,
   paid boolean,
   constraint pk_bills primary key (id_bill),
-  constraint fk_id_line_bills foreign key (id_line) references phone_lines(id_line)
+  constraint fk_id_line_bills foreign key (id_line) references phone_lines(id_line)  
 );
 
 
--- FUNCION QUE DEVUELVE EL ID DE UN NUMERO DE TELEFONO
+-- FUNCION QUE DEVUELVE EL ID DE UN NUMERO DE TELEFONO 
 delimiter //
 create function getLineId(pIdCity int, pLineNumer varchar(10))
 returns int
@@ -99,7 +99,7 @@ begin
 end //
 delimiter ;
 
--- FUNCION QUE DEVUELVE EL ID DE UNA CITY BASADO EN UN PREFIJO
+-- FUNCION QUE DEVUELVE EL ID DE UNA CITY BASADO EN UN PREFIJO 
 delimiter //
 create function getCityIdByPrefix(pPrefix varchar(5))
 returns int
@@ -111,8 +111,8 @@ begin
 end //
 delimiter ;
 
--- STORED PROCEDURE QUE INSERTA UNA NUEVA CALL
-delimiter //
+-- STORED PROCEDURE QUE INSERTA UNA NUEVA CALL 
+delimiter // 
 create procedure sp_insert_call(pOriginNumber varchar(16), pDestinationNumber varchar(16), pDate datetime, pDuration int)
 begin
   declare vOriginPrefix varchar(5);
@@ -131,15 +131,9 @@ begin
 
   insert into calls(id_origin_line, id_destination_line, call_date, call_duration)
   values (getLineId(vOriginCityId,vOriginNumber), getLineId(vDestinationCityId,vDestinationNumber),pDate,pDuration);
-<<<<<<< HEAD
     
 end //
 delimiter ; 
-=======
-
-end //
-delimiter ;
->>>>>>> getCallsByUserAndDate
 
 -- TRIGGER PARA EVITAR QUE UN NUMERO SE LLAME A SI MISMO
 delimiter //
@@ -160,19 +154,13 @@ begin
 end //
 delimiter ;
 
--- TRIGGER PARA INSERTAR UNA LLAMADA
-delimiter //
-create trigger tbi_calls_set_call before insert on calls for each row
-begin
-
-
 
 -- FUNCION PARA OBTENER EL ID_RATE BASADO EN ID_ORIGEN E ID_DESTINO
 delimiter //
 create function getIdRate(pIdOriginLine int, pIdDestinationLine int)
 returns int
 reads sql data
-begin
+begin 
     declare vResult int;
     select id_rate into vResult from rates where (id_origin_city = pIdOriginLine) and (id_destination_city = pIdDestinationLine);
     return vResult;
@@ -184,7 +172,7 @@ delimiter //
 create function getCallPrice(pId_rate int)
 returns double
 reads sql data
-begin
+begin 
     declare vResult double;
     select cost_per_minute into vResult from rates where id_rate = pId_rate;
     return vResult;
@@ -212,13 +200,8 @@ INSERT INTO `users` (`username`,`password`,`name`,`lastname`,`dni`,`id_city`,`ro
 -- INSERTS RATES
 INSERT INTO rates(id_origin_city, id_destination_city, cost_per_minute, price_per_minute) values (1,1,6,5), (1,2,15,5), (1,3,9,5), (1,4,17,5), (1,5,15,5), (1,6,8,5), (1,7,10,5), (1,8,9,5), (1,9,11,5), (1,10,19,5), (2,1,11,5), (2,2,12,5), (2,3,14,5), (2,4,9,5), (2,5,17,5), (2,6,5,5), (2,7,12,5), (2,8,14,5), (2,9,8,5), (2,10,14,5), (3,1,6,5), (3,2,12,5), (3,3,10,5), (3,4,18,5), (3,5,6,5), (3,6,19,5), (3,7,14,5), (3,8,5,5), (3,9,13,5), (3,10,15,5), (4,1,15,5), (4,2,13,5), (4,3,19,5), (4,4,13,5), (4,5,15,5), (4,6,15,5), (4,7,19,5), (4,8,19,5), (4,9,19,5), (4,10,7,5), (5,1,10,5), (5,2,13,5), (5,3,17,5), (5,4,13,5), (5,5,14,5), (5,6,15,5), (5,7,10,5), (5,8,8,5), (5,9,8,5), (5,10,7,5), (6,1,8,5), (6,2,7,5), (6,3,14,5), (6,4,9,5), (6,5,8,5), (6,6,5,5), (6,7,5,5), (6,8,12,5), (6,9,7,5), (6,10,12,5), (7,1,7,5), (7,2,10,5), (7,3,19,5), (7,4,5,5), (7,5,8,5), (7,6,5,5), (7,7,10,5), (7,8,8,5), (7,9,7,5), (7,10,5,5), (8,1,15,5), (8,2,9,5), (8,3,7,5), (8,4,17,5), (8,5,13,5), (8,6,10,5), (8,7,5,5), (8,8,10,5), (8,9,19,5), (8,10,19,5), (9,1,7,5), (9,2,11,5), (9,3,11,5), (9,4,8,5), (9,5,5,5), (9,6,14,5), (9,7,6,5), (9,8,9,5), (9,9,11,5), (9,10,15,5), (10,1,7,5), (10,2,13,5), (10,3,12,5), (10,4,11,5), (10,5,16,5), (10,6,12,5), (10,7,5,5), (10,8,6,5), (10,9,9,5), (10,10,6,5);
 
-<<<<<<< HEAD
 -- INSERTS PHONE_LINES 
 INSERT INTO `phone_lines` (`id_user`,`id_city`,`phone_number`,`line_type`,`status` ) VALUES (1,1,"5375920","RESIDENTIAL","ACTIVE"),(56,1,"9906290","MOBILE","ACTIVE"),(49,5,"4155176","MOBILE","ACTIVE"),(50,2,"9464855","MOBILE","ACTIVE"),(3,2,"3456156","RESIDENTIAL","ACTIVE"),(43,3,"7113169","RESIDENTIAL","ACTIVE"),(88,6,"4855135","MOBILE","ACTIVE"),(13,10,"5862927","MOBILE","ACTIVE"),(63,8,"1471419","MOBILE","ACTIVE"),(24,7,"9605421","RESIDENTIAL","ACTIVE");
-=======
--- INSERTS PHONE_LINES
-INSERT INTO `phone_lines` (`id_user`,`id_city`,`phone_number`,`line_type`,`status` ) VALUES (41,1,"5375920","RESIDENTIAL","ACTIVE"),(56,4,"9906290","MOBILE","ACTIVE"),(49,5,"4155176","MOBILE","ACTIVE"),(50,2,"9464855","MOBILE","ACTIVE"),(3,2,"3456156","RESIDENTIAL","ACTIVE"),(43,3,"7113169","RESIDENTIAL","ACTIVE"),(88,6,"4855135","MOBILE","ACTIVE"),(13,10,"5862927","MOBILE","ACTIVE"),(63,8,"1471419","MOBILE","ACTIVE"),(24,7,"9605421","RESIDENTIAL","ACTIVE");
->>>>>>> getCallsByUserAndDate
 INSERT INTO `phone_lines` (`id_user`,`id_city`,`phone_number`,`line_type`,`status` ) VALUES (39,2,"3730060","RESIDENTIAL","ACTIVE"),(25,10,"8118949","RESIDENTIAL","ACTIVE"),(88,9,"9676506","MOBILE","ACTIVE"),(31,2,"4678017","MOBILE","ACTIVE"),(93,10,"3027481","RESIDENTIAL","ACTIVE"),(40,6,"3415217","RESIDENTIAL","ACTIVE"),(86,7,"9788484","RESIDENTIAL","ACTIVE"),(79,3,"3655135","MOBILE","ACTIVE"),(52,4,"5311449","RESIDENTIAL","ACTIVE"),(5,4,"6191557","RESIDENTIAL","ACTIVE");
 INSERT INTO `phone_lines` (`id_user`,`id_city`,`phone_number`,`line_type`,`status` ) VALUES (92,7,"5628958","RESIDENTIAL","ACTIVE"),(69,5,"2567757","RESIDENTIAL","ACTIVE"),(64,7,"6975705","RESIDENTIAL","ACTIVE"),(30,9,"2221318","RESIDENTIAL","ACTIVE"),(5,9,"3138217","MOBILE","ACTIVE"),(96,7,"7603644","RESIDENTIAL","ACTIVE"),(75,8,"6232279","RESIDENTIAL","ACTIVE"),(67,3,"3692339","MOBILE","ACTIVE"),(87,7,"6997606","MOBILE","ACTIVE"),(13,4,"1377869","RESIDENTIAL","ACTIVE");
 INSERT INTO `phone_lines` (`id_user`,`id_city`,`phone_number`,`line_type`,`status` ) VALUES (44,1,"2090542","RESIDENTIAL","ACTIVE"),(71,10,"4531090","RESIDENTIAL","ACTIVE"),(25,8,"5226104","MOBILE","ACTIVE"),(66,4,"1194363","RESIDENTIAL","ACTIVE"),(69,3,"6759301","MOBILE","ACTIVE"),(30,3,"9101212","RESIDENTIAL","ACTIVE"),(11,2,"7608900","RESIDENTIAL","ACTIVE"),(38,5,"4669203","MOBILE","ACTIVE"),(33,8,"1732779","RESIDENTIAL","ACTIVE"),(80,3,"2046194","MOBILE","ACTIVE");
@@ -229,7 +212,6 @@ INSERT INTO `phone_lines` (`id_user`,`id_city`,`phone_number`,`line_type`,`statu
 INSERT INTO `phone_lines` (`id_user`,`id_city`,`phone_number`,`line_type`,`status` ) VALUES (67,4,"2796632","MOBILE","ACTIVE"),(56,4,"9376108","RESIDENTIAL","ACTIVE"),(73,1,"1860250","MOBILE","ACTIVE"),(44,1,"9917384","MOBILE","ACTIVE"),(72,3,"8995537","RESIDENTIAL","ACTIVE"),(6,1,"7485195","MOBILE","ACTIVE"),(1,8,"7261560","RESIDENTIAL","ACTIVE"),(7,3,"7117741","MOBILE","ACTIVE"),(84,6,"3429158","MOBILE","ACTIVE"),(71,8,"4236322","RESIDENTIAL","ACTIVE");
 INSERT INTO `phone_lines` (`id_user`,`id_city`,`phone_number`,`line_type`,`status` ) VALUES (96,7,"5982727","MOBILE","ACTIVE"),(60,2,"5099304","MOBILE","ACTIVE"),(60,9,"9526473","MOBILE","ACTIVE"),(25,10,"2763612","MOBILE","ACTIVE"),(60,10,"7674983","RESIDENTIAL","ACTIVE"),(74,1,"9868979","MOBILE","ACTIVE"),(89,3,"6453135","RESIDENTIAL","ACTIVE"),(12,1,"3788082","MOBILE","ACTIVE"),(73,2,"2638911","MOBILE","ACTIVE"),(18,4,"2106568","RESIDENTIAL","ACTIVE");
 
-<<<<<<< HEAD
 
 -- INSERT EN BILLS (PARA TESTING)
 insert into bills (id_line,total_production_cost, total_price, issue_date, expiration_date) values (1,50,300,"2020-03-01","2020-04-01");
@@ -238,50 +220,3 @@ insert into bills (id_line,total_production_cost, total_price, issue_date, expir
 
 -- INSERT CALL 
 call sp_insert_call("223-5375920","223-9906290",now(),70);
-
-
-
-=======
--- INSERT EN CALLS
-insert into calls (id_origin_line, id_destination_line, call_date, call_duration) values (5,5,now(),50);
->>>>>>> getCallsByUserAndDate
-
-
--- (pOriginNumber varchar(16), pDestinationNumber varchar(16), pDate datetime, pDuration int
-call sp_insert_call("223-5375920","2291-3730060",now(),50);
-
-<<<<<<< HEAD
-=======
-delimiter //
-create function getCallPrice(pId_rate int)
-returns double
-reads sql data
-begin
-    declare vResult double;
-    select cost_per_minute into vResult from rates where id_rate = pId_rate;
-    return vResult;
-end //
-delimiter ;
-
-delimiter //
-create function getLineId(pLineNumer string)
-return int
-reads sql data
-begin
-    declare vResult int
-    select id_line into vResult from phone_lines where phone_number = pLineNumer;
-    return vResult;
-end //
-delimiter ;
-
-delimiter //
-create function getCallPrice(pIdOriginLine int pIdDestinationLine int)
-returns double
-reads sql data
-begin
-    declare vResult double
-    select price_per_minute int vResult from rates where (id_origin_line = pIdOriginLine) and (id_destination_line = pIdDestinationLine);
-    return vResult
-end //
-delimiter ;
->>>>>>> getCallsByUserAndDate
