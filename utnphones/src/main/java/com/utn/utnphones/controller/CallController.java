@@ -1,10 +1,14 @@
 package com.utn.utnphones.controller;
 
+import com.utn.utnphones.exceptions.UserNotExistsException;
 import com.utn.utnphones.model.Call;
 import com.utn.utnphones.service.CallService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
 import java.util.List;
 
 @RestController
@@ -26,5 +30,16 @@ public class CallController {
     @PostMapping("/")
     public void addCall(@RequestBody Call c) {
         callService.addCall(c);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<Call>> getCallsByUserAndDate(@PathVariable Integer userId, @RequestParam("fromDate") Date fromDate, @RequestParam("toDate")Date toDate) throws UserNotExistsException {
+
+        List<Call> lc= callService.getCallsByUserAndDate(userId,fromDate, toDate);
+
+        if(lc.size() > 0) {
+            return ResponseEntity.ok(lc);
+        }else
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
