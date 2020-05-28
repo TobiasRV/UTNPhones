@@ -31,7 +31,10 @@ public class BillService {
     }
 
     public List<Bill> getBillsByDate(Integer userId, Date fromDate, Date toDate) throws UserNotExistsException {
-        User u = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
-        return billRepository.getBillsByDate(userId, fromDate, toDate);
+        if (userRepository.existsById(userId))
+            return billRepository.getBillsByDate(userId, fromDate, toDate);
+        else
+            throw new UserNotExistsException();
+
     }
 }

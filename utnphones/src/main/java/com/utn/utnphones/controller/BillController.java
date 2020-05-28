@@ -33,10 +33,10 @@ public class BillController {
     public ResponseEntity<List<Bill>> getBillsByDate(@PathVariable Integer userId, @RequestParam Date fromDate, @RequestParam Date toDate) throws UserNotExistsException {
         List<Bill> bills = billService.getBillsByDate(userId, fromDate, toDate);
 
-        if (bills.size() > 0) {
+        if (bills.size() > 0)
             return ResponseEntity.ok(bills);
-        } else {
+        else
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
+
     }
 }
