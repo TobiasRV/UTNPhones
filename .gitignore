@@ -4,6 +4,7 @@
 
 ### Config Files ###
 **/resources/application.yml
+**/resources/application.properties
 
 ### Eclipse ###
 .metadata
