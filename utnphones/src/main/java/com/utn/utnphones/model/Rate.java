@@ -35,4 +35,7 @@ public class Rate {
     @Column(name = "cost_per_minute", nullable = false)
     private Double costPerMinute;
 
+    @Column(name = "price_per_minute", nullable = false)
+    private Double pricePerMinute;
+
 }

@@ -14,5 +14,8 @@ import java.util.List;
 public interface BillRepository extends JpaRepository<Bill, Integer> {
 
     @Query(value = "select * from bills as b inner join phone_lines as pl on pl.id_line = b.id_line where (pl.id_user = ?1) and (b.issue_date >= ?2 ) and (b.issue_date <= ?3)", nativeQuery = true)
-    List<Bill> getBillsByDate(Integer userId, Date fromDate, Date toDate);
+    List<Bill> getBillsByUserAndDate(Integer userId, Date fromDate, Date toDate);
+
+    @Query(value = "select * from bills as b inner join phone_lines as pl on pl.id_line = b.id_line where (pl.id_user = ?1)", nativeQuery = true)
+    List<Bill> getBillsByUser(Integer userId);
 }

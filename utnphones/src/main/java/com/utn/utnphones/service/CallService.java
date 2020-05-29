@@ -47,4 +47,12 @@ public class CallService {
             throw new UserNotExistsException();
         }
     }
+
+    public List<Call> getCallsByUser(Integer userId) throws UserNotExistsException {
+        if (userRepository.existsById(userId)){
+            return  callRepository.getCallsByUser(userId);
+        }else{
+            throw new UserNotExistsException();
+        }
+    }
 }

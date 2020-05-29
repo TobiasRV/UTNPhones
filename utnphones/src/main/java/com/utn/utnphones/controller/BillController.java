@@ -28,11 +28,17 @@ public class BillController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Bill>> getBillsByDate(@PathVariable Integer userId, @RequestParam Date fromDate, @RequestParam Date toDate) throws UserNotExistsException {
-        List<Bill> bills = billService.getBillsByDate(userId, fromDate, toDate);
+    public ResponseEntity<List<Bill>> getBillsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate", required = false) Date fromDate, @RequestParam(value ="toDate", required = false) Date toDate) throws UserNotExistsException {
 
-        if (bills.size() > 0)
-            return ResponseEntity.ok(bills);
+        List<Bill> lb;
+
+        if(fromDate == null || toDate == null) {
+            lb = billService.getBillsByUser(userId);
+        }else {
+            lb = billService.getBillsByUserAndDate(userId, fromDate, toDate);
+        }
+        if (lb.size() > 0)
+            return ResponseEntity.ok(lb);
         else
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 

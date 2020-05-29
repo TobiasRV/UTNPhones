@@ -33,10 +33,15 @@ public class CallController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Call>> getCallsByUserAndDate(@PathVariable Integer userId, @RequestParam("fromDate") Date fromDate, @RequestParam("toDate")Date toDate) throws UserNotExistsException {
+    public ResponseEntity<List<Call>> getCallsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate",required = false) Date fromDate, @RequestParam(value = "toDate", required = false)Date toDate) throws UserNotExistsException {
 
-        List<Call> lc= callService.getCallsByUserAndDate(userId,fromDate, toDate);
+        List<Call> lc = null;
 
+        if (fromDate == null || toDate == null){
+            lc = callService.getCallsByUser(userId);
+        }else {
+           lc  = callService.getCallsByUserAndDate(userId, fromDate, toDate);
+        }
         if(lc.size() > 0) {
             return ResponseEntity.ok(lc);
         }else

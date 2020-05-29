@@ -1,5 +1,6 @@
 package com.utn.utnphones.service;
 
+import com.utn.utnphones.exceptions.CityNotFoundException;
 import com.utn.utnphones.model.Province;
 import com.utn.utnphones.model.Rate;
 import com.utn.utnphones.repository.ProvinceRepository;
@@ -25,5 +26,13 @@ public class RateService {
 
     public void addProvince(final Rate r) {
         rateRepository.save(r);
+    }
+
+    public List<Rate> getRateByCities(Integer fromCityId, Integer toCityId) throws CityNotFoundException {
+        if(rateRepository.existsById(fromCityId) && rateRepository.existsById(toCityId)){
+            return rateRepository.getRateByCities(fromCityId, toCityId);
+        }else{
+            throw new CityNotFoundException();
+        }
     }
 }
