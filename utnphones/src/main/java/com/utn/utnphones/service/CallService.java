@@ -1,5 +1,6 @@
 package com.utn.utnphones.service;
 
+import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
 import com.utn.utnphones.exceptions.UserNotExistsException;
 import com.utn.utnphones.model.Call;
 import com.utn.utnphones.repository.CallRepository;
@@ -32,26 +33,18 @@ public class CallService {
 
 
     public List<Call> getCallsByUserAndDate(Integer userId, Date fromDate, Date toDate) throws UserNotExistsException {
-        if(userRepository.existsById(userId)) {
+        if (userRepository.existsById(userId)) {
             return callRepository.getCallsByUserAndDate(userId, fromDate, toDate);
-        }
-        else {
+        } else {
             throw new UserNotExistsException();
         }
     }
 
-    public List<Call> getTop10Destinations(Integer userId) throws UserNotExistsException {
-        if (userRepository.existsById(userId)){
-            return callRepository.getTop10Destinations(userId);
-        }else{
-            throw new UserNotExistsException();
-        }
-    }
 
     public List<Call> getCallsByUser(Integer userId) throws UserNotExistsException {
-        if (userRepository.existsById(userId)){
-            return  callRepository.getCallsByUser(userId);
-        }else{
+        if (userRepository.existsById(userId)) {
+            return callRepository.getCallsByUser(userId);
+        } else {
             throw new UserNotExistsException();
         }
     }

@@ -1,5 +1,6 @@
 package com.utn.utnphones.controller;
 
+import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
 import com.utn.utnphones.exceptions.UserNotExistsException;
 import com.utn.utnphones.model.Call;
 import com.utn.utnphones.service.CallService;
@@ -33,29 +34,19 @@ public class CallController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Call>> getCallsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate",required = false) Date fromDate, @RequestParam(value = "toDate", required = false)Date toDate) throws UserNotExistsException {
+    public ResponseEntity<List<Call>> getCallsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate", required = false) Date fromDate, @RequestParam(value = "toDate", required = false) Date toDate) throws UserNotExistsException {
 
         List<Call> lc = null;
 
-        if (fromDate == null || toDate == null){
+        if (fromDate == null || toDate == null) {
             lc = callService.getCallsByUser(userId);
-        }else {
-           lc  = callService.getCallsByUserAndDate(userId, fromDate, toDate);
+        } else {
+            lc = callService.getCallsByUserAndDate(userId, fromDate, toDate);
         }
-        if(lc.size() > 0) {
+        if (lc.size() > 0) {
             return ResponseEntity.ok(lc);
-        }else
+        } else
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @GetMapping("/top10Destinations/{userId}")
-    public ResponseEntity<List<Call>> getTop10Destinations(@PathVariable Integer userId) throws UserNotExistsException {
-        List<Call> lc = callService.getTop10Destinations(userId);
-
-        if(lc.size() > 0){
-            return ResponseEntity.ok(lc);
-        }else {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-    }
 }

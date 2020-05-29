@@ -1,24 +1,27 @@
 package com.utn.utnphones.service;
 
 import com.utn.utnphones.exceptions.LineNotFoundException;
+import com.utn.utnphones.exceptions.UserNotExistsException;
 import com.utn.utnphones.model.Line;
-import com.utn.utnphones.model.Province;
+import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.LineStatus;
 import com.utn.utnphones.repository.LineRepository;
+import com.utn.utnphones.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LineService {
 
     private LineRepository lineRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, UserRepository userRepository) {
         this.lineRepository = lineRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Line> getAll() {
@@ -53,5 +56,13 @@ public class LineService {
         Line lineToUpdate = lineRepository.findById(lineId).orElseThrow(() -> new LineNotFoundException());
         lineToUpdate = updatedLine;
         return lineRepository.save(lineToUpdate);
+    }
+
+    public List<Line> getTop10Destinations(Integer userId) throws UserNotExistsException {
+        if (userRepository.existsById(userId)) {
+            return lineRepository.getTop10Destinations(userId);
+        } else {
+            throw new UserNotExistsException();
+        }
     }
 }
