@@ -55,19 +55,6 @@ public class UserService {
         userRepository.save(u);
     }
 
-//    public User updateUser(Integer userId, User u) throws UserNotExistsException, JsonConflictException, DataIntegrityViolationException {
-//        if (userRepository.existsById(userId)) {
-//            // We set the user id manually to avoid receiving null in the userId field
-//            if (u.getIdUser() == null) {
-//                u.setIdUser(userId);
-//            } else if ((u.getIdUser() != userId)) {
-//                throw new JsonConflictException();
-//            }
-//            return userRepository.save(u);
-//        } else
-//            throw new UserNotExistsException();
-//    }
-
 
     public User updateUser(Integer userId, UpdateUserDto u) throws UserNotExistsException, DataIntegrityViolationException {
         User oldUser = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
