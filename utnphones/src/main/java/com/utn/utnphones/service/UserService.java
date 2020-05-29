@@ -55,7 +55,6 @@ public class UserService {
         userRepository.save(u);
     }
 
-
     public User updateUser(Integer userId, UpdateUserDto u) throws UserNotExistsException, DataIntegrityViolationException {
         User oldUser = userRepository.findById(userId).orElseThrow(UserNotExistsException::new);
 
