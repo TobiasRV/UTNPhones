@@ -30,5 +30,6 @@ public class Province {
     private String provinceName;
 
     @OneToMany(mappedBy = "province")
+    @JsonBackReference
     private List<City> cities;
 }
