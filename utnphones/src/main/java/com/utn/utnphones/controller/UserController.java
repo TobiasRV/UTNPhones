@@ -4,6 +4,7 @@ package com.utn.utnphones.controller;
 import com.utn.utnphones.dto.UpdateUserDto;
 import com.utn.utnphones.exceptions.*;
 import com.utn.utnphones.model.User;
+import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -20,10 +21,12 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final CityService cityService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, CityService cityService) {
         this.userService = userService;
+        this.cityService = cityService;
     }
 
     @GetMapping("/")
@@ -45,13 +48,17 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ResponseEntity addPerson(@RequestBody User u) throws UserAlreadyExistsException, CityNotExistsException {
+    public ResponseEntity addUser(@RequestBody User u) throws UserAlreadyExistsException, CityNotExistsException {
+
+        if (!cityService.existsById(u.getCity().getIdCity()))
+            throw new CityNotExistsException();
+
         User newUser = userService.addUser(u);
         return ResponseEntity.created(getLocation(newUser)).build();
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity updateUser(@PathVariable Integer userId, @RequestBody UpdateUserDto u) throws UserNotExistsException, DataIntegrityViolationException{
+    public ResponseEntity updateUser(@PathVariable Integer userId, @RequestBody UpdateUserDto u) throws UserNotExistsException, DataIntegrityViolationException {
         return ResponseEntity.ok(userService.updateUser(userId, u));
     }
 
@@ -69,6 +76,5 @@ public class UserController {
                 .buildAndExpand(user.getIdUser())
                 .toUri();
     }
-
 }
 

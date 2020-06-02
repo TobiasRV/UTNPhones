@@ -15,12 +15,10 @@ import java.util.List;
 public class CallService {
 
     private final CallRepository callRepository;
-    private final UserRepository userRepository;
 
     @Autowired
-    public CallService(CallRepository callRepository, UserRepository userRepository) {
+    public CallService(CallRepository callRepository) {
         this.callRepository = callRepository;
-        this.userRepository = userRepository;
     }
 
     public List<Call> getAll() {
@@ -32,28 +30,15 @@ public class CallService {
     }
 
 
-    public List<Call> getCallsByUserAndDate(Integer userId, Date fromDate, Date toDate) throws UserNotExistsException {
-        if (userRepository.existsById(userId)) {
-            return callRepository.getCallsByUserAndDate(userId, fromDate, toDate);
-        } else {
-            throw new UserNotExistsException();
-        }
+    public List<Call> getCallsByUserAndDate(Integer userId, Date fromDate, Date toDate) {
+        return callRepository.getCallsByUserAndDate(userId, fromDate, toDate);
     }
 
-
-    public List<Call> getCallsByUser(Integer userId) throws UserNotExistsException {
-        if (userRepository.existsById(userId)) {
-            return callRepository.getCallsByUser(userId);
-        } else {
-            throw new UserNotExistsException();
-        }
+    public List<Call> getCallsByUser(Integer userId) {
+        return callRepository.getCallsByUser(userId);
     }
 
-    public List<Call> getCallsByUserOverPrice(Integer userId, Float price) throws UserNotExistsException {
-        if (userRepository.existsById(userId)) {
-            return callRepository.getCallsByUserOverPrice(userId, price);
-        } else {
-            throw new UserNotExistsException();
-        }
+    public List<Call> getCallsByUserOverPrice(Integer userId, Float price) {
+        return callRepository.getCallsByUserOverPrice(userId, price);
     }
 }

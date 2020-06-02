@@ -4,7 +4,6 @@ import com.utn.utnphones.dto.UpdateUserDto;
 import com.utn.utnphones.exceptions.*;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.UserStatus;
-import com.utn.utnphones.repository.CityRepository;
 import com.utn.utnphones.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,12 +16,10 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final CityRepository cityRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, CityRepository cityRepository) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.cityRepository = cityRepository;
     }
 
     public User login(String username, String password) throws UserNotExistsException {
@@ -34,9 +31,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User addUser(final User u) throws CityNotExistsException, UserAlreadyExistsException {
-        if (!cityRepository.existsById(u.getCity().getIdCity()))
-            throw new CityNotExistsException();
+    public User addUser(final User u) throws UserAlreadyExistsException {
 
         if (userRepository.existsByUsername(u.getUsername()) || userRepository.existsByDni(u.getDni()))
             throw new UserAlreadyExistsException();
@@ -77,6 +72,9 @@ public class UserService {
     }
 
 
+    public boolean existsById(Integer userId) {
+        return userRepository.existsById(userId);
+    }
 
 }
 

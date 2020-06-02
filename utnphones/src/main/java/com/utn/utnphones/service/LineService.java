@@ -4,7 +4,6 @@ import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
 import com.utn.utnphones.exceptions.LineNotFoundException;
 import com.utn.utnphones.exceptions.UserNotExistsException;
 import com.utn.utnphones.model.Line;
-import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.LineStatus;
 import com.utn.utnphones.repository.LineRepository;
 import com.utn.utnphones.repository.UserRepository;
@@ -18,12 +17,10 @@ import java.util.List;
 public class LineService {
 
     private LineRepository lineRepository;
-    private UserRepository userRepository;
 
     @Autowired
-    public LineService(LineRepository lineRepository, UserRepository userRepository) {
+    public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
-        this.userRepository = userRepository;
     }
 
     public List<Line> getAll() {
@@ -48,6 +45,7 @@ public class LineService {
         lineRepository.save(l);
     }
 
+    //TODO ACTUALIZAR ESTE METODO HORRIBLE
     public Line updateLine(Integer lineId, Line updatedLine) throws LineNotFoundException {
 
         lineRepository.existsById(lineId);
@@ -58,29 +56,15 @@ public class LineService {
     }
 
 
-    public List<LineAndQtyOfCallsDto> getTop10Destinations(Integer userId) throws UserNotExistsException {
-        if (userRepository.existsById(userId)) {
-            List<LineAndQtyOfCallsDto> result = new ArrayList<LineAndQtyOfCallsDto>();
-            for (Line l : lineRepository.getTop10Destinations(userId)) {
-                LineAndQtyOfCallsDto dto = new LineAndQtyOfCallsDto();
-                dto.setLine(l);
-                dto.setQtyOfCalls(lineRepository.getQtyOfCallsToLine(userId, l.getIdLine()));
-                result.add(dto);
-            }
-            return result;
-        } else {
-            throw new UserNotExistsException();
-        }
-    }
+    public List<LineAndQtyOfCallsDto> getTop10Destinations(Integer userId) {
 
-
-    /*
-    public List<LineAndQtyOfCallsDto> getTop10Destinations(Integer userId) throws UserNotExistsException {
-        if (userRepository.existsById(userId)) {
-            return lineRepository.getTop10Destinations(userId);
-        } else {
-            throw new UserNotExistsException();
+        List<LineAndQtyOfCallsDto> result = new ArrayList<>();
+        for (Line l : lineRepository.getTop10Destinations(userId)) {
+            LineAndQtyOfCallsDto dto = new LineAndQtyOfCallsDto();
+            dto.setLine(l);
+            dto.setQtyOfCalls(lineRepository.getQtyOfCallsToLine(userId, l.getIdLine()));
+            result.add(dto);
         }
+        return result;
     }
-     */
 }

@@ -8,6 +8,7 @@ import com.utn.utnphones.model.Line;
 import com.utn.utnphones.model.Province;
 import com.utn.utnphones.service.LineService;
 import com.utn.utnphones.service.ProvinceService;
+import com.utn.utnphones.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +22,12 @@ import java.util.List;
 public class LineController {
 
     private final LineService lineService;
+    private final UserService userService;
 
     @Autowired
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, UserService userService) {
         this.lineService = lineService;
+        this.userService = userService;
     }
 
     @GetMapping("/")
@@ -46,6 +49,9 @@ public class LineController {
 
     @GetMapping("/top10Destinations/{userId}")
     public ResponseEntity<List<LineAndQtyOfCallsDto>> getTop10Destinations(@PathVariable Integer userId) throws UserNotExistsException {
+
+        if (!userService.existsById(userId))
+            throw new UserNotExistsException();
 
         List<LineAndQtyOfCallsDto> ll = lineService.getTop10Destinations(userId);
 

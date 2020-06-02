@@ -25,4 +25,8 @@ public class CityService {
     public void addCity(final City c) {
         cityRepository.save(c);
     }
+
+    public boolean existsById(Integer idCity) {
+        return cityRepository.existsById(idCity);
+    }
 }

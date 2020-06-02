@@ -18,31 +18,21 @@ import java.util.Optional;
 public class BillService {
 
     private final BillRepository billRepository;
-    private final UserRepository userRepository;
 
     @Autowired
-    public BillService(BillRepository billRepository, UserRepository userRepository) {
+    public BillService(BillRepository billRepository) {
         this.billRepository = billRepository;
-        this.userRepository = userRepository;
     }
 
     public List<Bill> getAll() {
         return billRepository.findAll();
     }
 
-    public List<Bill> getBillsByUserAndDate(Integer userId, Date fromDate, Date toDate) throws UserNotExistsException {
-        if (userRepository.existsById(userId))
-            return billRepository.getBillsByUserAndDate(userId, fromDate, toDate);
-        else
-            throw new UserNotExistsException();
-
+    public List<Bill> getBillsByUserAndDate(Integer userId, Date fromDate, Date toDate) {
+        return billRepository.getBillsByUserAndDate(userId, fromDate, toDate);
     }
 
-    public List<Bill> getBillsByUser(Integer userId) throws UserNotExistsException {
-        if (userRepository.existsById(userId)){
-            return billRepository.getBillsByUser(userId);
-        }else{
-            throw new UserNotExistsException();
-        }
+    public List<Bill> getBillsByUser(Integer userId) {
+        return billRepository.getBillsByUser(userId);
     }
 }
