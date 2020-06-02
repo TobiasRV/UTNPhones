@@ -13,8 +13,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class LineAndQtyOfCallsDto {
 
+
     @JsonProperty
-    String phone_number;
+    Line line;
 
     @JsonProperty
     Integer qtyOfCalls;

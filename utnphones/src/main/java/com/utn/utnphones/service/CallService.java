@@ -48,4 +48,12 @@ public class CallService {
             throw new UserNotExistsException();
         }
     }
+
+    public List<Call> getCallsByUserOverPrice(Integer userId, Float price) throws UserNotExistsException {
+        if (userRepository.existsById(userId)) {
+            return callRepository.getCallsByUserOverPrice(userId, price);
+        } else {
+            throw new UserNotExistsException();
+        }
+    }
 }

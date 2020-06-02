@@ -34,19 +34,24 @@ public class CallController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Call>> getCallsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate", required = false) Date fromDate, @RequestParam(value = "toDate", required = false) Date toDate) throws UserNotExistsException {
+    public ResponseEntity<List<Call>> getCallsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate", required = false) Date fromDate, @RequestParam(value = "toDate", required = false) Date toDate, @RequestParam(value = "price", required = false) Float price) throws UserNotExistsException {
 
         List<Call> lc = null;
 
-        if (fromDate == null || toDate == null) {
-            lc = callService.getCallsByUser(userId);
-        } else {
+        if (fromDate != null && toDate != null) {
             lc = callService.getCallsByUserAndDate(userId, fromDate, toDate);
+
+        } else if(price != null){
+            lc = callService.getCallsByUserOverPrice(userId,price);
+        }else {
+            lc = callService.getCallsByUser(userId);
         }
         if (lc.size() > 0) {
             return ResponseEntity.ok(lc);
         } else
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+
 
 }
