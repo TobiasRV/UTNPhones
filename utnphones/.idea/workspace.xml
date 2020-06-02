@@ -1,22 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="d2b6c4b3-bb95-43a1-931e-2fd52e655515" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/controller/ProvinceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/controller/ProvinceController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/model/City.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/model/City.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/model/Province.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/model/Province.java" afterDir="false" />
+=======
+    <list default="true" id="b0b87e2c-9a7f-40da-8a73-6e7d3d31cd48" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/controller/CallController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/controller/CallController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/controller/LineController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/controller/LineController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/controller/ProvinceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/controller/ProvinceController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/dto/LineAndQtyOfCallsDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/dto/LineAndQtyOfCallsDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/repository/CallRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/repository/CallRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/repository/LineRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/repository/LineRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/repository/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/service/CallService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/service/CallService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/service/LineService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/service/LineService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/service/ProvinceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/service/ProvinceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/utn/utnphones/service/UserService.java" afterDir="false" />
+>>>>>>> 72a3c4cafdd785bf7be3e78bc50ec7f1bda96106
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CoverageViewManager">
+    <option name="myElementSize" value="241" />
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Enum" />
         <option value="Class" />
+        <option value="JUnit5 Test Class" />
+        <option value="JUnit4 Test Class" />
       </list>
     </option>
   </component>
@@ -38,26 +60,44 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+<<<<<<< HEAD
     <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main/resources" />
+=======
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4" value="" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.includeInheritedMembers" value="true" />
+>>>>>>> 72a3c4cafdd785bf7be3e78bc50ec7f1bda96106
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RecentsManager">
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="com.utn.utnphones.service" />
+      <recent name="com.utn.utnphones.model" />
+      <recent name="com.utn.utnphones.controller" />
+    </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="com.utn.utnphones.dto" />
     </key>
+<<<<<<< HEAD
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\TP FINAL\UTNPhones\utnphones\src\main\resources" />
+=======
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+>>>>>>> 72a3c4cafdd785bf7be3e78bc50ec7f1bda96106
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Application.UtnphonesApplication">
     <configuration name="UtnphonesApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.utn.utnphones.UtnphonesApplication" />
       <module name="utnphones" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.utn.utnphones.dto.*" />
+          <option name="PATTERN" value="com.utn.utnphones.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -65,9 +105,75 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="CityTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="utnphones" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.utn.utnphones.model.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.utn.utnphones.model" />
+      <option name="MAIN_CLASS_NAME" value="com.utn.utnphones.model.CityTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RateServiceTest.getRateByCities" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="utnphones" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.utn.utnphones.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.utn.utnphones.service" />
+      <option name="MAIN_CLASS_NAME" value="com.utn.utnphones.service.RateServiceTest" />
+      <option name="METHOD_NAME" value="getRateByCities" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UserServiceTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="utnphones" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.utn.utnphones.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.utn.utnphones.service" />
+      <option name="MAIN_CLASS_NAME" value="com.utn.utnphones.service.UserServiceTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="UserServiceTest.testGetUserById" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="utnphones" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.utn.utnphones.service.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.utn.utnphones.service" />
+      <option name="MAIN_CLASS_NAME" value="com.utn.utnphones.service.UserServiceTest" />
+      <option name="METHOD_NAME" value="testGetUserById" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.UtnphonesApplication" />
+        <item itemvalue="JUnit.UserServiceTest.testGetUserById" />
+        <item itemvalue="JUnit.UserServiceTest" />
+        <item itemvalue="JUnit.RateServiceTest.getRateByCities" />
+        <item itemvalue="JUnit.CityTest" />
       </list>
     </recent_temporary>
   </component>
@@ -76,7 +182,7 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="d2b6c4b3-bb95-43a1-931e-2fd52e655515" name="Default Changelist" comment="" />
+      <changelist id="b0b87e2c-9a7f-40da-8a73-6e7d3d31cd48" name="Default Changelist" comment="" />
       <created>1589412055252</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -89,14 +195,37 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="552" y="178" key="#Auto_Import/0.0.1920.1040@0.0.1920.1040" timestamp="1589414836525" />
+    <state x="552" y="198" width="816" height="774" key="#Intentions" timestamp="1590971265851">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="552" y="198" width="816" height="774" key="#Intentions/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1590971265851" />
+    <state x="552" y="198" key="#Notifications" timestamp="1591063397777">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="552" y="198" key="#Notifications/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1591063397777" />
+    <state x="564" y="186" key="#UtnphonesApplicationTests" timestamp="1590944248042">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="564" y="186" key="#UtnphonesApplicationTests/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1590944248042" />
+    <state x="414" y="195" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1590963200448">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="414" y="195" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1590963200448" />
     <state x="765" y="203" key="#com.intellij.ide.util.MemberChooser" timestamp="1589602036828">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="765" y="203" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1589602036828" />
+<<<<<<< HEAD
     <state x="808" y="408" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog" timestamp="1590795526887">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="808" y="408" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1590795526887" />
+=======
+    <state x="889" y="266" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1590971271888">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="889" y="266" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1590971271888" />
+>>>>>>> 72a3c4cafdd785bf7be3e78bc50ec7f1bda96106
     <state x="756" y="379" width="408" height="289" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes" timestamp="1590598107899">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -109,6 +238,7 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="614" y="111" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1589413231692" />
+<<<<<<< HEAD
     <state width="1877" height="135" key="GridCell.Tab.0.bottom" timestamp="1591122589701">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -127,28 +257,66 @@
     <state width="1877" height="135" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1591122589701" />
     <state width="1877" height="263" key="GridCell.Tab.1.bottom" timestamp="1590795214502">
       <screen x="0" y="0" width="1920" height="1040" />
+=======
+    <state x="740" y="295" key="FileChooserDialogImpl" timestamp="1590966860721">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="740" y="295" key="FileChooserDialogImpl/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1590966860721" />
+    <state width="1877" height="341" key="GridCell.Tab.0.bottom" timestamp="1591063898948">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="263" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1590795214502" />
+    <state width="1877" height="341" key="GridCell.Tab.0.bottom/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1591063898948" />
+    <state width="1317" height="252" key="GridCell.Tab.0.bottom/0.0.1920.1080/1920.148.1360.768@1920.148.1360.768" timestamp="1590975205698" />
+    <state width="1877" height="341" key="GridCell.Tab.0.center" timestamp="1591063898948">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="263" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1590795214502" />
+    <state width="1877" height="341" key="GridCell.Tab.0.center/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1591063898948" />
+    <state width="1317" height="252" key="GridCell.Tab.0.center/0.0.1920.1080/1920.148.1360.768@1920.148.1360.768" timestamp="1590975205697" />
+    <state width="1877" height="341" key="GridCell.Tab.0.left" timestamp="1591063898948">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="263" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1590795214502" />
+    <state width="1877" height="341" key="GridCell.Tab.0.left/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1591063898948" />
+    <state width="1317" height="252" key="GridCell.Tab.0.left/0.0.1920.1080/1920.148.1360.768@1920.148.1360.768" timestamp="1590975205697" />
+    <state width="1877" height="341" key="GridCell.Tab.0.right" timestamp="1591063898948">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state width="1877" height="263" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1590795214502" />
+    <state width="1877" height="341" key="GridCell.Tab.0.right/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1591063898948" />
+    <state width="1317" height="252" key="GridCell.Tab.0.right/0.0.1920.1080/1920.148.1360.768@1920.148.1360.768" timestamp="1590975205698" />
+    <state width="1877" height="341" key="GridCell.Tab.1.bottom" timestamp="1591063898949">
+      <screen x="0" y="0" width="1920" height="1080" />
+>>>>>>> 72a3c4cafdd785bf7be3e78bc50ec7f1bda96106
     </state>
     <state width="1877" height="263" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1590795214502" />
-    <state width="1877" height="263" key="GridCell.Tab.1.center" timestamp="1590795214502">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="341" key="GridCell.Tab.1.bottom/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1591063898949" />
+    <state width="1877" height="341" key="GridCell.Tab.1.center" timestamp="1591063898948">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state width="1877" height="263" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1590795214502" />
-    <state width="1877" height="263" key="GridCell.Tab.1.left" timestamp="1590795214502">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="341" key="GridCell.Tab.1.center/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1591063898948" />
+    <state width="1877" height="341" key="GridCell.Tab.1.left" timestamp="1591063898948">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state width="1877" height="263" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1590795214502" />
-    <state width="1877" height="263" key="GridCell.Tab.1.right" timestamp="1590795214502">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="341" key="GridCell.Tab.1.left/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1591063898948" />
+    <state width="1877" height="341" key="GridCell.Tab.1.right" timestamp="1591063898948">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state width="1877" height="263" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1590795214502" />
-    <state x="490" y="174" key="Maven.ArtifactSearchDialog" timestamp="1590611948447">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state width="1877" height="341" key="GridCell.Tab.1.right/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1591063898948" />
+    <state x="490" y="181" key="Maven.ArtifactSearchDialog" timestamp="1590949784684">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="490" y="174" key="Maven.ArtifactSearchDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1590611948447" />
-    <state x="461" y="162" key="SettingsEditor" timestamp="1590077390840">
-      <screen x="0" y="0" width="1920" height="1040" />
+    <state x="490" y="181" key="Maven.ArtifactSearchDialog/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1590949784684" />
+    <state x="461" y="168" key="SettingsEditor" timestamp="1590971287832">
+      <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="461" y="162" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1590077390840" />
+    <state x="461" y="168" key="SettingsEditor/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1590971287832" />
     <state x="776" y="301" key="chooseDestDirectoryDialog" timestamp="1590598092756">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -157,5 +325,34 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="769" y="436" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040@0.0.1920.1040" timestamp="1590783122569" />
+    <state x="2579" y="272" key="com.intellij.testIntegration.createTest.CreateTestDialog" timestamp="1590974303030">
+      <screen x="1920" y="148" width="1360" height="768" />
+    </state>
+    <state x="930" y="174" key="com.intellij.testIntegration.createTest.CreateTestDialog/0.0.1920.1080/1920.148.1360.768@0.0.1920.1080" timestamp="1590971274750" />
+    <state x="2579" y="272" key="com.intellij.testIntegration.createTest.CreateTestDialog/0.0.1920.1080/1920.148.1360.768@1920.148.1360.768" timestamp="1590974303030" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/test/java/com/utn/utnphones/model/CityTest.java</url>
+          <line>30</line>
+          <properties class="com.utn.utnphones.model.CityTest">
+            <option name="EMULATED" value="true" />
+          </properties>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/com/utn/utnphones/model/CityTest.java</url>
+          <line>13</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/utnphones$UtnphonesApplication.ic" NAME="UtnphonesApplication Coverage Results" MODIFIED="1590890508066" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>com.utn.utnphones.dto.*</FILTER>
+    </SUITE>
   </component>
 </project>

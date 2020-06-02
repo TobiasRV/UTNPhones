@@ -1,5 +1,6 @@
 package com.utn.utnphones.controller;
 
+import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
 import com.utn.utnphones.exceptions.LineNotFoundException;
 import com.utn.utnphones.exceptions.UserNotExistsException;
 import com.utn.utnphones.model.Call;
@@ -43,11 +44,10 @@ public class LineController {
     }
 
 
-    // TODO hacer dto para que retorne la linea y la cantidad de llamadas a esa linea
     @GetMapping("/top10Destinations/{userId}")
-    public ResponseEntity<List<Line>> getTop10Destinations(@PathVariable Integer userId) throws UserNotExistsException {
+    public ResponseEntity<List<LineAndQtyOfCallsDto>> getTop10Destinations(@PathVariable Integer userId) throws UserNotExistsException {
 
-        List<Line> ll = lineService.getTop10Destinations(userId);
+        List<LineAndQtyOfCallsDto> ll = lineService.getTop10Destinations(userId);
 
         if (ll.size() > 0) {
             return ResponseEntity.ok(ll);
@@ -55,5 +55,7 @@ public class LineController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
     }
+
+
 
 }
