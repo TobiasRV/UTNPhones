@@ -82,7 +82,7 @@ create table bills(
   total_price double,
   issue_date datetime,
   expiration_date datetime,
-  paid boolean,
+  paid boolean default 0,
   constraint pk_bills primary key (id_bill),
   constraint fk_id_line_bills foreign key (id_line) references phone_lines(id_line)  
 );
