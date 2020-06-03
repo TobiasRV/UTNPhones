@@ -55,4 +55,40 @@ public class UserServiceTest {
         assertEquals(0, userList2.size());
         assertEquals(userList, userList2);
     }
+
+
+    @Test
+    public void getUsersByDniEven(){
+        User u1 = new User(1, "user1", "pass", "name1", "lastname1", 40020322, null, UserRole.CLIENT, null, UserStatus.ACTIVE);
+        User u2 = new User(2, "user2", "pass2", "name2", "lastname2", 40020324, null, UserRole.CLIENT, null, UserStatus.ACTIVE);
+
+        List<User> lu = new ArrayList<>();
+        lu.add(u1);
+        lu.add(u2);
+
+        when(userRepository.getUserByEvenDni()).thenReturn(lu);
+
+        List<User> response = userRepository.getUserByEvenDni();
+        assertNotNull(response);
+        assertEquals(lu,response);
+    }
+
+    @Test
+    public void getUsersByDniOdd(){
+
+        User u1 = new User(1, "user1", "pass", "name1", "lastname1", 40020323, null, UserRole.CLIENT, null, UserStatus.ACTIVE);
+        User u2 = new User(2, "user2", "pass2", "name2", "lastname2", 40020325, null, UserRole.CLIENT, null, UserStatus.ACTIVE);
+
+        List<User> lu = new ArrayList<>();
+        lu.add(u1);
+        lu.add(u2);
+
+        when(userRepository.getUserByOddDni()).thenReturn(lu);
+
+        List<User> response = userRepository.getUserByOddDni();
+        assertNotNull(response);
+        assertEquals(lu,response);
+    }
+
+
 }

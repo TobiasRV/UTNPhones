@@ -1,5 +1,6 @@
 package com.utn.utnphones.controller;
 
+import com.utn.utnphones.exceptions.ParameterNotValidException;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.model.enums.UserStatus;
@@ -14,8 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -26,6 +26,7 @@ public class UserControllerTest {
     UserService userService;
     @Mock
     CityService cityService;
+
 
     @Before
     public void setUp() {
@@ -66,6 +67,42 @@ public class UserControllerTest {
         //We spect NO_CONTENT status
         assertEquals(HttpStatus.NO_CONTENT, status);
     }
+
+
+    @Test
+    public void getUsersByDniEven() throws ParameterNotValidException {
+
+        User u1 = new User(1, "user1", "pass", "name1", "lastname1", 40020322, null, UserRole.CLIENT, null, UserStatus.ACTIVE);
+        User u2 = new User(2, "user2", "pass2", "name2", "lastname2", 40020328, null, UserRole.CLIENT, null, UserStatus.ACTIVE);
+
+        List<User> lu = new ArrayList<>();
+        lu.add(u1);
+        lu.add(u2);
+
+        when(userService.getUsersByDniEvenOrOdd(0)).thenReturn(lu);
+
+        List<User> response = userService.getUsersByDniEvenOrOdd(0);
+        assertNotNull(response);
+        assertEquals(lu,response);
+    }
+
+    @Test
+    public void getUsersByDniOdd() throws ParameterNotValidException {
+
+        User u1 = new User(1, "user1", "pass", "name1", "lastname1", 40020323, null, UserRole.CLIENT, null, UserStatus.ACTIVE);
+        User u2 = new User(2, "user2", "pass2", "name2", "lastname2", 40020325, null, UserRole.CLIENT, null, UserStatus.ACTIVE);
+
+        List<User> lu = new ArrayList<>();
+        lu.add(u1);
+        lu.add(u2);
+
+        when(userService.getUsersByDniEvenOrOdd(0)).thenReturn(lu);
+
+        List<User> response = userService.getUsersByDniEvenOrOdd(0);
+        assertNotNull(response);
+        assertEquals(lu,response);
+    }
+
 
 
 }

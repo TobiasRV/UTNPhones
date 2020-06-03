@@ -1,6 +1,7 @@
 package com.utn.utnphones.controller;
 
 
+import com.utn.utnphones.dto.ReturnUserDto;
 import com.utn.utnphones.dto.UpdateUserDto;
 import com.utn.utnphones.exceptions.*;
 import com.utn.utnphones.model.User;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -75,6 +78,34 @@ public class UserController {
                 .path("/{userId}")
                 .buildAndExpand(user.getIdUser())
                 .toUri();
+    }
+
+
+    /*
+        El endpoint quedaria localhost:8080/api/user/dni y en los query param enviar condicion que debe ser  0 para los dni pares y 1 para los impares, en caso de enviar otro numero tira error
+     */
+    @GetMapping("/dni")
+    public ResponseEntity<List<ReturnUserDto>> getUsersByDniEvenOrOdd(@RequestParam(value = "condition", required = true) Integer condition) throws ParameterNotValidException {
+
+        if (condition == 0 || condition == 1) {
+            List<ReturnUserDto> response = new ArrayList<ReturnUserDto>();
+            for (User user : userService.getUsersByDniEvenOrOdd(condition)) {
+                ReturnUserDto dto = new ReturnUserDto();
+                dto.setId(user.getIdUser());
+                dto.setName(user.getName());
+                dto.setLastname(user.getLastname());
+                dto.setUsername(user.getUsername());
+                dto.setDni(user.getDni());
+                dto.setStatus(user.getStatus());
+                dto.setCity(user.getCity());
+                dto.setLineList(user.getLines());
+                response.add(dto);
+            }
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
     }
 }
 
