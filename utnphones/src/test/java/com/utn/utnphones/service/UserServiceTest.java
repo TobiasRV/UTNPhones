@@ -1,66 +1,58 @@
 package com.utn.utnphones.service;
 
-import com.utn.utnphones.controller.UserController;
-import com.utn.utnphones.exceptions.UserNotFoundException;
-import com.utn.utnphones.model.City;
-import com.utn.utnphones.model.Line;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.model.enums.UserStatus;
-import com.utn.utnphones.repository.CityRepository;
 import com.utn.utnphones.repository.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class UserServiceTest {
 
-    private UserService service;
-
+    UserService userService;
     @Mock
     UserRepository userRepository;
-    @Mock
-    CityRepository cityRepository;
 
     @Before
-    public void setUP(){
-        
+    public void setUp() {
+        initMocks(this);
+        this.userService = new UserService(userRepository);
     }
 
     @Test
-    public void login() {
+    public void getAllOk() {
+        User u1 = new User(1, "user1", "pass", "name1", "lastname1", 40020327, null, UserRole.CLIENT, null, UserStatus.ACTIVE);
+        User u2 = new User(2, "user2", "pass2", "name2", "lastname2", 40020328, null, UserRole.CLIENT, null, UserStatus.ACTIVE);
+
+        List<User> userList = new ArrayList<>();
+        userList.add(u1);
+        userList.add(u2);
+
+        when(userRepository.findAll()).thenReturn(userList);
+
+        List<User> userList2 = userService.getAll();
+
+        assertEquals(2, userList2.size());
+        assertEquals(userList, userList2);
     }
 
     @Test
-    public void getAll() {
-    }
+    public void getAllEmpty() {
+        List<User> userList = new ArrayList<>();
 
-    @Test
-    public void addUser() {
-    }
+        when(userRepository.findAll()).thenReturn(userList);
 
-    @Test
-    public void testGetUserById() throws UserNotFoundException {
-        int id = 1;
-        User expected = new User(id,"username","","name","surename",28623956,new City(), UserRole.CLIENT,new ArrayList<Line>(), UserStatus.ACTIVE);
-        when(service.getUserById(id)).thenReturn(expected);
-        User returnedUser = service.getUserById(id);
-        assertEquals(expected.getDni(),returnedUser.getDni());
-        verify(service,times(1)).getUserById(id);
-    }
+        List<User> userList2 = userService.getAll();
 
-    @Test
-    public void deleteUser() {
-    }
-
-    @Test
-    public void updateUser() {
+        assertEquals(0, userList2.size());
+        assertEquals(userList, userList2);
     }
 }
