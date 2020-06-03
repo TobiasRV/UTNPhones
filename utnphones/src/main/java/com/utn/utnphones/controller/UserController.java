@@ -1,10 +1,15 @@
 package com.utn.utnphones.controller;
 
 
+import com.utn.utnphones.dto.LongestCallDto;
 import com.utn.utnphones.dto.UpdateUserDto;
 import com.utn.utnphones.exceptions.*;
+import com.utn.utnphones.model.Call;
+import com.utn.utnphones.model.Line;
 import com.utn.utnphones.model.User;
+import com.utn.utnphones.service.CallService;
 import com.utn.utnphones.service.CityService;
+import com.utn.utnphones.service.LineService;
 import com.utn.utnphones.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,11 +27,15 @@ public class UserController {
 
     private final UserService userService;
     private final CityService cityService;
+    private final LineService lineService;
+    private final CallService callService;
 
     @Autowired
-    public UserController(UserService userService, CityService cityService) {
+    public UserController(UserService userService, CityService cityService, LineService lineService, CallService callService) {
         this.userService = userService;
         this.cityService = cityService;
+        this.lineService = lineService;
+        this.callService = callService;
     }
 
     @GetMapping("/")
@@ -75,6 +84,19 @@ public class UserController {
                 .path("/{userId}")
                 .buildAndExpand(user.getIdUser())
                 .toUri();
+    }
+
+    @GetMapping("/longestcall")
+    public ResponseEntity getUserByLongestCall() throws LineNotFoundException, UserNotFoundException {
+
+        Call call = callService.getLongestCall();
+        if(call != null){
+            Line line = lineService.getLineById(call.getOriginLine().getIdLine());
+            User u = userService.getUserById(line.getUser().getIdUser());
+            LongestCallDto longestCallDto = new LongestCallDto(u,call.getCallDuration());
+            return ResponseEntity.ok(longestCallDto);
+        }else
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
 

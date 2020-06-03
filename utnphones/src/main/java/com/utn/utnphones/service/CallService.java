@@ -41,4 +41,8 @@ public class CallService {
     public List<Call> getCallsByUserOverPrice(Integer userId, Float price) {
         return callRepository.getCallsByUserOverPrice(userId, price);
     }
+
+    public Call getLongestCall(){
+        return callRepository.getLongestCall();
+    }
 }

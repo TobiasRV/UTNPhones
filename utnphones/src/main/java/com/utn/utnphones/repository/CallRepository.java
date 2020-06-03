@@ -20,4 +20,7 @@ public interface CallRepository extends JpaRepository<Call, Integer> {
 
     @Query(value = "select * FROM calls as c INNER JOIN phone_lines as p on p.id_line = c.id_origin_Line WHERE (p.id_User = ?1) AND (c.call_price > ?2)", nativeQuery = true)
     List<Call> getCallsByUserOverPrice(Integer userId, Float price);
+
+    @Query(value = "select * from calls order by call_duration desc limit 1",nativeQuery = true)
+    Call getLongestCall();
 }

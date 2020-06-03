@@ -27,6 +27,10 @@ public class LineService {
         return lineRepository.findAll();
     }
 
+    public Line getLineById(Integer lineId) throws LineNotFoundException {
+        return lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
+    }
+
     public void addLine(final Line l) {
         lineRepository.save(l);
     }
