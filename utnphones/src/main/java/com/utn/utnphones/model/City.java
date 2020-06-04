@@ -30,7 +30,6 @@ public class City {
 
     @JoinColumn(name = "id_province", nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
-    @JsonManagedReference
     private Province province;
 
     @Column(nullable = false, unique = true, length = 5)

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.sql.Date;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class CallController {
     }
 
     @PostMapping("/")
-    public void addCall(@RequestBody Call c) {
+    public void addCall(@RequestBody @Valid Call c) {
         callService.addCall(c);
     }
 

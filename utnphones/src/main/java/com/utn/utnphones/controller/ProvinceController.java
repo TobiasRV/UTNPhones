@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -26,7 +27,7 @@ public class ProvinceController {
     }
 
     @PostMapping("/")
-    public void addProvince(@RequestBody Province p) {
+    public void addProvince(@RequestBody @Valid Province p) {
         provinceService.addProvince(p);
     }
 

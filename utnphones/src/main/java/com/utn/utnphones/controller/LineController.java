@@ -36,7 +36,7 @@ public class LineController {
     }
 
     @PostMapping("/")
-    public void addLine(@RequestBody Line l) {
+    public void addLine(@RequestBody @Valid Line l) {
         lineService.addLine(l);
     }
 

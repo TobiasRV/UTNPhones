@@ -27,10 +27,23 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ErrorResponseDto handleUserAlreadyExists() {
-        return new ErrorResponseDto(3, "User already exists");
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ErrorResponseDto handleUsernameAlreadyExists() {
+        return new ErrorResponseDto(3, "Username already exists");
     }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(DniAlreadyExistsException.class)
+    public ErrorResponseDto handleDniAlreadyExists() {
+        return new ErrorResponseDto(3, "DNI already exists");
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ErrorResponseDto handleEmailAlreadyExists() {
+        return new ErrorResponseDto(3, "Email already exists");
+    }
+
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(CityNotExistsException.class)

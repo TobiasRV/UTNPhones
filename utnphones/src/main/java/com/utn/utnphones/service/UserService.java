@@ -31,10 +31,14 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User addUser(final User u) throws UserAlreadyExistsException {
+    public User addUser(final User u) throws UsernameAlreadyExistsException, DniAlreadyExistsException, EmailAlreadyExistsException {
 
-        if (userRepository.existsByUsername(u.getUsername()) || userRepository.existsByDni(u.getDni()))
-            throw new UserAlreadyExistsException();
+        if (userRepository.existsByUsername(u.getUsername()))
+            throw new UsernameAlreadyExistsException();
+        if (userRepository.existsByDni(u.getDni()))
+            throw new DniAlreadyExistsException();
+        if (userRepository.existsByEmail(u.getEmail()))
+            throw new EmailAlreadyExistsException();
 
         return userRepository.save(u);
     }

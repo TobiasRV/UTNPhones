@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ResponseEntity addUser(@RequestBody User u) throws UserAlreadyExistsException, CityNotExistsException {
+    public ResponseEntity addUser(@RequestBody @Valid User u) throws CityNotExistsException, EmailAlreadyExistsException, UsernameAlreadyExistsException, DniAlreadyExistsException {
 
         if (!cityService.existsById(u.getCity().getIdCity()))
             throw new CityNotExistsException();

@@ -5,6 +5,7 @@ import com.utn.utnphones.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -24,7 +25,7 @@ public class CityController {
     }
 
     @PostMapping("/")
-    public void addCity(@RequestBody City c) {
+    public void addCity(@RequestBody @Valid City c) {
         cityService.addCity(c);
     }
 }

@@ -34,6 +34,9 @@ public class User {
     @Column(nullable = false, length = 50)
     private String password;
 
+    @Column(nullable = false, length = 50, unique = true)
+    private String email;
+
     @Column(nullable = false, length = 50)
     private String name;
 
@@ -46,6 +49,9 @@ public class User {
     @JoinColumn(name = "id_city")
     @ManyToOne(fetch = FetchType.EAGER)
     private City city;
+
+    @Column(nullable = false, length = 50)
+    private String address;
 
     @NotNull
     @Enumerated(EnumType.STRING)
