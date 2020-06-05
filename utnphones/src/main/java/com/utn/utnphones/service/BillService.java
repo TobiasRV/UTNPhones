@@ -1,18 +1,14 @@
 package com.utn.utnphones.service;
 
-import com.utn.utnphones.exceptions.UserNotExistsException;
+import com.utn.utnphones.exceptions.BillNotFoundException;
+import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.Bill;
-import com.utn.utnphones.model.Call;
-import com.utn.utnphones.model.User;
 import com.utn.utnphones.repository.BillRepository;
-import com.utn.utnphones.repository.CallRepository;
-import com.utn.utnphones.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BillService {
@@ -35,4 +31,23 @@ public class BillService {
     public List<Bill> getBillsByUser(Integer userId) {
         return billRepository.getBillsByUser(userId);
     }
+
+    public Bill getBillById(Integer lineId, Integer billId) throws BillNotFoundException, ValidationException {
+        Bill b = billRepository.findById(billId).orElseThrow(BillNotFoundException::new);
+
+        if (!b.getLine().getIdLine().equals(lineId))
+            throw new ValidationException("The bill id given does not match with the line id");
+
+        return b;
+    }
+
+    public void payBill(Integer lineId, Integer billId) throws BillNotFoundException, ValidationException {
+        Bill b = billRepository.findById(billId).orElseThrow(BillNotFoundException::new);
+        if (!b.getLine().getIdLine().equals(lineId))
+            throw new ValidationException("The bill id given does not match with the line id");
+
+        b.setPaid(true);
+        billRepository.save(b);
+    }
+
 }

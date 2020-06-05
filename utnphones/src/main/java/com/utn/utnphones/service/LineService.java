@@ -2,11 +2,9 @@ package com.utn.utnphones.service;
 
 import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
 import com.utn.utnphones.exceptions.LineNotFoundException;
-import com.utn.utnphones.exceptions.UserNotExistsException;
 import com.utn.utnphones.model.Line;
 import com.utn.utnphones.model.enums.LineStatus;
 import com.utn.utnphones.repository.LineRepository;
-import com.utn.utnphones.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,5 +64,9 @@ public class LineService {
             result.add(dto);
         }
         return result;
+    }
+
+    public boolean existsById(Integer lineId){
+        return lineRepository.existsById(lineId);
     }
 }

@@ -1,8 +1,12 @@
 package com.utn.utnphones.controller;
 
-import com.utn.utnphones.exceptions.UserNotExistsException;
+import com.utn.utnphones.exceptions.BillNotFoundException;
+import com.utn.utnphones.exceptions.LineNotFoundException;
+import com.utn.utnphones.exceptions.UserNotFoundException;
+import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.service.BillService;
+import com.utn.utnphones.service.LineService;
 import com.utn.utnphones.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,11 +22,13 @@ public class BillController {
 
     private final BillService billService;
     private final UserService userService;
+    private final LineService lineService;
 
     @Autowired
-    public BillController(BillService billService, UserService userService) {
+    public BillController(BillService billService, UserService userService, LineService lineService) {
         this.billService = billService;
         this.userService = userService;
+        this.lineService = lineService;
     }
 
     @GetMapping("/")
@@ -31,9 +37,9 @@ public class BillController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Bill>> getBillsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate", required = false) Date fromDate, @RequestParam(value = "toDate", required = false) Date toDate) throws UserNotExistsException {
-        if(!userService.existsById(userId))
-            throw new UserNotExistsException();
+    public ResponseEntity<List<Bill>> getBillsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate", required = false) Date fromDate, @RequestParam(value = "toDate", required = false) Date toDate) throws UserNotFoundException {
+        if (!userService.existsById(userId))
+            throw new UserNotFoundException();
 
         List<Bill> lb;
 
@@ -48,4 +54,21 @@ public class BillController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
     }
+
+    @GetMapping("/{lineId}/{billId}")
+    public ResponseEntity<Bill> getBillById(@PathVariable Integer lineId, @PathVariable Integer billId) throws LineNotFoundException, BillNotFoundException, ValidationException {
+        if (!lineService.existsById(lineId))
+            throw new LineNotFoundException();
+        return ResponseEntity.ok(billService.getBillById(lineId, billId));
+    }
+
+    @PutMapping("/{lineId}/{billId}")
+    public ResponseEntity payBill(@PathVariable Integer lineId, @PathVariable Integer billId) throws BillNotFoundException, LineNotFoundException, ValidationException {
+        if (!lineService.existsById(lineId))
+            throw new LineNotFoundException();
+
+        billService.payBill(lineId, billId);
+        return ResponseEntity.ok().build();
+    }
+
 }

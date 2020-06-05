@@ -2,12 +2,9 @@ package com.utn.utnphones.controller;
 
 import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
 import com.utn.utnphones.exceptions.LineNotFoundException;
-import com.utn.utnphones.exceptions.UserNotExistsException;
-import com.utn.utnphones.model.Call;
+import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.model.Line;
-import com.utn.utnphones.model.Province;
 import com.utn.utnphones.service.LineService;
-import com.utn.utnphones.service.ProvinceService;
 import com.utn.utnphones.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,10 +45,10 @@ public class LineController {
 
 
     @GetMapping("/top10Destinations/{userId}")
-    public ResponseEntity<List<LineAndQtyOfCallsDto>> getTop10Destinations(@PathVariable Integer userId) throws UserNotExistsException {
+    public ResponseEntity<List<LineAndQtyOfCallsDto>> getTop10Destinations(@PathVariable Integer userId) throws UserNotFoundException {
 
         if (!userService.existsById(userId))
-            throw new UserNotExistsException();
+            throw new UserNotFoundException();
 
         List<LineAndQtyOfCallsDto> ll = lineService.getTop10Destinations(userId);
 
@@ -61,7 +58,6 @@ public class LineController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
     }
-
 
 
 }

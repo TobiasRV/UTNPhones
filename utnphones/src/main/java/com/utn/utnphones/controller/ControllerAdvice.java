@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
-
 @RestControllerAdvice
 public class ControllerAdvice extends ResponseEntityExceptionHandler {
 
@@ -22,52 +19,50 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
         return new ErrorResponseDto(1, "User not found");
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(UserNotExistsException.class)
-    public ErrorResponseDto handleUserNotExists() {
-        return new ErrorResponseDto(2, "User not exists");
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(BillNotFoundException.class)
+    public ErrorResponseDto handleBillNotFound() {
+        return new ErrorResponseDto(2, "Bill not found");
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(LineNotFoundException.class)
+    public ErrorResponseDto handleLineNotFound() {
+        return new ErrorResponseDto(3, "Line not found");
+    }
+
+    /*
+        409 CONFLICT
+        The request could not be completed due to a conflict with the current state of the target resource.
+        This code is used in situations where the user might be able to resolve the conflict and resubmit the request.
+     */
     @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(UsernameAlreadyExistsException.class)
-    public ErrorResponseDto handleUsernameAlreadyExists() {
-        return new ErrorResponseDto(3, "Username already exists");
+    @ExceptionHandler(ValidationException.class)
+    public ErrorResponseDto handleValidationException(ValidationException e) {
+        return new ErrorResponseDto(4, e.getMessage());
     }
-
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(DniAlreadyExistsException.class)
-    public ErrorResponseDto handleDniAlreadyExists() {
-        return new ErrorResponseDto(4, "DNI already exists");
-    }
-
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ErrorResponseDto handleEmailAlreadyExists() {
-        return new ErrorResponseDto(5, "Email already exists");
-    }
-
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(CityNotExistsException.class)
     public ErrorResponseDto handleCityNotExists() {
-        return new ErrorResponseDto(6, "City not Exists");
+        return new ErrorResponseDto(5, "City not Exists");
     }
 
     /*
-    The 422 (Unprocessable Entity) status code means the server
-    understands the content type of the request entity, and the
-    syntax of the request entity is correct but was unable to process the contained instructions.
+        422 UNPROCESSABLE ENTITY
+        The server understands the content type of the request entity, and thesyntax of the request entity is correct
+        but was unable to process the contained instructions.
      */
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(HibernateException.class)
     public ErrorResponseDto spErro(RuntimeException e) {
-        return new ErrorResponseDto(7, e.getCause().getCause().getMessage());
+        return new ErrorResponseDto(6, e.getCause().getCause().getMessage());
     }
-    
+
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorResponseDto handleUniqueConstraint() {
-        return new ErrorResponseDto(8, "One or more fields are not valid");
+        return new ErrorResponseDto(7, "One or more fields are not valid");
     }
 
 }
