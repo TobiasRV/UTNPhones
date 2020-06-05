@@ -2,6 +2,7 @@ package com.utn.utnphones.controller;
 
 import com.utn.utnphones.dto.ErrorResponseDto;
 import com.utn.utnphones.exceptions.*;
+import org.hibernate.HibernateException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 @RestControllerAdvice
@@ -59,6 +61,12 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorResponseDto handleUniqueConstraint() {
+        return new ErrorResponseDto(6, "One or more fields are not valid");
+    }
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(HibernateException.class)
+    public ErrorResponseDto spErro(HibernateException e) {
         return new ErrorResponseDto(6, "One or more fields are not valid");
     }
 

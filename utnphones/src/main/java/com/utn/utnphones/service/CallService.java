@@ -1,5 +1,6 @@
 package com.utn.utnphones.service;
 
+import com.utn.utnphones.dto.AddCallDto;
 import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
 import com.utn.utnphones.exceptions.UserNotExistsException;
 import com.utn.utnphones.model.Call;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
@@ -25,8 +27,8 @@ public class CallService {
         return callRepository.findAll();
     }
 
-    public void addCall(final Call c) {
-        callRepository.save(c);
+    public void addCall(final AddCallDto c) {
+        callRepository.saveNewCall(c.getOriginNumber(), c.getDestinationNumber(), c.getDate(), c.getDuration());
     }
 
 

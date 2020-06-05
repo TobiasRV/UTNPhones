@@ -23,16 +23,19 @@ create table users(
   id_user int unsigned auto_increment,
   username varchar(50),
   password varchar(50),
+  email varchar(50),
   name varchar(50),
   lastname varchar(50),
   dni int,
   id_city int unsigned,
+  address varchar(50),
   role enum('ADMIN','CLIENT','EMPLOYEE','INFRAESTRUCTURE') default 'CLIENT',
   status enum('ACTIVE','DELETED') default 'ACTIVE',
   constraint pk_user primary key (id_user),
   constraint fk_id_city_user foreign key (id_city) references cities(id_city),
   constraint unq_username_users unique (username),
-  constraint unq_dni_users unique (dni)
+  constraint unq_dni_users unique (dni),
+  constraint unq_email_users unique (email)
 );
 
 create table rates(
@@ -96,7 +99,11 @@ reads sql data
 begin
     declare vResult int;
     select id_line into vResult from phone_lines where (id_city = pIdCity) and (phone_number = pLineNumer);
-    return vResult;
+	if(vResult is not null) then
+		return vResult;
+    else
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Line not found', MYSQL_ERRNO = 1000;
+    end if;
 end //
 delimiter ;
 
@@ -108,7 +115,12 @@ reads sql data
 begin
     declare vResult int;
     select id_city into vResult from cities where (prefix = pPrefix);
-    return vResult;
+	if (vResult is not null) then
+		return vResult;
+    else
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Rate not found', MYSQL_ERRNO = 1004;
+    end if;
+
 end //
 delimiter ;
 
@@ -117,7 +129,7 @@ delimiter //
 create trigger tbi_calls_prevent_self_calling before insert on calls for each row
 begin
 	if (new.id_origin_line = new.id_destination_line) then
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Origin and Destination ID can not be the same', MYSQL_ERRNO = 1001;
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Origin and Destination ID can not be the same', MYSQL_ERRNO = 1002;
   end if;
 end //
 delimiter ;
@@ -130,7 +142,11 @@ reads sql data
 begin 
     declare vResult int;
     select id_rate into vResult from rates where (id_origin_city = pIdOriginLine) and (id_destination_city = pIdDestinationLine);
-    return vResult;
+    if(vResult is not null) then
+		return vResult;
+    else
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Rate not found', MYSQL_ERRNO = 1003;
+    end if;
 end //
 delimiter ;
 
@@ -142,11 +158,15 @@ reads sql data
 begin 
     declare vResult double;
     select price_per_minute into vResult from rates where id_rate = pId_rate;
-    return vResult;
+	if(vResult is not null) then
+		return vResult;
+    else
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Rate not found', MYSQL_ERRNO = 1004;
+    end if;
 end //
 delimiter ;
 
--- FUNCION PARA OBTENER EL PRECIO DE UN RATE
+-- FUNCION PARA OBTENER EL COSTO DE UN RATE
 delimiter //
 create function getCallCost(pId_rate int)
 returns double
@@ -154,7 +174,11 @@ reads sql data
 begin 
     declare vResult double;
     select cost_per_minute into vResult from rates where id_rate = pId_rate;
-    return vResult;
+  	if(vResult is not null) then
+		return vResult;
+    else
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Rate not found', MYSQL_ERRNO = 1005;
+    end if;
 end //
 delimiter ;
 
@@ -196,16 +220,15 @@ INSERT INTO provinces(province_name) values ("Buenos Aires"),("La Pampa"),("Cord
 INSERT INTO cities(city_name,id_province,prefix) values ("Mar del Plata",1,"223"),("Miramar",1,"2291"),("Necochea",1,"2262"),("Bahia Blanca",1,"291"),("Balcarce",1,"2266"),("Olavarria",1,"2284"),("Ciudad Autonoma de Buenos Aires",1,"011"),("La plata",1,"221"),("Cordoba Capital",3,"351"),("Santa Rosa",2,"2954");
 
 -- INSERTS USERS
-INSERT INTO `users` (`username`,`password`,`name`,`lastname`,`dni`,`id_city`,`role`) VALUES ("siderjonas","pastrana","Christian","Soldano",40020327,1,"client"),("Soker","tobiasrv","Tobias","Rodriguez Viau",41216459,2,"client"),("Hadley","IQQ01AEE8RZ","Vivian","Lynch",17086970,8,"client"),("Gloria","FDB42QHB8IH","Demetrius","Brennan",41571814,7,"client"),("Macon","ULK20VWV2DC","Damon","Salinas",15314357,7,"client"),("Ezekiel","PRA31VXO7OH","Haley","Allison",24202784,10,"client"),("Briar","CNT80TQJ4DL","Nomlanga","Alford",19115569,6,"client"),("Eric","PCG80MPR8EE","Hilary","Wynn",20803324,5,"client");
-INSERT INTO `users` (`username`,`password`,`name`,`lastname`,`dni`,`id_city`,`role`) VALUES ("Maisie","FIK63URR0YI","Gray","Rollins",15964934,1,"client"),("Macaulay","TTJ86BEY7FI","Kaden","Mcclain",30595780,6,"client"),("Taylor","XLV26VKY5DB","Zena","May",15141960,10,"client"),("Isaac","KJY84VCT9XI","Abraham","Gilmore",42436632,4,"client"),("Asher","BUM04FXQ4UK","Mia","Tyson",23981647,5,"client"),("Rachel","ABS32BGY0TL","Lucius","Burke",27673033,1,"client"),("Hall","OGU32OFB7BL","Daria","Burnett",23478504,5,"client"),("Martin","CXF84DBZ4GM","Dahlia","Chambers",19944189,3,"client"),("Brianna","PDE12CQR3MN","Zelenia","Reyes",42484766,7,"client"),("Prescott","ROY90PPO4PW","Yuri","Charles",38944538,3,"client");
-INSERT INTO `users` (`username`,`password`,`name`,`lastname`,`dni`,`id_city`,`role`) VALUES ("Kieran","XLQ80FPF3NQ","Rhonda","Pierce",42811839,9,"client"),("Cairo","WXU31PZN5GA","Illiana","Conrad",39898544,4,"client"),("Price","ILL15LCF3UZ","Lewis","Williams",34182879,5,"client"),("Deirdre","NPT68VZD1ML","Carson","Harrell",22459768,1,"client"),("Edan","CJF10YBW5WQ","Chastity","Nicholson",43414428,10,"client"),("Aaron","IZC36PRX2AW","Halee","Pickett",28862585,1,"client"),("Hilel","UGG76EOS8MT","Tiger","Peterson",37854344,1,"client"),("Hollee","TAV42TPX6HS","Phelan","Rush",25436042,4,"client"),("Jarrod","HEA51UKU8KK","Dexter","Hensley",19006015,3,"client"),("Eaton","YYY95KOZ6ZF","Jenette","Thomas",27646304,2,"client");
-INSERT INTO `users` (`username`,`password`,`name`,`lastname`,`dni`,`id_city`,`role`) VALUES ("Vera","LDI35URH9FJ","Rinah","Conner",33472672,5,"client"),("Hermione","JVV52PJX5KB","Chester","Key",32162195,6,"client"),("Juliet","TGN10FSR9CR","Brock","Sweet",17112028,6,"client"),("Maggie","YHA91QNL3LK","Yuri","Vega",40371930,4,"client"),("Violet","AHB73VJD2ND","Blair","Lambert",32816169,8,"client"),("Aubrey","AAF58VOE0HL","Emerald","Fulton",18851271,10,"client"),("Stella","IJK13SAR8UK","Kennan","Whitley",25481781,9,"client"),("Bevis","MHZ07BWE3QQ","Louis","Wilkinson",34116407,6,"client"),("Signe","ZGC25BIB9PI","Hedwig","Leonard",18237951,2,"client"),("Brady","ENL37VXB9LP","Cruz","Coffey",29329606,3,"client");
-INSERT INTO `users` (`username`,`password`,`name`,`lastname`,`dni`,`id_city`,`role`) VALUES ("Rafael","SEE14GRD5XJ","Garrett","Vinson",30365693,10,"client"),("Catherine","MTN45APA7JE","Ifeoma","Merrill",22276210,7,"client"),("Colin","IWK06TMZ9FL","Jared","Reeves",31034213,7,"client"),("Wayne","EHO73STJ1CR","Rebecca","Bright",22992019,10,"client"),("Reed","PIP95LDC5NC","Hermione","Parsons",39888957,9,"client"),("Rhoda","OVT65HKM5CG","Luke","Hale",29294315,8,"client"),("Angelica","XYK24TNE0RB","Ivor","Alford",39267598,10,"client"),("Kevin","BHP79AYK1RO","Lacy","Delacruz",17227827,6,"client"),("Stacey","SCD42MWN1CL","Tamekah","Mccormick",38603726,5,"client"),("Carl","KLP73SYG7CR","Pandora","Bridges",16939251,10,"client");
-INSERT INTO `users` (`username`,`password`,`name`,`lastname`,`dni`,`id_city`,`role`) VALUES ("Jordan","MCP03JTB1FQ","Erin","Goodman",18836155,1,"client"),("Sylvester","BRE25HFH6FF","Patricia","Shelton",19746495,9,"client"),("Francis","SPW56EPO5SV","Brent","Hancock",32974553,9,"client"),("Leilani","TVQ41YRK1BG","Kellie","Cruz",39368815,8,"client"),("Dalton","RMH41SXR0OC","Holmes","Rosales",17550414,3,"client"),("Hope","PEV02NZB3QP","Brendan","Peters",31725805,4,"client"),("Constance","ZID92CSZ9HT","Xaviera","Gross",35391849,6,"client"),("Oprah","ZXN27BPC8LK","Phelan","Lawson",22901376,7,"client"),("Charissa","WXL95LAF5TZ","Anastasia","Dejesus",41614333,1,"client"),("Geraldine","JWB01NJS6WY","Laura","Wolfe",35912723,10,"client");
-INSERT INTO `users` (`username`,`password`,`name`,`lastname`,`dni`,`id_city`,`role`) VALUES ("Cecilia","CQT97KFH7YV","Ezekiel","Farley",23961021,10,"client"),("Ferdinand","EJM04DHR9NF","Jaden","Haley",27083204,3,"client"),("Amena","MTP95JQW3RU","Kelly","Rosario",31801509,2,"client"),("Silas","VOD77MAN2HL","Jerome","Franco",17651481,2,"client"),("Nehru","AYS58QIM1XB","Macey","Garcia",28179472,5,"client"),("Phelan","DPE20BCX9ZP","Rhonda","Morrison",19503016,7,"client"),("Uta","RZK98QHR5FJ","Jelani","Knowles",27236970,10,"client"),("Kathleen","MDJ14AGI4US","Eaton","Carrillo",39290158,8,"client"),("Perry","XJL63FSY1OB","Rebekah","Peterson",30219905,6,"client"),("Quinn","BLB79FUC6MU","Alvin","Bentley",33822765,2,"client");
-INSERT INTO `users` (`username`,`password`,`name`,`lastname`,`dni`,`id_city`,`role`) VALUES ("Hasad","WYA70ZLI3SE","Mallory","Jacobs",17034038,9,"client"),("Amy","SZI63XXD2BF","Zena","Calhoun",42500779,5,"client"),("Iola","OGX50FDV4DR","Georgia","Lopez",15784358,4,"client"),("Lenore","FND18UDS3UT","Jerome","Downs",37072568,5,"client"),("Gage","RUC21DOF0BZ","Moses","Reed",15650456,8,"client"),("Emi","TTO68AUM4MI","Casey","Santiago",16637494,5,"client"),("Kirestin","DTE17WHV8RS","Cara","Mosley",39711496,6,"client"),("Willow","XKY89EXZ5XQ","Armando","Turner",19160732,1,"client"),("Cleo","WHO80YFO2EJ","Barry","Acosta",30234860,10,"client"),("Amethyst","VMS06NFS1MJ","Leila","Morton",40554560,4,"client");
-INSERT INTO `users` (`username`,`password`,`name`,`lastname`,`dni`,`id_city`,`role`) VALUES ("Abdul","ONE22XMF1CY","Stuart","Garcia",22483592,5,"client"),("Heidi","IJF22DRO9VW","Drake","Tran",26393838,3,"client"),("Winter","UNI51WGY2YK","Miranda","Pugh",19770404,9,"client"),("Jorden","UJZ35DCF6UM","Dominic","Dillard",16311824,5,"client"),("Sarah","YHO01MHZ7SX","Aiko","Phelps",23624910,3,"client"),("Patience","TUN01VUH9AV","Justine","Blackburn",41568528,2,"client"),("Kyla","ZXT82UQL2QB","Lance","Cash",38259590,7,"client"),("Dennis","LIQ87PEK2GH","Yasir","York",42388428,7,"client");
-INSERT INTO `users` (`username`,`password`,`name`,`lastname`,`dni`,`id_city`,`role`) VALUES ("Jacob","BEH09LYI2KU","Myra","Valencia",27881912,8,"client"),("Pearl","RWU98FMC2SC","Raja","Graves",16667714,4,"client"),("Maya","SKR57CXO3IA","Tashya","Avila",19509946,1,"client"),("Denton","CMY15BOK8HY","Reece","Avila",43029942,5,"client"),("Cherokee","LFT62NJD6NW","Sloane","Fisher",27327464,2,"client"),("Wade","SIA49HJC1KA","Kimberly","Hart",32923400,5,"client"),("Dylan","QLV00HDS6TM","Hilel","Mcintyre",39169169,3,"client"),("Nicholas","FGJ48ZLF0OQ","Buckminster","Rose",16851802,2,"client"),("Teagan","COG55PIF2EM","Jeremy","Winters",43400128,8,"client"),("Keegan","OUT90GKQ2MM","Dante","Taylor",38077433,9,"client");
+INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ("siderjonas","pastrana","soldanochristian@hotmail.com","Christian","Soldano",40020327,"Manuel Acevedo 2685",1,"client"),("Soker","tobiasrv","rodriguezviautobias@gmail.com","Tobias","Rodriguez Viau",41216459,"Calle Falsa 123",2,"client");
+INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ('duebel0', 'qu44Uu22m1i2', 'duebel0@dailymotion.com', 'Demott', 'Uebel', 26548921, '099 Bunker Hill Trail', 7, "CLIENT"),('vgullivan1', 'szaqM5WaDFV', 'vgullivan1@netscape.com', 'Vannie', 'Gullivan', 39965555, '06 Luster Way', 3, "CLIENT"),('lbeat2', 'PICqkIHlJjvf', 'lbeat2@nyu.edu', 'Leila', 'Beat', 18055777, '70849 Blaine Center', 6, "CLIENT"),('alainge3', 'WhiyjJ3s1ZZ7', 'alainge3@woothemes.com', 'Ameline', 'Lainge', 17733987, '61 Magdeline Park', 4, "CLIENT"),('chuc4', '96SfJ35eXcV', 'chuc4@ftc.gov', 'Corby', 'Huc', 32364518, '2 Towne Drive', 10, "CLIENT"),('sguidini5', 'crione83', 'sguidini5@sfgate.com', 'Silva', 'Guidini', 32936147, '22175 Bay Circle', 9, "CLIENT"),('apeyntue6', 'ioMkitPYv6V9', 'apeyntue6@tinyurl.com', 'Alvin', 'Peyntue', 15799689, '6084 Lake View Center', 5, "CLIENT"),('amcleman7', 'knzCc5', 'amcleman7@intel.com', 'Aluin', 'McLeman', 33178319, '62 Memorial Court', 2, "CLIENT"),('zbaugh8', 'YKe4rv54o', 'zbaugh8@bing.com', 'Zahara', 'Baugh', 19061342, '80 Miller Park', 5, "CLIENT"),('wgarett9', 'VBub0bLHo6E3', 'wgarett9@flickr.com', 'Wilt', 'Garett', 31919301, '01 Grasskamp Pass', 9, "CLIENT"),('rkittoa', 'sRe1NnoM5', 'rkittoa@blogtalkradio.com', 'Ros', 'Kitto', 36236666, '5151 Mesta Trail', 3, "CLIENT");
+INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ('ntorrib', 'hmmWaV3', 'ntorrib@tinypic.com', 'Nananne', 'Torri', 34293383, '30707 Mockingbird Point', 1, "CLIENT"),('ggarrattleyc', '8B88rXuK0', 'ggarrattleyc@nyu.edu', 'Germana', 'Garrattley', 26935740, '810 Lakewood Gardens Way', 7, "CLIENT"),('rabaded', 'e3e3zpyywHk', 'rabaded@army.mil', 'Roland', 'Abade', 24350879, '3 Holmberg Parkway', 2, "CLIENT"),('ajakubowskie', 'G95eDHRIOw3x', 'ajakubowskie@wp.com', 'Aubrie', 'Jakubowski', 17206840, '31756 Mccormick Place', 9, "CLIENT"),('yjolliffef', '3pAGfE', 'yjolliffef@fda.gov', 'Yves', 'Jolliffe', 29154178, '19 Dennis Junction', 1, "CLIENT"),('pwadesong', 'byBzEA', 'pwadesong@va.gov', 'Perry', 'Wadeson', 20099799, '935 Anthes Center', 7, "CLIENT"),('eticksallh', 'XFHvcNV', 'eticksallh@studiopress.com', 'Elston', 'Ticksall', 23375975, '6 Larry Street', 4, "CLIENT"),('brhubottomi', 'bfo3cZDsdCPc', 'brhubottomi@timesonline.co.uk', 'Brose', 'Rhubottom', 35243813, '4859 Mandrake Parkway', 1, "CLIENT"),('rvalenssmithj', 'a4bKYA9w', 'rvalenssmithj@amazon.co.jp', 'Ronnie', 'Valens-Smith', 18822039, '0670 Emmet Street', 4, "CLIENT"),('naldrenk', 'MLMYUqR2kx', 'naldrenk@istockphoto.com', 'Nessie', 'Aldren', 37723839, '2 Oakridge Place', 8, "CLIENT"),('npierrepointl', 'd705eU', 'npierrepointl@gnu.org', 'Nicky', 'Pierrepoint', 19803675, '08 Eliot Avenue', 7, "CLIENT");
+INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ('tvigerm', 'yxOfLIEEd', 'tvigerm@amazon.co.uk', 'Thorvald', 'Viger', 43747576, '79762 Manitowish Junction', 10, "CLIENT"),('sbenn', 'mPNSlYfAhosU', 'sbenn@msn.com', 'Stu', 'Ben', 20749618, '81225 Eastwood Hill', 6, "CLIENT"),('spostianso', 'hGPYCH5F', 'spostianso@artisteer.com', 'Shelli', 'Postians', 29823498, '6 Buell Hill', 8, "CLIENT"),('bheusticep', 'vm9SlwqOw', 'bheusticep@prweb.com', 'Babara', 'Heustice', 32012826, '3 Morrow Avenue', 5, "CLIENT"),('aredmanq', '0sAwWunR1Q', 'aredmanq@miitbeian.gov.cn', 'Anet', 'Redman', 42851896, '4 Knutson Trail', 8, "CLIENT"),('efaringtonr', 'G63Uj9rzdbd', 'efaringtonr@webnode.com', 'Errol', 'Farington', 43393904, '3333 Bobwhite Center', 7, "CLIENT"),('xkemshells', '1KWiiZR', 'xkemshells@mit.edu', 'Ximenez', 'Kemshell', 40306619, '5 Stone Corner Court', 10, "CLIENT"),('mlentet', 'tOFlpfwb6', 'mlentet@hubpages.com', 'Marshall', 'Lente', 37231533, '0395 Bowman Alley', 2, "CLIENT"),('ldavidowichu', 'YyYAYS', 'ldavidowichu@google.com.hk', 'Lefty', 'Davidowich', 42337207, '6 Corscot Parkway', 10, "CLIENT"),('smcduffyv', 'QZsnhdncg13', 'smcduffyv@over-blog.com', 'Savina', 'McDuffy', 27649879, '8 Starling Point', 8, "CLIENT"),('ioveralw', 'yxENnf', 'ioveralw@phoca.cz', 'Isidoro', 'Overal', 35145338, '6 5th Pass', 4, "CLIENT");
+INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ('pvaskovx', 'ESx2VQO', 'pvaskovx@pbs.org', 'Phillis', 'Vaskov', 42484141, '117 Anniversary Junction', 10, "CLIENT"),('jcotsfordy', 'TI07jEil', 'jcotsfordy@jalbum.net', 'Janeta', 'Cotsford', 41430251, '6 Larry Avenue', 9, "CLIENT"),('oferneleyz', 'AYudDBDdR0U', 'oferneleyz@diigo.com', 'Odo', 'Ferneley', 21290067, '9497 Bluestem Circle', 4, "CLIENT"),('jsalan10', 'mgib53q', 'jsalan10@oracle.com', 'Josepha', 'Salan', 36798337, '13329 Menomonie Pass', 10, "CLIENT"),('ddagon11', 'dKx3Gr5GMy', 'ddagon11@springer.com', 'Darren', 'Dagon', 34994083, '9 Eastlawn Point', 8, "CLIENT"),('agetten12', 'JLHOGixda', 'agetten12@wsj.com', 'Aldin', 'Getten', 15324468, '17 Miller Center', 1, "CLIENT"),('aconnors13', 'nFDCPt9', 'aconnors13@cisco.com', 'Ardisj', 'Connors', 25086590, '65 Nancy Lane', 3, "CLIENT"),('vkears14', 'jOmkgM', 'vkears14@meetup.com', 'Veriee', 'Kears', 24859648, '602 Del Mar Alley', 1, "CLIENT"),('vmcareavey15', 'U6rz8crG', 'vmcareavey15@cloudflare.com', 'Virgie', 'McAreavey', 43545251, '36623 Bay Terrace', 4, "CLIENT"),('phaville16', 'V2l2GgEsVK9L', 'phaville16@comsenz.com', 'Pierrette', 'Haville', 29797291, '2539 Lindbergh Hill', 3, "CLIENT"),('llongina17', 'p8wvN78hUBxC', 'llongina17@ehow.com', 'Lyon', 'Longina', 17579817, '23 Mayfield Road', 3, "CLIENT");
+INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ('thannabus18', 'hRUo9hCQ', 'thannabus18@domainmarket.com', 'Teodoro', 'Hannabus', 29068216, '9767 Beilfuss Road', 1, "CLIENT"),('ofossey19', '5lN486nc5y', 'ofossey19@taobao.com', 'Ogdan', 'Fossey', 42807307, '4 Algoma Pass', 7, "CLIENT"),('dspeare1a', 'itOTJkk', 'dspeare1a@uol.com.br', 'Davey', 'Speare', 15287562, '72071 School Pass', 7, "CLIENT"),('mwiddecombe1b', '8Mxwhoa', 'mwiddecombe1b@skyrock.com', 'Meris', 'Widdecombe', 20373986, '08818 Prentice Pass', 4, "CLIENT"),('cbanister1c', 'aAEB1h', 'cbanister1c@engadget.com', 'Constantine', 'Banister', 31221463, '2779 Sugar Crossing', 2, "CLIENT"),('pstolle1d', 'KoOfnf', 'pstolle1d@acquirethisname.com', 'Pearline', 'Stolle', 33314817, '7744 Acker Lane', 10, "CLIENT"),('wpearde1e', 'WWLQa066', 'wpearde1e@jimdo.com', 'Wynny', 'Pearde', 37066451, '04065 Vernon Lane', 2, "CLIENT"),('mcamelli1f', 'YbdPbG6hAlm', 'mcamelli1f@ebay.co.uk', 'Misti', 'Camelli', 23328393, '65 Meadow Vale Pass', 9, "CLIENT"),('ttalton1g', '0u6o9ZIXKB', 'ttalton1g@quantcast.com', 'Tess', 'Talton', 27468933, '91771 Vahlen Plaza', 5, "CLIENT"),('abispham1h', 'CIBuowY', 'abispham1h@time.com', 'Agneta', 'Bispham', 28386264, '007 Sunbrook Road', 1, "CLIENT"),('lmathivet1i', 'VePE4Vk', 'lmathivet1i@ucla.edu', 'Lemar', 'Mathivet', 24067960, '684 East Park', 6, "CLIENT");
+INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ('htroughton1j', 'ESzC1T8', 'htroughton1j@spotify.com', 'Herrick', 'Troughton', 39142270, '60 Nancy Court', 10, "CLIENT"),('jlynd1k', '0sWdV6iYHTK4', 'jlynd1k@purevolume.com', 'Jemie', 'Lynd', 34964608, '0 Pennsylvania Court', 5, "CLIENT"),('cmurrthum1l', '1MtqwBRZcezz', 'cmurrthum1l@plala.or.jp', 'Christophorus', 'Murrthum', 17325405, '1 Karstens Lane', 10, "CLIENT"),('cgeldeard1m', 'k7D0oDomG', 'cgeldeard1m@hao123.com', 'Cynthea', 'Geldeard', 32816597, '56365 Myrtle Avenue', 10, "CLIENT"),('jscoullar1n', 'FF95ZS3Skqz', 'jscoullar1n@mlb.com', 'Joyann', 'Scoullar', 32869430, '19 Haas Terrace', 9, "CLIENT"),('tmcilwraith1o', 'tnnFEr', 'tmcilwraith1o@live.com', 'Toby', 'McIlwraith', 23362978, '62 High Crossing Alley', 10, "CLIENT"),('awicher1p', 'baJUklU', 'awicher1p@latimes.com', 'Adriena', 'Wicher', 29004332, '21 Huxley Parkway', 5, "CLIENT"),('dcushelly1q', 'PnMegR', 'dcushelly1q@51.la', 'Deeanne', 'Cushelly', 23893879, '249 Victoria Junction', 8, "CLIENT"),('mgillespey1r', '6YgLAokqKw', 'mgillespey1r@irs.gov', 'Murdock', 'Gillespey', 30626404, '25386 Park Meadow Crossing', 6, "CLIENT"),('jcaines1s', 'JcsAAvZb', 'jcaines1s@dedecms.com', 'Joela', 'Caines', 23859189, '48282 Hallows Street', 5, "CLIENT"),('jproske1t', 'WS5RKMsmLRCo', 'jproske1t@ycombinator.com', 'Josephine', 'Proske', 33333356, '99 Bunker Hill Avenue', 1, "CLIENT");
+INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ('flattimore1u', '39inhMT', 'flattimore1u@samsung.com', 'Freddy', 'Lattimore', 25637367, '66453 Florence Drive', 7, "CLIENT"),('wmoorwood1v', 'NVM362GHop6b', 'wmoorwood1v@acquirethisname.com', 'Werner', 'Moorwood', 26565007, '51921 Vahlen Junction', 10, "CLIENT"),('agathercole1w', '7AQjRi61crxT', 'agathercole1w@sphinn.com', 'Artemus', 'Gathercole', 26138229, '0 Truax Drive', 4, "CLIENT"),('scrackett1x', 'TydX8o', 'scrackett1x@cocolog-nifty.com', 'Sarita', 'Crackett', 31413381, '8621 Brickson Park Avenue', 6, "CLIENT"),('rcaslin1y', 'zUsrcV', 'rcaslin1y@ask.com', 'Rheba', 'Caslin', 24566851, '947 Annamark Park', 6, "CLIENT"),('aheinl1z', '6wOPxLDH', 'aheinl1z@meetup.com', 'Averil', 'Heinl', 15626945, '42 Namekagon Pass', 5, "CLIENT"),('whendonson20', 'sKlyfzf0sZV', 'whendonson20@mozilla.org', 'Willabella', 'Hendonson', 27999624, '08 Eagle Crest Lane', 2, "CLIENT"),('jantrim21', 'CGdoW6d', 'jantrim21@rakuten.co.jp', 'Jefferey', 'Antrim', 25556822, '956 Spenser Point', 6, "CLIENT"),('trivelin22', 'a4IwWkP', 'trivelin22@howstuffworks.com', 'Tresa', 'Rivelin', 22816778, '940 Schmedeman Trail', 5, "CLIENT"),('deburah23', 'iTtJgPz', 'deburah23@google.nl', 'Derril', 'Eburah', 40086503, '572 Sheridan Terrace', 5, "CLIENT"),('fluberto24', 'cl6Lr1rBL', 'fluberto24@meetup.com', 'Francois', 'Luberto', 28784248, '739 Acker Street', 1, "CLIENT");
+INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ('wlansberry25', 'FjhsGzk3Nx', 'wlansberry25@list-manage.com', 'Waylan', 'Lansberry', 40425125, '94445 Lakeland Road', 5, "CLIENT"),('nwhitsun26', '1WTENj52xf', 'nwhitsun26@aboutads.info', 'Nollie', 'Whitsun', 23053784, '8 Hintze Lane', 6, "CLIENT"),('jhandslip27', 'EynJOmCCDECU', 'jhandslip27@odnoklassniki.ru', 'Jaquelyn', 'Handslip', 15859686, '4138 Trailsway Street', 2, "CLIENT"),('dmoulding28', 'WdYpbxgPRI', 'dmoulding28@pagesperso-orange.fr', 'Dosi', 'Moulding', 30077935, '1 Blaine Point', 6, "CLIENT"),('ckniveton29', 'SBVVhhq', 'ckniveton29@meetup.com', 'Clare', 'Kniveton', 41693126, '2812 Bashford Center', 8, "CLIENT"),('ggreenstead2a', '58KBswkXBQ', 'ggreenstead2a@163.com', 'Granny', 'Greenstead', 18147221, '5823 Chinook Junction', 5, "CLIENT"),('mdyers2b', 'o00Wl1z', 'mdyers2b@guardian.co.uk', 'Mayer', 'Dyers', 29099316, '01807 Elgar Drive', 7, "CLIENT"),('cbarchrameev2c', 'zhojd37wSDb', 'cbarchrameev2c@aboutads.info', 'Cesaro', 'Barchrameev', 34807799, '12 Rigney Alley', 10, "CLIENT"),('csalzen2d', 'gxSlNflpj9', 'csalzen2d@seesaa.net', 'Constantino', 'Salzen', 24996721, '484 Kensington Circle', 9, "CLIENT"),('nwitherow2e', 'cY9e2ounuQN', 'nwitherow2e@angelfire.com', 'Nicol', 'Witherow', 21344655, '9789 Lunder Hill', 6, "CLIENT"),('ascrogges2f', 'cqGKEtNvwyHP', 'ascrogges2f@yellowpages.com', 'Artair', 'Scrogges', 41751491, '54 Morning Road', 9, "CLIENT"),('ksperling2g', '9kRIV3KWi74y', 'ksperling2g@angelfire.com', 'Katya', 'Sperling', 42199093, '65000 Quincy Trail', 1, "CLIENT"),('bsyce2h', 'wUgk4LYdH3bJ', 'bsyce2h@a8.net', 'Benjamin', 'Syce', 17611888, '330 Sunnyside Avenue', 2, "CLIENT"),('jhyams2i', 'e9oRT529ov', 'jhyams2i@symantec.com', 'Jeniffer', 'Hyams', 43331088, '4605 Garrison Street', 5, "CLIENT"),('hsmeal2j', '3plAJ80anI', 'hsmeal2j@amazon.co.uk', 'Hodge', 'Smeal', 20633190, '6 Gale Trail', 4, "CLIENT"),('uciobotaru2k', '4CueA9bZ', 'uciobotaru2k@bluehost.com', 'Umberto', 'Ciobotaru', 38288305, '00417 Mallard Center', 1, "CLIENT"),('rslateford2l', 'YV5jrKKWg9', 'rslateford2l@google.ru', 'Robbin', 'Slateford', 15538079, '3235 Melrose Plaza', 8, "CLIENT"),('vspitell2m', 'Spp5RKRb3MSi', 'vspitell2m@unicef.org', 'Vivi', 'Spitell', 27035504, '1 Manitowish Junction', 3, "CLIENT"),('apaulon2n', 'ND9ImllZ', 'apaulon2n@oakley.com', 'Anatola', 'Paulon', 31357980, '4711 Harper Way', 10, "CLIENT"),('rofairy2o', 'HQXNpY', 'rofairy2o@pagesperso-orange.fr', 'Rouvin', 'O''Fairy', 19801647, '00650 John Wall Pass', 2, "CLIENT"),('lflieg2p', '2SkeWa', 'lflieg2p@admin.ch', 'Lutero', 'Flieg', 43890757, '97972 Sherman Crossing', 1, "CLIENT"),('wfenton2q', 'x1L5D4', 'wfenton2q@dell.com', 'Wells', 'Fenton', 39953715, '74108 Dwight Junction', 4, "CLIENT"),('fbeamson2r', 'yKOYpmS8qSs', 'fbeamson2r@about.com', 'Ferrel', 'Beamson', 40488116, '33 Quincy Lane', 2, "CLIENT");
 
 -- INSERTS RATES
 INSERT INTO rates(id_origin_city, id_destination_city, cost_per_minute, price_per_minute) values (1,1,6,5), (1,2,15,5), (1,3,9,5), (1,4,17,5), (1,5,15,5), (1,6,8,5), (1,7,10,5), (1,8,9,5), (1,9,11,5), (1,10,19,5), (2,1,11,5), (2,2,12,5), (2,3,14,5), (2,4,9,5), (2,5,17,5), (2,6,5,5), (2,7,12,5), (2,8,14,5), (2,9,8,5), (2,10,14,5), (3,1,6,5), (3,2,12,5), (3,3,10,5), (3,4,18,5), (3,5,6,5), (3,6,19,5), (3,7,14,5), (3,8,5,5), (3,9,13,5), (3,10,15,5), (4,1,15,5), (4,2,13,5), (4,3,19,5), (4,4,13,5), (4,5,15,5), (4,6,15,5), (4,7,19,5), (4,8,19,5), (4,9,19,5), (4,10,7,5), (5,1,10,5), (5,2,13,5), (5,3,17,5), (5,4,13,5), (5,5,14,5), (5,6,15,5), (5,7,10,5), (5,8,8,5), (5,9,8,5), (5,10,7,5), (6,1,8,5), (6,2,7,5), (6,3,14,5), (6,4,9,5), (6,5,8,5), (6,6,5,5), (6,7,5,5), (6,8,12,5), (6,9,7,5), (6,10,12,5), (7,1,7,5), (7,2,10,5), (7,3,19,5), (7,4,5,5), (7,5,8,5), (7,6,5,5), (7,7,10,5), (7,8,8,5), (7,9,7,5), (7,10,5,5), (8,1,15,5), (8,2,9,5), (8,3,7,5), (8,4,17,5), (8,5,13,5), (8,6,10,5), (8,7,5,5), (8,8,10,5), (8,9,19,5), (8,10,19,5), (9,1,7,5), (9,2,11,5), (9,3,11,5), (9,4,8,5), (9,5,5,5), (9,6,14,5), (9,7,6,5), (9,8,9,5), (9,9,11,5), (9,10,15,5), (10,1,7,5), (10,2,13,5), (10,3,12,5), (10,4,11,5), (10,5,16,5), (10,6,12,5), (10,7,5,5), (10,8,6,5), (10,9,9,5), (10,10,6,5);

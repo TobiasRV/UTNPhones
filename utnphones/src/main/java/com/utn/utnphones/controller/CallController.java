@@ -1,18 +1,20 @@
 package com.utn.utnphones.controller;
 
-import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
+import com.utn.utnphones.dto.AddCallDto;
 import com.utn.utnphones.exceptions.UserNotExistsException;
 import com.utn.utnphones.model.Call;
-import com.utn.utnphones.repository.UserRepository;
+import com.utn.utnphones.model.User;
 import com.utn.utnphones.service.CallService;
 import com.utn.utnphones.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.validation.Valid;
+import java.net.URI;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -34,8 +36,9 @@ public class CallController {
     }
 
     @PostMapping("/")
-    public void addCall(@RequestBody @Valid Call c) {
+    public ResponseEntity addCall(@RequestBody AddCallDto c) {
         callService.addCall(c);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/{userId}")
@@ -58,6 +61,5 @@ public class CallController {
         } else
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
 
 }
