@@ -37,20 +37,20 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(DniAlreadyExistsException.class)
     public ErrorResponseDto handleDniAlreadyExists() {
-        return new ErrorResponseDto(3, "DNI already exists");
+        return new ErrorResponseDto(4, "DNI already exists");
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ErrorResponseDto handleEmailAlreadyExists() {
-        return new ErrorResponseDto(3, "Email already exists");
+        return new ErrorResponseDto(5, "Email already exists");
     }
 
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(CityNotExistsException.class)
     public ErrorResponseDto handleCityNotExists() {
-        return new ErrorResponseDto(4, "City not Exists");
+        return new ErrorResponseDto(6, "City not Exists");
     }
 
     /*
@@ -59,15 +59,15 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
     syntax of the request entity is correct but was unable to process the contained instructions.
      */
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(HibernateException.class)
+    public ErrorResponseDto spErro(RuntimeException e) {
+        return new ErrorResponseDto(7, e.getCause().getCause().getMessage());
+    }
+    
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorResponseDto handleUniqueConstraint() {
-        return new ErrorResponseDto(6, "One or more fields are not valid");
-    }
-
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    @ExceptionHandler(HibernateException.class)
-    public ErrorResponseDto spErro(HibernateException e) {
-        return new ErrorResponseDto(6, "One or more fields are not valid");
+        return new ErrorResponseDto(8, "One or more fields are not valid");
     }
 
 }
