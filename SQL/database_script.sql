@@ -87,7 +87,7 @@ create table bills(
   total_price double default 0.0,
   issue_date datetime,
   expiration_date datetime,
-  paid boolean default 0,
+  status enum('PAID','UNPAID','EXPIRED'),
   constraint pk_bills primary key (id_bill),
   constraint fk_id_line_bills foreign key (id_line) references phone_lines(id_line)  
 );
