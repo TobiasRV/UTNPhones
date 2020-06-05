@@ -1,5 +1,6 @@
 package com.utn.utnphones.model;
 
+import com.utn.utnphones.model.enums.BillStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,6 +41,7 @@ public class Bill {
     @Column(name = "expiration_date")
     private Timestamp expirationDate;
 
-    @NotNull
-    private Boolean paid;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private BillStatus status;
 }

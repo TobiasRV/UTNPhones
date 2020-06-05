@@ -3,6 +3,7 @@ package com.utn.utnphones.service;
 import com.utn.utnphones.exceptions.BillNotFoundException;
 import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.Bill;
+import com.utn.utnphones.model.enums.BillStatus;
 import com.utn.utnphones.repository.BillRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class BillService {
         if (!b.getLine().getIdLine().equals(lineId))
             throw new ValidationException("The bill id given does not match with the line id");
 
-        b.setPaid(true);
+        b.setStatus(BillStatus.PAID);
         billRepository.save(b);
     }
 
