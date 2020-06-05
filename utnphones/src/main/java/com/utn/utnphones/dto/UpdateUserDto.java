@@ -2,6 +2,7 @@ package com.utn.utnphones.dto;
 
 import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.enums.UserRole;
+import com.utn.utnphones.model.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,5 +22,6 @@ public class UpdateUserDto {
     private Integer dni;
     private City city;
     private UserRole role;
+    private UserStatus status;
 
 }

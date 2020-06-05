@@ -1,20 +1,16 @@
 package com.utn.utnphones.controller;
 
 import com.utn.utnphones.dto.AddCallDto;
-import com.utn.utnphones.exceptions.UserNotExistsException;
+import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.model.Call;
-import com.utn.utnphones.model.User;
 import com.utn.utnphones.service.CallService;
 import com.utn.utnphones.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -43,9 +39,9 @@ public class CallController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Call>> getCallsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate", required = false) Date fromDate, @RequestParam(value = "toDate", required = false) Date toDate, @RequestParam(value = "price", required = false) Float price) throws UserNotExistsException {
+    public ResponseEntity<List<Call>> getCallsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate", required = false) Date fromDate, @RequestParam(value = "toDate", required = false) Date toDate, @RequestParam(value = "price", required = false) Float price) throws UserNotFoundException {
         if (!userService.existsById(userId))
-            throw new UserNotExistsException();
+            throw new UserNotFoundException();
 
         List<Call> lc = null;
 

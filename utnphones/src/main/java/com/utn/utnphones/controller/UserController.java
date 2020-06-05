@@ -49,7 +49,7 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ResponseEntity addUser(@RequestBody @Valid User u) throws CityNotExistsException, EmailAlreadyExistsException, UsernameAlreadyExistsException, DniAlreadyExistsException {
+    public ResponseEntity addUser(@RequestBody @Valid User u) throws CityNotExistsException, ValidationException {
 
         if (!cityService.existsById(u.getCity().getIdCity()))
             throw new CityNotExistsException();
@@ -59,12 +59,13 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity updateUser(@PathVariable Integer userId, @RequestBody UpdateUserDto u) throws UserNotExistsException, DataIntegrityViolationException {
-        return ResponseEntity.ok(userService.updateUser(userId, u));
+    public ResponseEntity updateUser(@PathVariable Integer userId, @RequestBody UpdateUserDto u) throws DataIntegrityViolationException, UserNotFoundException {
+        userService.updateUser(userId, u);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity deleteUser(@PathVariable Integer userId) throws UserNotExistsException {
+    public ResponseEntity deleteUser(@PathVariable Integer userId) throws UserNotFoundException {
         userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

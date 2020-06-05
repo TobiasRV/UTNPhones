@@ -1,16 +1,12 @@
 package com.utn.utnphones.service;
 
 import com.utn.utnphones.dto.AddCallDto;
-import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
-import com.utn.utnphones.exceptions.UserNotExistsException;
 import com.utn.utnphones.model.Call;
 import com.utn.utnphones.repository.CallRepository;
-import com.utn.utnphones.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.List;
 
 @Service
