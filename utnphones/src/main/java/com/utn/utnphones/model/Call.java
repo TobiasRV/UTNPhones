@@ -51,4 +51,7 @@ public class Call {
     @Column(name = "call_price")
     private Double callPrice;
 
+    @Column(name = "registered")
+    private boolean registered;
+
 }
