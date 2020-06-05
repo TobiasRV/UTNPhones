@@ -343,3 +343,14 @@ DO BEGIN
 call sp_generate_bills();
 END //
 delimiter ;
+
+
+delimiter // 
+CREATE EVENT expire_unpaid_bills
+ON SCHEDULE EVERY 1 MONTH STARTS '2020-07-16 00:00:00'
+DO BEGIN 
+  update bills set status = 'EXPIRED' where (status = 'UNPAID') and (expiration_date - interval 1 day);
+END //
+delimiter ;
+
+
