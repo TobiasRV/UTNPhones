@@ -35,7 +35,7 @@ public class RateController {
         rateService.addProvince(r);
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<List<Rate>> getRate(@RequestParam(value = "fromCityId", required = false) Integer fromCityId, @RequestParam(value = "toCityId", required = false) Integer toCityId) throws CityNotFoundException {
 
         List<Rate> lr;
