@@ -33,7 +33,6 @@ public class CallController {
 
     @PostMapping("/")
     public ResponseEntity addCall(@RequestBody AddCallDto c) {
-
         callService.addCall(c);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

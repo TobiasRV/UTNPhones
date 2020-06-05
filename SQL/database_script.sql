@@ -1,6 +1,7 @@
 drop database if exists utnphones;
 create database utnphones;
 use utnphones;
+SET GLOBAL event_scheduler = ON;
 
 create table provinces(
   id_province int unsigned auto_increment,
@@ -72,6 +73,7 @@ create table calls(
   call_duration int unsigned,
   call_cost double default null,
   call_price double default null,
+  registered boolean default 0,
   constraint pk_id_call primary key (id_call),
   constraint fk_id_origin_line_lines_calls foreign key (id_origin_line) references phone_lines(id_line),
   constraint fk_id_destination_line_lines_calls foreign key (id_destination_line) references phone_lines(id_line),
@@ -81,8 +83,8 @@ create table calls(
 create table bills(
   id_bill int unsigned auto_increment,
   id_line int unsigned,
-  total_production_cost double,
-  total_price double,
+  total_production_cost double default 0.0,
+  total_price double default 0.0,
   issue_date datetime,
   expiration_date datetime,
   paid boolean default 0,
@@ -204,8 +206,8 @@ begin
   set vDestinationCityId = getCityIdByPrefix(vDestinationPrefix);
 
   set vIdRate = getIdRate(vOriginCityId,vDestinationCityId);
-  set vPrice = pDuration * getCallPrice(vIdRate);
-  set vCost = pDuration * getCallCost(vIdRate);
+  set vPrice = pDuration * (getCallPrice(vIdRate)/60);
+  set vCost = pDuration * (getCallCost(vIdRate)/60);
 
   insert into calls(id_origin_line, id_destination_line, call_date, id_rate, call_duration, call_cost, call_price)
   values (getLineId(vOriginCityId,vOriginNumber), getLineId(vDestinationCityId,vDestinationNumber),pDate,vIdRate, pDuration,vCost, vPrice);
@@ -247,9 +249,97 @@ INSERT INTO `phone_lines` (`id_user`,`id_city`,`phone_number`,`line_type`,`statu
 
 
 -- INSERT EN BILLS (PARA TESTING)
-insert into bills (id_line,total_production_cost, total_price, issue_date, expiration_date) values (1,50,300,"2020-03-01","2020-04-01");
-insert into bills (id_line,total_production_cost, total_price, issue_date, expiration_date) values (1,50,300,"2020-04-01","2020-05-01");
-insert into bills (id_line,total_production_cost, total_price, issue_date, expiration_date) values (1,50,300,"2020-05-01","2020-06-01");
+-- insert into bills (id_line,total_production_cost, total_price, issue_date, expiration_date) values (1,50,300,"2020-03-01","2020-04-01");
+-- insert into bills (id_line,total_production_cost, total_price, issue_date, expiration_date) values (1,50,300,"2020-04-01","2020-05-01");
+-- insert into bills (id_line,total_production_cost, total_price, issue_date, expiration_date) values (1,50,300,"2020-05-01","2020-06-01");
 
 -- INSERT CALL 
-call sp_insert_call("223-6363325","2291-412505", now(), 300);
+call sp_insert_call("223-6363325","2291-412505", now(), 10);
+
+
+delimiter //
+create procedure sp_generate_bills()
+begin
+  DECLARE vIdLine INTEGER;
+  DECLARE vFinished BOOLEAN DEFAULT FALSE;
+
+  DECLARE select_active_lines CURSOR FOR 
+  select id_line from phone_lines where status = "ACTIVE";
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET vFinished = TRUE;
+
+  OPEN select_active_lines;
+  insert_bill: LOOP
+  FETCH select_active_lines into vIdLine;
+  if `vFinished` THEN LEAVE insert_bill; END IF;
+
+  insert into bills(id_line,issue_date, expiration_date) values (vIdLine,curdate(),(curdate() + interval 15 day));
+  END LOOP insert_bill;
+  CLOSE select_active_lines;
+
+  call sp_loop_unregistered_bills();
+
+end //
+delimiter ;
+
+delimiter //
+create procedure sp_loop_unregistered_bills()
+BEGIN
+  DECLARE vIdBill INTEGER;
+  DECLARE vIdLine INTEGER;
+
+  DECLARE vFinished BOOLEAN DEFAULT FALSE;
+
+  -- CURSOR DE LAS FACTURAS
+  DECLARE select_incomplete_bills CURSOR FOR 
+  select id_bill, id_line from bills where (issue_date = curdate());
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET vFinished = TRUE;
+
+  OPEN select_incomplete_bills;
+  complete_bill: LOOP
+
+  FETCH select_incomplete_bills into vIdBill, vIdLine;
+  if `vFinished` THEN LEAVE complete_bill; END IF;
+
+  call sp_complete_bills(vIdBill,vIdLine);
+
+  END LOOP complete_bill;
+  CLOSE select_incomplete_bills;
+
+end //
+delimiter ;
+
+
+delimiter //
+create procedure sp_complete_bills(pIdBill INTEGER, pIdLine INTEGER)
+BEGIN 
+
+DECLARE vCallListFinished BOOLEAN DEFAULT FALSE;
+DECLARE vCallPrice double default 0;
+DECLARE vCallCost double default 0;
+DECLARE vIdCall INTEGER;
+
+DECLARE call_data CURSOR FOR select id_call, call_cost, call_price from calls where (id_origin_line = pIdLine) and (registered = 0);
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET vCallListFinished = TRUE;
+    
+OPEN call_data;
+search_calls: LOOP
+    
+  FETCH call_data into vIdCall, vCallCost, vCallPrice;
+    if `vCallListFinished` THEN LEAVE search_calls; END IF;
+
+    update bills set total_production_cost = total_production_cost + vCallCost, total_price = total_price + vCallPrice where id_bill = pIdBill;
+    update calls set registered = 1 where id_call = vIdCall;
+
+END LOOP search_calls;
+CLOSE call_data;
+
+end //
+delimiter ;
+
+delimiter // 
+CREATE EVENT create_bills
+ON SCHEDULE EVERY 1 MONTH STARTS '2020-07-01 00:00:00'
+DO BEGIN 
+call sp_generate_bills();
+END //
+delimiter ;
