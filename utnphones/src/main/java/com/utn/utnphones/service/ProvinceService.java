@@ -1,5 +1,6 @@
 package com.utn.utnphones.service;
 
+import com.utn.utnphones.dto.UpdateProvinceDto;
 import com.utn.utnphones.exceptions.ProvinceNotFoundException;
 import com.utn.utnphones.model.Province;
 import com.utn.utnphones.repository.ProvinceRepository;
@@ -31,7 +32,16 @@ public class ProvinceService {
         return provinceRepository.existsById(idProvince);
     }
 
-    public Province getProvinceById(Integer idProvince) throws ProvinceNotFoundException {
-        return provinceRepository.findById(idProvince).orElseThrow(ProvinceNotFoundException::new);
+    public Province getProvinceById(Integer provinceId) throws ProvinceNotFoundException {
+        return provinceRepository.findById(provinceId).orElseThrow(ProvinceNotFoundException::new);
+    }
+
+    public void updateProvince(Integer provinceId, UpdateProvinceDto updateProvinceDto) throws ProvinceNotFoundException {
+        Province oldProvince = provinceRepository.findById(provinceId).orElseThrow(ProvinceNotFoundException::new);
+
+        if (updateProvinceDto.getProvinceName() != null)
+            oldProvince.setProvinceName(updateProvinceDto.getProvinceName());
+
+        provinceRepository.save(oldProvince);
     }
 }

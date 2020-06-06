@@ -8,6 +8,7 @@ import com.utn.utnphones.model.Province;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.ProvinceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -31,7 +32,13 @@ public class CityController {
 
     @GetMapping("/")
     public ResponseEntity<List<City>> getAll() {
-        return ResponseEntity.ok(cityService.getAll());
+        List<City> cityList = cityService.getAll();
+
+        if (cityList.size() > 0) {
+            return ResponseEntity.ok(cityList);
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
     }
 
     @GetMapping("/{cityId}")
@@ -50,8 +57,8 @@ public class CityController {
         if (updateCityDtoCity.getIdProvince() != null) {
             Province province = provinceService.getProvinceById(updateCityDtoCity.getIdProvince());
             cityService.updateCity(cityId, updateCityDtoCity, province);
-        }else
-            cityService.updateCity(cityId, updateCityDtoCity,null);
+        } else
+            cityService.updateCity(cityId, updateCityDtoCity, null);
 
         return ResponseEntity.ok().build();
     }

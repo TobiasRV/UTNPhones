@@ -28,7 +28,13 @@ public class CallController {
 
     @GetMapping("/")
     public ResponseEntity<List<Call>> getAll() {
-        return ResponseEntity.ok(callService.getAll());
+        List<Call> callList = callService.getAll();
+
+        if (callList.size() > 0) {
+            return ResponseEntity.ok(callList);
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
     }
 
     @PostMapping("/")

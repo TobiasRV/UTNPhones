@@ -33,7 +33,13 @@ public class BillController {
 
     @GetMapping("/")
     public ResponseEntity<List<Bill>> getAll() {
-        return ResponseEntity.ok(billService.getAll());
+        List<Bill> billList = billService.getAll();
+
+        if (billList.size() > 0) {
+            return ResponseEntity.ok(billList);
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
     }
 
     @GetMapping("/{userId}")

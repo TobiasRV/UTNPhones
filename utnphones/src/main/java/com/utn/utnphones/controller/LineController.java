@@ -37,8 +37,14 @@ public class LineController {
     }
 
     @GetMapping("/")
-    public List<Line> getAll() {
-        return lineService.getAll();
+    public ResponseEntity<List<Line>> getAll() {
+        List<Line> lineList = lineService.getAll();
+
+        if (lineList.size() > 0) {
+            return ResponseEntity.ok(lineList);
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
     }
 
     @GetMapping("/{lineId}")
@@ -64,6 +70,12 @@ public class LineController {
         }
 
         lineService.updateLine(lineId, updateLineDto, null);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{lineId}")
+    public ResponseEntity deleteLine(@PathVariable Integer lineId) throws LineNotFoundException {
+        lineService.deleteLine(lineId);
         return ResponseEntity.ok().build();
     }
 
