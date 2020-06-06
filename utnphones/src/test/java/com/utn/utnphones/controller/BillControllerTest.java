@@ -18,6 +18,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.springframework.http.ResponseEntity.*;
 
 public class BillControllerTest {
 
@@ -49,12 +50,11 @@ public class BillControllerTest {
 
         List<Bill> returned = billService.getAll();
 
-        //userlist.size must be 2
+
         if (returned != null) {
             assertThat(returned.size(), is(2));
         }
 
-        //check if userlist contains the same elements
         assertEquals(returned, expected);
 
     }
@@ -94,6 +94,8 @@ public class BillControllerTest {
         assertEquals(returned, expected);
     }
 
+
+    // TODO Hacer test
     @Test
     public void payBill() throws ValidationException, BillNotFoundException {
 

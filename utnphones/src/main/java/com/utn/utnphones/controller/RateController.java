@@ -49,6 +49,7 @@ public class RateController {
     @GetMapping("/{fromCityId}")
     public ResponseEntity<List<Rate>> getRate(@PathVariable Integer fromCityId, @RequestParam(value = "toCityId", required = false) Integer toCityId) throws CityNotFoundException {
 
+
         if (!cityService.existsById(fromCityId))
             throw new CityNotFoundException();
 
