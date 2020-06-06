@@ -18,10 +18,8 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
 
 public class Line {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

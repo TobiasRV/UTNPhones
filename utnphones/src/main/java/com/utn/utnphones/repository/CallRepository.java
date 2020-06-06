@@ -19,10 +19,6 @@ public interface CallRepository extends JpaRepository<Call, Integer> {
     @Query(value = "select * FROM calls as c INNER JOIN phone_lines as p on p.id_line = c.id_origin_Line WHERE (p.id_User = ?1) AND (c.call_date >= ?2) AND (c.call_date <= ?3)", nativeQuery = true)
     List<Call> getCallsByUserAndDate(Integer userId, Date fromDate, Date toDate);
 
-    @Query(value = "select * FROM calls as c INNER JOIN phone_lines as p on p.id_line = c.id_origin_Line WHERE (p.id_User = ?1) AND (c.call_price > ?2)", nativeQuery = true)
-    List<Call> getCallsByUserOverPrice(Integer userId, Float price);
-
-
     @Procedure(procedureName = "sp_insert_call")
     void saveNewCall(String originNumber, String destinationNumber, Timestamp date, Integer duration);
 }

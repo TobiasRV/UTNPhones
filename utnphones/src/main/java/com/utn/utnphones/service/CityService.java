@@ -1,7 +1,10 @@
 package com.utn.utnphones.service;
 
 
+import com.utn.utnphones.dto.UpdateCityDto;
+import com.utn.utnphones.exceptions.CityNotFoundException;
 import com.utn.utnphones.model.City;
+import com.utn.utnphones.model.Province;
 import com.utn.utnphones.repository.CityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,11 +25,28 @@ public class CityService {
         return cityRepository.findAll();
     }
 
-    public void addCity(final City c) {
-        cityRepository.save(c);
+    public City addCity(final City c) {
+        return cityRepository.save(c);
     }
 
     public boolean existsById(Integer idCity) {
         return cityRepository.existsById(idCity);
+    }
+
+    public City getCityById(Integer cityId) throws CityNotFoundException {
+        return cityRepository.findById(cityId).orElseThrow(CityNotFoundException::new);
+    }
+
+    public void updateCity(Integer cityId, UpdateCityDto updateCityDtoCity, Province province) throws CityNotFoundException {
+        City oldCity = cityRepository.findById(cityId).orElseThrow(CityNotFoundException::new);
+
+        if (province != null)
+            oldCity.setProvince(province);
+        if (oldCity.getCityName() != null)
+            oldCity.setCityName(updateCityDtoCity.getCityName());
+        if (oldCity.getPrefix() != null)
+            oldCity.setPrefix(updateCityDtoCity.getPrefix());
+
+        cityRepository.save(oldCity);
     }
 }

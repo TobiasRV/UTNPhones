@@ -49,10 +49,10 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ResponseEntity addUser(@RequestBody @Valid User u) throws CityNotExistsException, ValidationException {
+    public ResponseEntity addUser(@RequestBody @Valid User u) throws CityNotFoundException, ValidationException {
 
         if (!cityService.existsById(u.getCity().getIdCity()))
-            throw new CityNotExistsException();
+            throw new CityNotFoundException();
 
         User newUser = userService.addUser(u);
         return ResponseEntity.created(getLocation(newUser)).build();

@@ -31,6 +31,19 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
         return new ErrorResponseDto(3, "Line not found");
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(ProvinceNotFoundException.class)
+    public ErrorResponseDto handleProvinceNotFound() {
+        return new ErrorResponseDto(4, "Province not found");
+    }
+
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(CityNotFoundException.class)
+    public ErrorResponseDto handleCityNotFound() {
+        return new ErrorResponseDto(4, "City not found");
+    }
+
     /*
         409 CONFLICT
         The request could not be completed due to a conflict with the current state of the target resource.
@@ -39,13 +52,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(ValidationException.class)
     public ErrorResponseDto handleValidationException(ValidationException e) {
-        return new ErrorResponseDto(4, e.getMessage());
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(CityNotExistsException.class)
-    public ErrorResponseDto handleCityNotExists() {
-        return new ErrorResponseDto(5, "City not Exists");
+        return new ErrorResponseDto(5, e.getMessage());
     }
 
     /*

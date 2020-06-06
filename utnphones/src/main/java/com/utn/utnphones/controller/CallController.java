@@ -27,8 +27,8 @@ public class CallController {
     }
 
     @GetMapping("/")
-    public List<Call> getAll() {
-        return callService.getAll();
+    public ResponseEntity<List<Call>> getAll() {
+        return ResponseEntity.ok(callService.getAll());
     }
 
     @PostMapping("/")
@@ -38,7 +38,7 @@ public class CallController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Call>> getCallsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate", required = false) Date fromDate, @RequestParam(value = "toDate", required = false) Date toDate, @RequestParam(value = "price", required = false) Float price) throws UserNotFoundException {
+    public ResponseEntity<List<Call>> getCallsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate", required = false) Date fromDate, @RequestParam(value = "toDate", required = false) Date toDate) throws UserNotFoundException {
         if (!userService.existsById(userId))
             throw new UserNotFoundException();
 
@@ -46,12 +46,10 @@ public class CallController {
 
         if (fromDate != null && toDate != null) {
             lc = callService.getCallsByUserAndDate(userId, fromDate, toDate);
-
-        } else if (price != null) {
-            lc = callService.getCallsByUserOverPrice(userId, price);
         } else {
             lc = callService.getCallsByUser(userId);
         }
+
         if (lc.size() > 0) {
             return ResponseEntity.ok(lc);
         } else
