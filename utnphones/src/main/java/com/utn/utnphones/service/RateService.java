@@ -29,10 +29,9 @@ public class RateService {
     }
 
     public List<Rate> getRateByCities(Integer fromCityId, Integer toCityId) throws CityNotFoundException {
-        if(rateRepository.existsById(fromCityId) && rateRepository.existsById(toCityId)){
+        if (toCityId != null)
             return rateRepository.getRateByCities(fromCityId, toCityId);
-        }else{
-            throw new CityNotFoundException();
-        }
+        else
+            return rateRepository.getRateByCity(fromCityId);
     }
 }

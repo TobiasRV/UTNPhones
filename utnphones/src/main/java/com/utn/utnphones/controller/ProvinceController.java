@@ -1,5 +1,7 @@
 package com.utn.utnphones.controller;
 
+import com.utn.utnphones.dto.UpdateProvinceDto;
+import com.utn.utnphones.exceptions.ProvinceNotFoundException;
 import com.utn.utnphones.model.Province;
 import com.utn.utnphones.service.ProvinceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +24,14 @@ public class ProvinceController {
     }
 
     @GetMapping("/")
-    public List<Province> getAll() {
-        return provinceService.getAll();
+    public ResponseEntity<List<Province>> getAll() {
+        List<Province> provinceList = provinceService.getAll();
+
+        if (provinceList.size() > 0) {
+            return ResponseEntity.ok(provinceList);
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
     }
 
     @PostMapping("/")
@@ -31,18 +39,19 @@ public class ProvinceController {
         provinceService.addProvince(p);
     }
 
-    /*
-    @GetMapping("/{province_id}")
-    public ResponseEntity<Province>getProvinceByID(@PathVariable Integer province_id){
-        Province result = provinceService.getById(province_id);
-
-        if(result != null){
-            return ResponseEntity.ok(result);
-        }else {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        }
-
+    @GetMapping("/{provinceId}")
+    public ResponseEntity<Province> getProvinceById(@PathVariable Integer provinceId) throws ProvinceNotFoundException {
+        return ResponseEntity.ok(provinceService.getProvinceById(provinceId));
     }
 
-     */
+    @PutMapping("/{provinceId}")
+    public ResponseEntity updateProvince(@PathVariable Integer provinceId, @RequestBody UpdateProvinceDto updateProvinceDto) throws ProvinceNotFoundException {
+        if (!provinceService.existsById(provinceId))
+            throw new ProvinceNotFoundException();
+
+        provinceService.updateProvince(provinceId, updateProvinceDto);
+
+        return ResponseEntity.ok().build();
+    }
+
 }

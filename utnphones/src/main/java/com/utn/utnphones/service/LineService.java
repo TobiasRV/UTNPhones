@@ -1,9 +1,13 @@
 package com.utn.utnphones.service;
 
 import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
+import com.utn.utnphones.dto.UpdateLineDto;
 import com.utn.utnphones.exceptions.LineNotFoundException;
+import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.Line;
+import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.LineStatus;
+import com.utn.utnphones.model.enums.LineType;
 import com.utn.utnphones.repository.LineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,8 +29,8 @@ public class LineService {
         return lineRepository.findAll();
     }
 
-    public void addLine(final Line l) {
-        lineRepository.save(l);
+    public Line addLine(final Line l) {
+        return lineRepository.save(l);
     }
 
     public void setLineStatus(Integer lineId, String action) throws Exception {
@@ -43,16 +47,20 @@ public class LineService {
         lineRepository.save(l);
     }
 
-    //TODO ACTUALIZAR ESTE METODO HORRIBLE
-    public Line updateLine(Integer lineId, Line updatedLine) throws LineNotFoundException {
+    public void updateLine(Integer lineId, UpdateLineDto updateLineDto, City city) throws LineNotFoundException {
+        Line oldLine = lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
 
-        lineRepository.existsById(lineId);
+        if (updateLineDto.getCityId() != null)
+            oldLine.setCity(city);
+        if (updateLineDto.getPhoneNumber() != null)
+            oldLine.setPhoneNumber(updateLineDto.getPhoneNumber());
+        if (updateLineDto.getLineType() != null)
+            oldLine.setLineType(updateLineDto.getLineType());
+        if (updateLineDto.getLineStatus() != null)
+            oldLine.setLineStatus(updateLineDto.getLineStatus());
 
-        Line lineToUpdate = lineRepository.findById(lineId).orElseThrow(() -> new LineNotFoundException());
-        lineToUpdate = updatedLine;
-        return lineRepository.save(lineToUpdate);
+        lineRepository.save(oldLine);
     }
-
 
     public List<LineAndQtyOfCallsDto> getTop10Destinations(Integer userId) {
 
@@ -66,7 +74,17 @@ public class LineService {
         return result;
     }
 
-    public boolean existsById(Integer lineId){
+    public boolean existsById(Integer lineId) {
         return lineRepository.existsById(lineId);
+    }
+
+    public Line getLineById(Integer lineId) throws LineNotFoundException {
+        return lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
+    }
+
+    public void deleteLine(Integer lineId) throws LineNotFoundException {
+        Line line = lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
+        line.setLineStatus(LineStatus.DELETED);
+        lineRepository.save(line);
     }
 }
