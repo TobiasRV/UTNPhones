@@ -32,8 +32,8 @@ public class BillController {
     }
 
     @GetMapping("/")
-    public List<Bill> getAll() {
-        return billService.getAll();
+    public ResponseEntity<List<Bill>> getAll() {
+        return ResponseEntity.ok(billService.getAll());
     }
 
     @GetMapping("/{userId}")

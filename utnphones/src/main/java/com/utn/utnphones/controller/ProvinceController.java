@@ -31,6 +31,7 @@ public class ProvinceController {
         provinceService.addProvince(p);
     }
 
+
     /*
     @GetMapping("/{province_id}")
     public ResponseEntity<Province>getProvinceByID(@PathVariable Integer province_id){

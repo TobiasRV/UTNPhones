@@ -3,8 +3,6 @@ package com.utn.utnphones.controller;
 import com.utn.utnphones.exceptions.BillNotFoundException;
 import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.Bill;
-import com.utn.utnphones.model.Line;
-import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.BillStatus;
 import com.utn.utnphones.service.BillService;
 import com.utn.utnphones.service.LineService;
@@ -13,13 +11,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.MockitoAnnotations.initMocks;

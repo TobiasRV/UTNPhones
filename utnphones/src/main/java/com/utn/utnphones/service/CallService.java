@@ -36,7 +36,4 @@ public class CallService {
         return callRepository.getCallsByUser(userId);
     }
 
-    public List<Call> getCallsByUserOverPrice(Integer userId, Float price) {
-        return callRepository.getCallsByUserOverPrice(userId, price);
-    }
 }
