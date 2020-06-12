@@ -16,7 +16,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
 
 public class City {
 

@@ -16,7 +16,6 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
 
 public class Bill {
 
@@ -28,6 +27,13 @@ public class Bill {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_line")
     private Line line;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_user")
+    private User user;
+
+    @Column(name = "qty_calls")
+    private Integer qtyCalls;
 
     @Column(name = "total_production_cost")
     private Double totalProductionCost;

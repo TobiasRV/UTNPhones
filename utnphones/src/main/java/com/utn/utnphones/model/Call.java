@@ -17,7 +17,6 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
 
 public class Call {
 
@@ -51,7 +50,8 @@ public class Call {
     @Column(name = "call_price")
     private Double callPrice;
 
-    @Column(name = "registered")
-    private boolean registered;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_bill")
+    private Bill bill;
 
 }
