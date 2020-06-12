@@ -3,10 +3,13 @@ package com.utn.utnphones.controller;
 
 import com.utn.utnphones.model.City;
 import com.utn.utnphones.service.CityService;
+import com.utn.utnphones.service.ProvinceService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +24,14 @@ public class CityControllerTest {
 
     @Mock
     CityService cityService;
+    @Mock
+    ProvinceService provinceService;
 
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        controller = new CityController(cityService);
+        controller = new CityController(cityService, provinceService);
     }
 
     @Test
@@ -41,15 +46,15 @@ public class CityControllerTest {
 
         Mockito.when(cityService.getAll()).thenReturn(expected);
 
-        List<City> returned = controller.getAll();
+        ResponseEntity<List<City>> returned = controller.getAll();
 
 
         if (returned != null) {
-            assertThat(returned.size(), is(2));
+            assertThat(returned.getBody().size(), is(2));
         }
 
 
-        assertEquals(returned, expected);
+        assertEquals(returned.getBody(), expected);
     }
 
     // TODO Hacer test

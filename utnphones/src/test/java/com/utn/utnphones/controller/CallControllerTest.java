@@ -49,15 +49,14 @@ public class CallControllerTest {
 
         Mockito.when(callService.getAll()).thenReturn(expected);
 
-        List<Call> returned = controller.getAll();
+        ResponseEntity<List<Call>> returned = controller.getAll();
 
 
         if (returned != null) {
-            assertThat(returned.size(), is(2));
+            assertThat(returned.getBody().size(), is(2));
         }
 
-
-        assertEquals(returned, expected);
+        assertEquals(returned.getBody(), expected);
 
     }
 
@@ -114,31 +113,4 @@ public class CallControllerTest {
         assertEquals(returned, expected);
 
     }
-
-    @Test
-    public void getCallsByUserOverPrice() throws UserNotFoundException {
-        Call c1 = new Call(1,null,null, Timestamp.valueOf("2020-05-2 13:00:00"),null,20,20.0,30.0,false);
-        Call c2 = new Call(2,null,null,Timestamp.valueOf("2020-05-4 13:00:00"),null,20,20.0,30.0,false);
-
-
-        List<Call> expected = new ArrayList<>();
-        expected.add(c1);
-        expected.add(c2);
-
-        Mockito.when(callService.getCallsByUserOverPrice(1, (float) 2)).thenReturn(expected);
-
-        List<Call> returned = callService.getCallsByUserOverPrice(1,(float)2);
-
-        //userlist.size must be 2
-        if (returned != null) {
-            assertThat(returned.size(),is(2));
-        }
-        //check if userlist contains the same elements
-        assertEquals(returned, expected);
-
-    }
-
-
-
-
 }

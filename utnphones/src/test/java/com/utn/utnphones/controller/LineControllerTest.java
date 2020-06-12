@@ -1,15 +1,18 @@
 package com.utn.utnphones.controller;
 
 import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
+import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.Line;
 import com.utn.utnphones.model.enums.LineStatus;
 import com.utn.utnphones.model.enums.LineType;
+import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.LineService;
 import com.utn.utnphones.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,17 +29,19 @@ public class LineControllerTest {
     LineService lineService;
     @Mock
     UserService userService;
+    @Mock
+    CityService cityService;
 
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        controller = new LineController(lineService,userService);
+        controller = new LineController(lineService, userService, cityService);
     }
 
     @Test
     public void getAll() {
-        Line l1 = new Line(1,null,null,"223-20202020", LineType.MOBILE, LineStatus.ACTIVE);
-        Line l2 = new Line(1,null,null,"223-23232323", LineType.MOBILE, LineStatus.ACTIVE);
+        Line l1 = new Line(1, null, null, "223-20202020", LineType.MOBILE, LineStatus.ACTIVE);
+        Line l2 = new Line(1, null, null, "223-23232323", LineType.MOBILE, LineStatus.ACTIVE);
 
         List<Line> expected = new ArrayList<>();
         expected.add(l1);
@@ -65,8 +70,8 @@ public class LineControllerTest {
 
     @Test
     public void getTop10Destinations() {
-        Line l1 = new Line(1,null,null,"223-20202020", LineType.MOBILE, LineStatus.ACTIVE);
-        Line l2 = new Line(1,null,null,"223-23232323", LineType.MOBILE, LineStatus.ACTIVE);
+        Line l1 = new Line(1, null, null, "223-20202020", LineType.MOBILE, LineStatus.ACTIVE);
+        Line l2 = new Line(1, null, null, "223-23232323", LineType.MOBILE, LineStatus.ACTIVE);
 
         LineAndQtyOfCallsDto dto1 = new LineAndQtyOfCallsDto();
         dto1.setLine(l1);

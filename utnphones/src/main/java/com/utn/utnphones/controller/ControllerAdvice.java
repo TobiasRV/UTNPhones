@@ -44,6 +44,13 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
         return new ErrorResponseDto(4, "City not found");
     }
 
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(RateNotFoundException.class)
+    public ErrorResponseDto handleRateNotFound() {
+        return new ErrorResponseDto(4, "Rate not found");
+    }
+
     /*
         409 CONFLICT
         The request could not be completed due to a conflict with the current state of the target resource.

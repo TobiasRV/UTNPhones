@@ -1,6 +1,8 @@
 package com.utn.utnphones.controller;
 
+import com.utn.utnphones.dto.UpdateRateDto;
 import com.utn.utnphones.exceptions.CityNotFoundException;
+import com.utn.utnphones.exceptions.RateNotFoundException;
 import com.utn.utnphones.model.Call;
 import com.utn.utnphones.model.Province;
 import com.utn.utnphones.model.Rate;
@@ -47,18 +49,33 @@ public class RateController {
     }
 
     @GetMapping("/{fromCityId}")
-    public ResponseEntity<List<Rate>> getRate(@PathVariable Integer fromCityId, @RequestParam(value = "toCityId", required = false) Integer toCityId) throws CityNotFoundException {
-
+    public ResponseEntity<List<Rate>> getRateByCities(@PathVariable Integer fromCityId, @RequestParam(value = "toCityId", required = false) Integer toCityId) throws CityNotFoundException {
 
         if (!cityService.existsById(fromCityId))
             throw new CityNotFoundException();
 
+        List<Rate> rateList;
         if (toCityId != null) {
             if (!cityService.existsById(toCityId))
                 throw new CityNotFoundException();
-            return ResponseEntity.ok(rateService.getRateByCities(fromCityId, toCityId));
-        } else //TODO EL NULL ENVIADO POR PARAMETRO ES REDUNDANTE PORQUE SI NO SE ENVIO "TOCITYID" POR URL YA ES NULL
-            return ResponseEntity.ok(rateService.getRateByCities(fromCityId, null));
+            rateList = rateService.getRateByCities(fromCityId, toCityId);
+        } else
+            rateList = rateService.getRateByCities(fromCityId, null);
 
+        if (rateList.size() > 0) {
+            return ResponseEntity.ok(rateList);
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+    }
+
+    @PutMapping("/{fromCityId}/{toCityId}")
+    public ResponseEntity updateRate(@PathVariable Integer fromCityId, @PathVariable Integer toCityId, @RequestBody UpdateRateDto updateRateDto) throws CityNotFoundException, RateNotFoundException {
+        if (cityService.existsById(fromCityId) && cityService.existsById(toCityId)) {
+            rateService.updateRate(fromCityId, toCityId, updateRateDto);
+        } else
+            throw new CityNotFoundException();
+
+        return ResponseEntity.ok().build();
     }
 }
