@@ -3,6 +3,8 @@ package com.utn.utnphones.controller;
 import com.utn.utnphones.exceptions.BillNotFoundException;
 import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.Bill;
+import com.utn.utnphones.model.Line;
+import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.BillStatus;
 import com.utn.utnphones.service.BillService;
 import com.utn.utnphones.service.LineService;
@@ -12,6 +14,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,13 +38,13 @@ public class BillControllerTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        controller = new BillController(billService,userService, lineService);
+        controller = new BillController(billService, userService, lineService);
     }
 
     @Test
     public void getAll() {
-        Bill b1 = new Bill(1,null,1.00,2.00,null,null, BillStatus.UNPAID);
-        Bill b2 = new Bill(2,null,1.00,2.00,null,null, BillStatus.UNPAID);
+        Bill b1 = new Bill(1, null, null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
+        Bill b2 = new Bill(2, null, null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
 
         List<Bill> expected = new ArrayList<>();
         expected.add(b1);
@@ -61,8 +65,9 @@ public class BillControllerTest {
 
     @Test
     public void getBillsByUser() {
-        Bill b1 = new Bill(1,null,1.00,2.00,null,null, BillStatus.UNPAID);
-        Bill b2 = new Bill(2,null,1.00,2.00,null,null, BillStatus.UNPAID);
+        Bill b1 = new Bill(1, null, null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
+        Bill b2 = new Bill(2, null, null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
+
 
         List<Bill> expected = new ArrayList<>();
         expected.add(b1);
@@ -83,11 +88,12 @@ public class BillControllerTest {
 
     @Test
     public void getBillById() throws ValidationException, BillNotFoundException {
-        Bill expected = new Bill(1,null,1.00,2.00,null,null, BillStatus.UNPAID);
+        Bill expected = new Bill(1, null, null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
 
-        Mockito.when(billService.getBillById(1,1)).thenReturn(expected);
 
-        Bill returned = billService.getBillById(1,1);
+        Mockito.when(billService.getBillById(1, 1)).thenReturn(expected);
+
+        Bill returned = billService.getBillById(1, 1);
 
 
         assertNotNull(returned);

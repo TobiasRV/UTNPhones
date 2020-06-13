@@ -19,7 +19,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
 
 public class User {
 
@@ -63,4 +62,6 @@ public class User {
     @NotNull
     @Enumerated(EnumType.STRING)
     private UserStatus status;
+
+
 }

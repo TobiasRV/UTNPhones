@@ -1,6 +1,7 @@
 package com.utn.utnphones.controller;
 
 import com.utn.utnphones.dto.AddCallDto;
+import com.utn.utnphones.dto.CallQueryReturnDto;
 import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.model.Call;
 import com.utn.utnphones.service.CallService;
@@ -44,11 +45,11 @@ public class CallController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Call>> getCallsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate", required = false) Date fromDate, @RequestParam(value = "toDate", required = false) Date toDate) throws UserNotFoundException {
+    public ResponseEntity<List<CallQueryReturnDto>> getCallsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate", required = false) Date fromDate, @RequestParam(value = "toDate", required = false) Date toDate) throws UserNotFoundException {
         if (!userService.existsById(userId))
             throw new UserNotFoundException();
 
-        List<Call> lc = null;
+        List<CallQueryReturnDto> lc = null;
 
         if (fromDate != null && toDate != null) {
             lc = callService.getCallsByUserAndDate(userId, fromDate, toDate);

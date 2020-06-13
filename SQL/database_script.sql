@@ -64,6 +64,21 @@ create table phone_lines(
   constraint unq_phone_number_lines unique (id_city, phone_number)
 );
 
+create table bills(
+  id_bill int unsigned auto_increment,
+  id_line int unsigned,
+  id_user int unsigned,
+  qty_calls int unsigned default 0,
+  total_production_cost double default 0.0,
+  total_price double default 0.0,
+  issue_date datetime,
+  expiration_date datetime,
+  status enum('PAID','UNPAID','EXPIRED') default 'UNPAID',
+  constraint pk_bills primary key (id_bill),
+  constraint fk_id_line_bills foreign key (id_line) references phone_lines(id_line),
+  constraint fk_id_user_bills foreign key (id_user) references users (id_user)
+);
+
 create table calls(
   id_call int unsigned auto_increment,
   id_origin_line int unsigned,
@@ -73,25 +88,13 @@ create table calls(
   call_duration int unsigned,
   call_cost double default null,
   call_price double default null,
-  registered boolean default 0,
+  id_bill int unsigned default null,
   constraint pk_id_call primary key (id_call),
   constraint fk_id_origin_line_lines_calls foreign key (id_origin_line) references phone_lines(id_line),
   constraint fk_id_destination_line_lines_calls foreign key (id_destination_line) references phone_lines(id_line),
-  constraint fk_id_rate_rates_calls foreign key (id_rate) references rates(id_rate)
+  constraint fk_id_rate_rates_calls foreign key (id_rate) references rates(id_rate),
+  constraint fk_id_bill_calls foreign key (id_bill) references bills(id_bill)
 );
-
-create table bills(
-  id_bill int unsigned auto_increment,
-  id_line int unsigned,
-  total_production_cost double default 0.0,
-  total_price double default 0.0,
-  issue_date datetime,
-  expiration_date datetime,
-  status enum('PAID','UNPAID','EXPIRED'),
-  constraint pk_bills primary key (id_bill),
-  constraint fk_id_line_bills foreign key (id_line) references phone_lines(id_line)  
-);
-
 
 -- FUNCION QUE DEVUELVE EL ID DE UN NUMERO DE TELEFONO 
 delimiter //
@@ -254,25 +257,30 @@ INSERT INTO `phone_lines` (`id_user`,`id_city`,`phone_number`,`line_type`,`statu
 -- insert into bills (id_line,total_production_cost, total_price, issue_date, expiration_date) values (1,50,300,"2020-05-01","2020-06-01");
 
 -- INSERT CALL 
-call sp_insert_call("223-6363325","2291-412505", now(), 10);
+call sp_insert_call("223-6363325","2291-412505",now(),60);
+call sp_insert_call("223-6363325","2291-412505",now(),60);
+call sp_insert_call("223-6363325","2291-412505",now(),60);
+call sp_insert_call("2291-412505","223-6363325",now(),60);
+call sp_insert_call("2291-412505","223-6363325",now(),60);
 
 
 delimiter //
 create procedure sp_generate_bills()
 begin
   DECLARE vIdLine INTEGER;
+  DECLARE vIdUser INTEGER;
   DECLARE vFinished BOOLEAN DEFAULT FALSE;
 
   DECLARE select_active_lines CURSOR FOR 
-  select id_line from phone_lines where status = "ACTIVE";
+  select id_line, id_user from phone_lines where status = "ACTIVE";
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET vFinished = TRUE;
 
   OPEN select_active_lines;
   insert_bill: LOOP
-  FETCH select_active_lines into vIdLine;
+  FETCH select_active_lines into vIdLine, vIdUser;
   if `vFinished` THEN LEAVE insert_bill; END IF;
 
-  insert into bills(id_line,issue_date, expiration_date) values (vIdLine,curdate(),(curdate() + interval 15 day));
+  insert into bills(id_line,id_user,issue_date, expiration_date) values (vIdLine,vIdUser,curdate(),(curdate() + interval 15 day));
   END LOOP insert_bill;
   CLOSE select_active_lines;
 
@@ -317,18 +325,20 @@ DECLARE vCallListFinished BOOLEAN DEFAULT FALSE;
 DECLARE vCallPrice double default 0;
 DECLARE vCallCost double default 0;
 DECLARE vIdCall INTEGER;
+DECLARE vQtyCalls INTEGER;
 
-DECLARE call_data CURSOR FOR select id_call, call_cost, call_price from calls where (id_origin_line = pIdLine) and (registered = 0);
+DECLARE call_data CURSOR FOR select id_call, call_cost, call_price from calls where (id_origin_line = pIdLine) and (id_bill is null);
 DECLARE CONTINUE HANDLER FOR NOT FOUND SET vCallListFinished = TRUE;
     
 OPEN call_data;
+select FOUND_ROWS() into vQtyCalls;
 search_calls: LOOP
     
   FETCH call_data into vIdCall, vCallCost, vCallPrice;
     if `vCallListFinished` THEN LEAVE search_calls; END IF;
 
-    update bills set total_production_cost = total_production_cost + vCallCost, total_price = total_price + vCallPrice where id_bill = pIdBill;
-    update calls set registered = 1 where id_call = vIdCall;
+    update bills set total_production_cost = total_production_cost + vCallCost, total_price = total_price + vCallPrice, qty_calls = vQtyCalls where id_bill = pIdBill;
+    update calls set id_bill = pIdBill where id_call = vIdCall;
 
 END LOOP search_calls;
 CLOSE call_data;
@@ -353,4 +363,5 @@ DO BEGIN
 END //
 delimiter ;
 
-
+--INDEX
+create index idx_calls_user_date on calls(id_origin_line, call_date) using btree;
