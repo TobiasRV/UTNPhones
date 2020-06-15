@@ -3,6 +3,7 @@ create database utnphones;
 use utnphones;
 SET GLOBAL event_scheduler = ON;
 
+
 create table provinces(
   id_province int unsigned auto_increment,
   province_name varchar(50),
@@ -96,7 +97,7 @@ create table calls(
   constraint fk_id_bill_calls foreign key (id_bill) references bills(id_bill)
 );
 
--- FUNCION QUE DEVUELVE EL ID DE UN NUMERO DE TELEFONO 
+-- FUNCION QUE DEVUELVE EL ID DE UN NUMERO DE TELEFONO
 delimiter //
 create function getLineId(pIdCity int, pLineNumer varchar(10))
 returns int
@@ -112,7 +113,7 @@ begin
 end //
 delimiter ;
 
--- FUNCION QUE DEVUELVE EL ID DE UNA CITY BASADO EN UN PREFIJO 
+-- FUNCION QUE DEVUELVE EL ID DE UNA CITY BASADO EN UN PREFIJO
 delimiter //
 create function getCityIdByPrefix(pPrefix varchar(5))
 returns int
@@ -144,7 +145,7 @@ delimiter //
 create function getIdRate(pIdOriginLine int, pIdDestinationLine int)
 returns int
 reads sql data
-begin 
+begin
     declare vResult int;
     select id_rate into vResult from rates where (id_origin_city = pIdOriginLine) and (id_destination_city = pIdDestinationLine);
     if(vResult is not null) then
@@ -160,7 +161,7 @@ delimiter //
 create function getCallPrice(pId_rate int)
 returns double
 reads sql data
-begin 
+begin
     declare vResult double;
     select price_per_minute into vResult from rates where id_rate = pId_rate;
 	if(vResult is not null) then
@@ -176,7 +177,7 @@ delimiter //
 create function getCallCost(pId_rate int)
 returns double
 reads sql data
-begin 
+begin
     declare vResult double;
     select cost_per_minute into vResult from rates where id_rate = pId_rate;
   	if(vResult is not null) then
@@ -187,8 +188,8 @@ begin
 end //
 delimiter ;
 
--- STORED PROCEDURE QUE INSERTA UNA NUEVA CALL 
-delimiter // 
+-- STORED PROCEDURE QUE INSERTA UNA NUEVA CALL
+delimiter //
 create procedure sp_insert_call(pOriginNumber varchar(16), pDestinationNumber varchar(16), pDate datetime, pDuration int)
 begin
   declare vOriginPrefix varchar(5);
@@ -214,9 +215,10 @@ begin
 
   insert into calls(id_origin_line, id_destination_line, call_date, id_rate, call_duration, call_cost, call_price)
   values (getLineId(vOriginCityId,vOriginNumber), getLineId(vDestinationCityId,vDestinationNumber),pDate,vIdRate, pDuration,vCost, vPrice);
-    
+
 end //
-delimiter ; 
+delimiter ;
+
 
 -- INSERTS PROVINCES
 INSERT INTO provinces(province_name) values ("Buenos Aires"),("La Pampa"),("Cordoba"),("Santa Fe"),("Rio Negro"),("Corrientes"),("Entre Rios");
@@ -224,6 +226,7 @@ INSERT INTO provinces(province_name) values ("Buenos Aires"),("La Pampa"),("Cord
 -- INSERTS CITIES
 INSERT INTO cities(city_name,id_province,prefix) values ("Mar del Plata",1,"223"),("Miramar",1,"2291"),("Necochea",1,"2262"),("Bahia Blanca",1,"291"),("Balcarce",1,"2266"),("Olavarria",1,"2284"),("Ciudad Autonoma de Buenos Aires",1,"011"),("La plata",1,"221"),("Cordoba Capital",3,"351"),("Santa Rosa",2,"2954");
 
+/*
 -- INSERTS USERS
 INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ("siderjonas","pastrana","soldanochristian@hotmail.com","Christian","Soldano",40020327,"Manuel Acevedo 2685",1,"client"),("Soker","tobiasrv","rodriguezviautobias@gmail.com","Tobias","Rodriguez Viau",41216459,"Calle Falsa 123",2,"client");
 INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ('duebel0', 'qu44Uu22m1i2', 'duebel0@dailymotion.com', 'Demott', 'Uebel', 26548921, '099 Bunker Hill Trail', 7, "CLIENT"),('vgullivan1', 'szaqM5WaDFV', 'vgullivan1@netscape.com', 'Vannie', 'Gullivan', 39965555, '06 Luster Way', 3, "CLIENT"),('lbeat2', 'PICqkIHlJjvf', 'lbeat2@nyu.edu', 'Leila', 'Beat', 18055777, '70849 Blaine Center', 6, "CLIENT"),('alainge3', 'WhiyjJ3s1ZZ7', 'alainge3@woothemes.com', 'Ameline', 'Lainge', 17733987, '61 Magdeline Park', 4, "CLIENT"),('chuc4', '96SfJ35eXcV', 'chuc4@ftc.gov', 'Corby', 'Huc', 32364518, '2 Towne Drive', 10, "CLIENT"),('sguidini5', 'crione83', 'sguidini5@sfgate.com', 'Silva', 'Guidini', 32936147, '22175 Bay Circle', 9, "CLIENT"),('apeyntue6', 'ioMkitPYv6V9', 'apeyntue6@tinyurl.com', 'Alvin', 'Peyntue', 15799689, '6084 Lake View Center', 5, "CLIENT"),('amcleman7', 'knzCc5', 'amcleman7@intel.com', 'Aluin', 'McLeman', 33178319, '62 Memorial Court', 2, "CLIENT"),('zbaugh8', 'YKe4rv54o', 'zbaugh8@bing.com', 'Zahara', 'Baugh', 19061342, '80 Miller Park', 5, "CLIENT"),('wgarett9', 'VBub0bLHo6E3', 'wgarett9@flickr.com', 'Wilt', 'Garett', 31919301, '01 Grasskamp Pass', 9, "CLIENT"),('rkittoa', 'sRe1NnoM5', 'rkittoa@blogtalkradio.com', 'Ros', 'Kitto', 36236666, '5151 Mesta Trail', 3, "CLIENT");
@@ -238,7 +241,7 @@ INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`addr
 -- INSERTS RATES
 INSERT INTO rates(id_origin_city, id_destination_city, cost_per_minute, price_per_minute) values (1,1,6,5), (1,2,15,5), (1,3,9,5), (1,4,17,5), (1,5,15,5), (1,6,8,5), (1,7,10,5), (1,8,9,5), (1,9,11,5), (1,10,19,5), (2,1,11,5), (2,2,12,5), (2,3,14,5), (2,4,9,5), (2,5,17,5), (2,6,5,5), (2,7,12,5), (2,8,14,5), (2,9,8,5), (2,10,14,5), (3,1,6,5), (3,2,12,5), (3,3,10,5), (3,4,18,5), (3,5,6,5), (3,6,19,5), (3,7,14,5), (3,8,5,5), (3,9,13,5), (3,10,15,5), (4,1,15,5), (4,2,13,5), (4,3,19,5), (4,4,13,5), (4,5,15,5), (4,6,15,5), (4,7,19,5), (4,8,19,5), (4,9,19,5), (4,10,7,5), (5,1,10,5), (5,2,13,5), (5,3,17,5), (5,4,13,5), (5,5,14,5), (5,6,15,5), (5,7,10,5), (5,8,8,5), (5,9,8,5), (5,10,7,5), (6,1,8,5), (6,2,7,5), (6,3,14,5), (6,4,9,5), (6,5,8,5), (6,6,5,5), (6,7,5,5), (6,8,12,5), (6,9,7,5), (6,10,12,5), (7,1,7,5), (7,2,10,5), (7,3,19,5), (7,4,5,5), (7,5,8,5), (7,6,5,5), (7,7,10,5), (7,8,8,5), (7,9,7,5), (7,10,5,5), (8,1,15,5), (8,2,9,5), (8,3,7,5), (8,4,17,5), (8,5,13,5), (8,6,10,5), (8,7,5,5), (8,8,10,5), (8,9,19,5), (8,10,19,5), (9,1,7,5), (9,2,11,5), (9,3,11,5), (9,4,8,5), (9,5,5,5), (9,6,14,5), (9,7,6,5), (9,8,9,5), (9,9,11,5), (9,10,15,5), (10,1,7,5), (10,2,13,5), (10,3,12,5), (10,4,11,5), (10,5,16,5), (10,6,12,5), (10,7,5,5), (10,8,6,5), (10,9,9,5), (10,10,6,5);
 
--- INSERTS PHONE_LINES 
+-- INSERTS PHONE_LINES
 INSERT INTO `phone_lines` (`id_user`,`id_city`,`phone_number`,`line_type`,`status` ) VALUES (1,1,"6363325","MOBILE","ACTIVE"),(2,2,"412505","MOBILE","ACTIVE"),(49,5,"4155176","MOBILE","ACTIVE"),(50,2,"9464855","MOBILE","ACTIVE"),(3,2,"3456156","RESIDENTIAL","ACTIVE"),(43,3,"7113169","RESIDENTIAL","ACTIVE"),(88,6,"4855135","MOBILE","ACTIVE"),(13,10,"5862927","MOBILE","ACTIVE"),(63,8,"1471419","MOBILE","ACTIVE"),(24,7,"9605421","RESIDENTIAL","ACTIVE");
 INSERT INTO `phone_lines` (`id_user`,`id_city`,`phone_number`,`line_type`,`status` ) VALUES (39,2,"3730060","RESIDENTIAL","ACTIVE"),(25,10,"8118949","RESIDENTIAL","ACTIVE"),(88,9,"9676506","MOBILE","ACTIVE"),(31,2,"4678017","MOBILE","ACTIVE"),(93,10,"3027481","RESIDENTIAL","ACTIVE"),(40,6,"3415217","RESIDENTIAL","ACTIVE"),(86,7,"9788484","RESIDENTIAL","ACTIVE"),(79,3,"3655135","MOBILE","ACTIVE"),(52,4,"5311449","RESIDENTIAL","ACTIVE"),(5,4,"6191557","RESIDENTIAL","ACTIVE");
 INSERT INTO `phone_lines` (`id_user`,`id_city`,`phone_number`,`line_type`,`status` ) VALUES (92,7,"5628958","RESIDENTIAL","ACTIVE"),(69,5,"2567757","RESIDENTIAL","ACTIVE"),(64,7,"6975705","RESIDENTIAL","ACTIVE"),(30,9,"2221318","RESIDENTIAL","ACTIVE"),(5,9,"3138217","MOBILE","ACTIVE"),(96,7,"7603644","RESIDENTIAL","ACTIVE"),(75,8,"6232279","RESIDENTIAL","ACTIVE"),(67,3,"3692339","MOBILE","ACTIVE"),(87,7,"6997606","MOBILE","ACTIVE"),(13,4,"1377869","RESIDENTIAL","ACTIVE");
@@ -256,13 +259,13 @@ INSERT INTO `phone_lines` (`id_user`,`id_city`,`phone_number`,`line_type`,`statu
 -- insert into bills (id_line,total_production_cost, total_price, issue_date, expiration_date) values (1,50,300,"2020-04-01","2020-05-01");
 -- insert into bills (id_line,total_production_cost, total_price, issue_date, expiration_date) values (1,50,300,"2020-05-01","2020-06-01");
 
--- INSERT CALL 
+-- INSERT CALL
 call sp_insert_call("223-6363325","2291-412505",now(),60);
 call sp_insert_call("223-6363325","2291-412505",now(),60);
 call sp_insert_call("223-6363325","2291-412505",now(),60);
 call sp_insert_call("2291-412505","223-6363325",now(),60);
 call sp_insert_call("2291-412505","223-6363325",now(),60);
-
+*/
 
 delimiter //
 create procedure sp_generate_bills()
@@ -271,10 +274,15 @@ begin
   DECLARE vIdUser INTEGER;
   DECLARE vFinished BOOLEAN DEFAULT FALSE;
 
-  DECLARE select_active_lines CURSOR FOR 
+  DECLARE select_active_lines CURSOR FOR
   select id_line, id_user from phone_lines where status = "ACTIVE";
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET vFinished = TRUE;
-
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+		BEGIN
+			ROLLBACK;
+		END;
+set autocommit=0;
+start transaction;
   OPEN select_active_lines;
   insert_bill: LOOP
   FETCH select_active_lines into vIdLine, vIdUser;
@@ -285,7 +293,7 @@ begin
   CLOSE select_active_lines;
 
   call sp_loop_unregistered_bills();
-
+commit;
 end //
 delimiter ;
 
@@ -298,7 +306,7 @@ BEGIN
   DECLARE vFinished BOOLEAN DEFAULT FALSE;
 
   -- CURSOR DE LAS FACTURAS
-  DECLARE select_incomplete_bills CURSOR FOR 
+  DECLARE select_incomplete_bills CURSOR FOR
   select id_bill, id_line from bills where (issue_date = curdate());
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET vFinished = TRUE;
 
@@ -319,7 +327,7 @@ delimiter ;
 
 delimiter //
 create procedure sp_complete_bills(pIdBill INTEGER, pIdLine INTEGER)
-BEGIN 
+BEGIN
 
 DECLARE vCallListFinished BOOLEAN DEFAULT FALSE;
 DECLARE vCallPrice double default 0;
@@ -329,11 +337,11 @@ DECLARE vQtyCalls INTEGER;
 
 DECLARE call_data CURSOR FOR select id_call, call_cost, call_price from calls where (id_origin_line = pIdLine) and (id_bill is null);
 DECLARE CONTINUE HANDLER FOR NOT FOUND SET vCallListFinished = TRUE;
-    
+
 OPEN call_data;
 select FOUND_ROWS() into vQtyCalls;
 search_calls: LOOP
-    
+
   FETCH call_data into vIdCall, vCallCost, vCallPrice;
     if `vCallListFinished` THEN LEAVE search_calls; END IF;
 
@@ -346,22 +354,51 @@ CLOSE call_data;
 end //
 delimiter ;
 
-delimiter // 
+delimiter //
 CREATE EVENT create_bills
 ON SCHEDULE EVERY 1 MONTH STARTS '2020-07-01 00:00:00'
-DO BEGIN 
+DO BEGIN
+set autocommit = 0;
+start transaction;
 call sp_generate_bills();
+commit;
 END //
 delimiter ;
 
 
-delimiter // 
+delimiter //
 CREATE EVENT expire_unpaid_bills
 ON SCHEDULE EVERY 1 MONTH STARTS '2020-07-16 00:00:00'
-DO BEGIN 
+DO BEGIN
+  set autocommit = 0;
+  start transaction;
   update bills set status = 'EXPIRED' where (status = 'UNPAID') and (expiration_date - interval 1 day);
+  commit;
 END //
 delimiter ;
 
---INDEX
+-- INDEX
 create index idx_calls_user_date on calls(id_origin_line, call_date) using btree;
+
+
+-- Prueba transactions
+drop procedure if exists sp_transaction_test;
+delimiter //
+create procedure sp_transaction_test()
+BEGIN
+
+DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+set autocommit=0;
+SHOW VARIABLES WHERE Variable_name='autocommit';
+start transaction;
+	INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ("cliente 1","pastrana","cliente1@hotmail.com","cliente 1","Soldano",41216455,"Manuel Acevedo 2685",1,"client");
+	INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ("cliente 2","pastrana","cliente2@hotmail.com","cliente 2","Soldano",41216453,"Manuel Acevedo 2685",1,"client");
+	INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ("cliente 3","pastrana","cliente3@hotmail.com","cliente 3","Soldano",41216451,"Manuel Acevedo 2685",1,"client");
+	INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ("cliente 1","pastrana","cliente1@hotmail.com","cliente 1","Soldano",41216455,"Manuel Acevedo 2685",1,"client");
+	INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ("cliente 4","pastrana","cliente4@hotmail.com","cliente 4","Soldano",41216452,"Manuel Acevedo 2685",1,"client");
+commit;
+end //
+delimiter ;
