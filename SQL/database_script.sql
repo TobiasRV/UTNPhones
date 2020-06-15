@@ -226,7 +226,7 @@ INSERT INTO provinces(province_name) values ("Buenos Aires"),("La Pampa"),("Cord
 -- INSERTS CITIES
 INSERT INTO cities(city_name,id_province,prefix) values ("Mar del Plata",1,"223"),("Miramar",1,"2291"),("Necochea",1,"2262"),("Bahia Blanca",1,"291"),("Balcarce",1,"2266"),("Olavarria",1,"2284"),("Ciudad Autonoma de Buenos Aires",1,"011"),("La plata",1,"221"),("Cordoba Capital",3,"351"),("Santa Rosa",2,"2954");
 
-/*
+
 -- INSERTS USERS
 INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ("siderjonas","pastrana","soldanochristian@hotmail.com","Christian","Soldano",40020327,"Manuel Acevedo 2685",1,"client"),("Soker","tobiasrv","rodriguezviautobias@gmail.com","Tobias","Rodriguez Viau",41216459,"Calle Falsa 123",2,"client");
 INSERT INTO `users` (`username`,`password`,`email`,`name`,`lastname`,`dni`,`address`,`id_city`,`role`) VALUES ('duebel0', 'qu44Uu22m1i2', 'duebel0@dailymotion.com', 'Demott', 'Uebel', 26548921, '099 Bunker Hill Trail', 7, "CLIENT"),('vgullivan1', 'szaqM5WaDFV', 'vgullivan1@netscape.com', 'Vannie', 'Gullivan', 39965555, '06 Luster Way', 3, "CLIENT"),('lbeat2', 'PICqkIHlJjvf', 'lbeat2@nyu.edu', 'Leila', 'Beat', 18055777, '70849 Blaine Center', 6, "CLIENT"),('alainge3', 'WhiyjJ3s1ZZ7', 'alainge3@woothemes.com', 'Ameline', 'Lainge', 17733987, '61 Magdeline Park', 4, "CLIENT"),('chuc4', '96SfJ35eXcV', 'chuc4@ftc.gov', 'Corby', 'Huc', 32364518, '2 Towne Drive', 10, "CLIENT"),('sguidini5', 'crione83', 'sguidini5@sfgate.com', 'Silva', 'Guidini', 32936147, '22175 Bay Circle', 9, "CLIENT"),('apeyntue6', 'ioMkitPYv6V9', 'apeyntue6@tinyurl.com', 'Alvin', 'Peyntue', 15799689, '6084 Lake View Center', 5, "CLIENT"),('amcleman7', 'knzCc5', 'amcleman7@intel.com', 'Aluin', 'McLeman', 33178319, '62 Memorial Court', 2, "CLIENT"),('zbaugh8', 'YKe4rv54o', 'zbaugh8@bing.com', 'Zahara', 'Baugh', 19061342, '80 Miller Park', 5, "CLIENT"),('wgarett9', 'VBub0bLHo6E3', 'wgarett9@flickr.com', 'Wilt', 'Garett', 31919301, '01 Grasskamp Pass', 9, "CLIENT"),('rkittoa', 'sRe1NnoM5', 'rkittoa@blogtalkradio.com', 'Ros', 'Kitto', 36236666, '5151 Mesta Trail', 3, "CLIENT");
@@ -265,7 +265,7 @@ call sp_insert_call("223-6363325","2291-412505",now(),60);
 call sp_insert_call("223-6363325","2291-412505",now(),60);
 call sp_insert_call("2291-412505","223-6363325",now(),60);
 call sp_insert_call("2291-412505","223-6363325",now(),60);
-*/
+
 
 delimiter //
 create procedure sp_generate_bills()
@@ -363,8 +363,21 @@ start transaction;
 call sp_generate_bills();
 commit;
 END //
-delimiter ;
+delimiter;
 
+
+/*
+delimiter //
+CREATE EVENT create_bills
+ON SCHEDULE EVERY 1 MONTH STARTS date_format(date_add(subdate(now(), dayofmonth(now()) - 1), interval 1 month),'%Y-%m-%d 00:00:00');
+DO BEGIN
+set autocommit = 0;
+start transaction;
+call sp_generate_bills();
+commit;
+END //
+delimiter;
+*/
 
 delimiter //
 CREATE EVENT expire_unpaid_bills
@@ -376,6 +389,21 @@ DO BEGIN
   commit;
 END //
 delimiter ;
+
+
+/*
+delimiter //
+CREATE EVENT expire_unpaid_bills
+ON SCHEDULE EVERY 1 MONTH STARTS date_format(date_add(subdate(now(), dayofmonth(now()) - 1), interval 14 DAY),'%Y-%m-%d 00:00:00');
+DO BEGIN
+  set autocommit = 0;
+  start transaction;
+  update bills set status = 'EXPIRED' where (status = 'UNPAID') and (expiration_date - interval 1 day);
+  commit;
+END //
+delimiter ;
+*/
+
 
 -- INDEX
 create index idx_calls_user_date on calls(id_origin_line, call_date) using btree;
