@@ -1,6 +1,7 @@
 package com.utn.utnphones.service;
 
 import com.utn.utnphones.dto.UpdateUserDto;
+import com.utn.utnphones.exceptions.InvalidLoginException;
 import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.User;
@@ -46,6 +47,10 @@ public class UserService {
 
     public User getUserById(Integer userId) throws UserNotFoundException {
         return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    }
+
+    public User getUserByUsernameAndPassword(String username, String password) throws InvalidLoginException {
+        return userRepository.findByUsernameAndPassword(username, password).orElseThrow(InvalidLoginException::new);
     }
 
     public void deleteUser(Integer userId) throws UserNotFoundException {

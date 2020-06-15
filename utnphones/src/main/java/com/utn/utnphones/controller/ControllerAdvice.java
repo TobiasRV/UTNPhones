@@ -69,7 +69,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
      */
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(HibernateException.class)
-    public ErrorResponseDto spErro(RuntimeException e) {
+    public ErrorResponseDto handleHibernateError(RuntimeException e) {
         return new ErrorResponseDto(6, e.getCause().getCause().getMessage());
     }
 
@@ -79,6 +79,11 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
         return new ErrorResponseDto(7, "One or more fields are not valid");
     }
 
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(InvalidLoginException.class)
+    public ErrorResponseDto handleInvalidLogin() {
+        return new ErrorResponseDto(9, "Username or password are not valid");
+    }
 }
 
 

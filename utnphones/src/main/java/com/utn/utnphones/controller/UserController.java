@@ -4,9 +4,11 @@ package com.utn.utnphones.controller;
 import com.utn.utnphones.dto.UpdateUserDto;
 import com.utn.utnphones.dto.UserLoginDto;
 import com.utn.utnphones.exceptions.CityNotFoundException;
+import com.utn.utnphones.exceptions.InvalidLoginException;
 import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.User;
+import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.UserService;
 import io.jsonwebtoken.Jwts;
@@ -15,12 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
+import javax.validation.Validation;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
@@ -40,19 +44,25 @@ public class UserController {
     }
 
     /* TODO
-    *   ESTE ES EL ENDPOINT PARA INICIAR SESION, TODAVIA NO TIENE NINGUN CHECKEO, HABRIA QUE
-    *   COMPARAR EL USERNAME Y PASSWORD QUE RECIBO CON LOS QUE TENGO EN LA BASE DE DATOS.
-    *   UNA VEZ VALIDADO SE GENERA EL TOKEN DE SEGURIDAD CON getJWTToken(username),
-    *   SE PUEDE GENERAR UN TOKEN CON CUALQUIER DATOS QUE LE PASES, EN ESTE CASO SOLO SE LE PASA EL USERNAME
-    * */
+     *   ESTE ES EL ENDPOINT PARA INICIAR SESION, TODAVIA NO TIENE NINGUN CHECKEO, HABRIA QUE
+     *   COMPARAR EL USERNAME Y PASSWORD QUE RECIBO CON LOS QUE TENGO EN LA BASE DE DATOS.
+     *   UNA VEZ VALIDADO SE GENERA EL TOKEN DE SEGURIDAD CON getJWTToken(username),
+     *   SE PUEDE GENERAR UN TOKEN CON CUALQUIER DATOS QUE LE PASES, EN ESTE CASO SOLO SE LE PASA EL USERNAME
+     * */
     @PostMapping("/login")
-    public UserLoginDto login(@RequestParam("user") String username, @RequestParam("password") String password) {
-        String token = getJWTToken(username);
-        UserLoginDto user = new UserLoginDto();
-        user.setUsername(username);
-        user.setToken(token);
-        user.setPassword(password);
-        return user;
+    public ResponseEntity<UserLoginDto> login(@RequestParam("username") String username, @RequestParam("password") String password) throws InvalidLoginException, ValidationException {
+        UserLoginDto userDto = new UserLoginDto();
+
+        if (username != null && password != null) {
+            User user = userService.getUserByUsernameAndPassword(username, password);
+            String token = getJWTToken(username, user.getRole());
+            userDto.setUsername(username);
+            userDto.setToken(token);
+
+        } else
+            throw new ValidationException("Fields username and password must not be null");
+
+        return ResponseEntity.ok(userDto);
     }
 
 
@@ -69,14 +79,15 @@ public class UserController {
      *      HACERLO ASI. DE CUALQUIER FORMA HAY UNA FUNCION EN EL FILTRO QUE LEE LOS TOKENS QUE PIDE DOS PARAMETROS, ESE
      *      PREFIJO Y EL TOKEN CONCATENADO.
      * */
-    private String getJWTToken(String username) {
-        String secretKey = "mySecretKey";
+    private String getJWTToken(String username, UserRole userRole) {
+
+        String secretKey = "ultraMegaSecuredKey";
         List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                .commaSeparatedStringToAuthorityList("ROLE_USER");
+                .commaSeparatedStringToAuthorityList("ROLE_" + userRole);
 
         String token = Jwts
                 .builder()
-                .setId("softtekJWT")
+                .setId("UTNPhonesToken")
                 .setSubject(username)
                 .claim("authorities",
                         grantedAuthorities.stream()
@@ -87,14 +98,12 @@ public class UserController {
                 .signWith(SignatureAlgorithm.HS512,
                         secretKey.getBytes()).compact();
 
-        return "Bearer " + token;
+        return token;
     }
 
 
-
-
-
     @GetMapping("/")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<User>> getAll() {
 
         List<User> userList = userService.getAll();
