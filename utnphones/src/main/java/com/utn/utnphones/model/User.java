@@ -56,12 +56,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @OneToMany(mappedBy = "user")
-    private List<Line> lines;
-
     @NotNull
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 
+    @OneToMany(mappedBy = "user")
+    private List<Line> lines;
 
 }

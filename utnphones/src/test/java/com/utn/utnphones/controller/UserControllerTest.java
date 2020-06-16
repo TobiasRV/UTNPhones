@@ -3,6 +3,7 @@ package com.utn.utnphones.controller;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.model.enums.UserStatus;
+import com.utn.utnphones.security.SessionManager;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.UserService;
 import org.junit.Before;
@@ -26,17 +27,20 @@ public class UserControllerTest {
     UserService userService;
     @Mock
     CityService cityService;
+    @Mock
+    SessionManager sessionManager;
+
 
     @Before
     public void setUp() {
         initMocks(this);
-        userController = new UserController(userService, cityService);
+        userController = new UserController(userService, cityService, sessionManager);
     }
 
     @Test
     public void getAllOk() {
-        User u1 = new User(1, "user1", "pass", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, null, UserStatus.ACTIVE);
-        User u2 = new User(2, "user2", "pass2", "mailfalso@hotmail.com", "name2", "lastname2", 40020328, null, "calle falsa 123", UserRole.CLIENT, null, UserStatus.ACTIVE);
+        User u1 = new User(1, "user1", "pass", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
+        User u2 = new User(2, "user2", "pass2", "mailfalso@hotmail.com", "name2", "lastname2", 40020328, null, "calle falsa 123", UserRole.CLIENT, UserStatus.ACTIVE, null);
 
         List<User> userList = new ArrayList<>();
         userList.add(u1);
