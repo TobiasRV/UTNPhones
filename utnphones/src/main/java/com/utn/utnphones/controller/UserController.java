@@ -9,6 +9,7 @@ import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.UserRole;
+import com.utn.utnphones.security.SessionManager;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.UserService;
 import io.jsonwebtoken.Jwts;
@@ -36,19 +37,15 @@ public class UserController {
 
     private final UserService userService;
     private final CityService cityService;
+    private final SessionManager sessionManager;
 
     @Autowired
-    public UserController(UserService userService, CityService cityService) {
+    public UserController(UserService userService, CityService cityService, SessionManager sessionManager) {
         this.userService = userService;
         this.cityService = cityService;
+        this.sessionManager = sessionManager;
     }
 
-    /* TODO
-     *   ESTE ES EL ENDPOINT PARA INICIAR SESION, TODAVIA NO TIENE NINGUN CHECKEO, HABRIA QUE
-     *   COMPARAR EL USERNAME Y PASSWORD QUE RECIBO CON LOS QUE TENGO EN LA BASE DE DATOS.
-     *   UNA VEZ VALIDADO SE GENERA EL TOKEN DE SEGURIDAD CON getJWTToken(username),
-     *   SE PUEDE GENERAR UN TOKEN CON CUALQUIER DATOS QUE LE PASES, EN ESTE CASO SOLO SE LE PASA EL USERNAME
-     * */
     @PostMapping("/login")
     public ResponseEntity<UserLoginDto> login(@RequestParam("username") String username, @RequestParam("password") String password) throws InvalidLoginException, ValidationException {
         UserLoginDto userDto = new UserLoginDto();
@@ -65,20 +62,6 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
-
-    /* TODO
-     *   ESTE METODO ES EL QUE GENERA EL TOKEN
-     *   1) "mySecretKey" ES LA CONTRASEÑA PARA DESENCRIPTAR EL TOKEN
-     *   2) "grantedAuthorities" CONTIENE LA LISTA DE ROLES O PERMISOS DEL USUARIO LOGEADO, EL TOKEN VA A DECIR SI UN
-     *    USUARIO TIENE PERMISO O NO PARA LA PETICION QUE QUIERE REALIZAR.
-     *      2.1) SPRING MANEJA LOS ROLES CON LA FORMA "ROLE_*****", ENTONCES LO QUE DEBERIAMOS HACER ES CONCATENAR
-     *      "ROLE_"+user.getRole()" ASI NOS QUEDA ROLE_ADMIN, ROLE_INFRAESTRUCTURE,ETC.
-     *   3) EL ".setId("softtekJWT")" DE LA LINEA 79 NO SE QUE SIGNIFICA, HAY QUE INVESTIGAR LA LIBRERIA JWTS, DEBE SER
-     *      SOLO UN ID.
-     *   4) TODOS LOS TOKENS TIENEN UN PREFIJO "BEARER", NO SE SI ES POR STANDARD O PORQUE EL TIPO DEL TUTORIAL LE GUSTA
-     *      HACERLO ASI. DE CUALQUIER FORMA HAY UNA FUNCION EN EL FILTRO QUE LEE LOS TOKENS QUE PIDE DOS PARAMETROS, ESE
-     *      PREFIJO Y EL TOKEN CONCATENADO.
-     * */
     private String getJWTToken(String username, UserRole userRole) {
 
         String secretKey = "ultraMegaSecuredKey";
@@ -94,9 +77,10 @@ public class UserController {
                                 .map(GrantedAuthority::getAuthority)
                                 .collect(Collectors.toList()))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 600000))
                 .signWith(SignatureAlgorithm.HS512,
                         secretKey.getBytes()).compact();
+
+        sessionManager.addSession(token);
 
         return token;
     }

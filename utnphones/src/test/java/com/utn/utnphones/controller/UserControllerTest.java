@@ -3,6 +3,7 @@ package com.utn.utnphones.controller;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.model.enums.UserStatus;
+import com.utn.utnphones.security.SessionManager;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.UserService;
 import org.junit.Before;
@@ -26,11 +27,14 @@ public class UserControllerTest {
     UserService userService;
     @Mock
     CityService cityService;
+    @Mock
+    SessionManager sessionManager;
+
 
     @Before
     public void setUp() {
         initMocks(this);
-        userController = new UserController(userService, cityService);
+        userController = new UserController(userService, cityService, sessionManager);
     }
 
     @Test
