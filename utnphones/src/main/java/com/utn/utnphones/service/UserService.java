@@ -5,14 +5,24 @@ import com.utn.utnphones.exceptions.InvalidLoginException;
 import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.User;
+import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.model.enums.UserStatus;
 import com.utn.utnphones.repository.UserRepository;
+import com.utn.utnphones.security.SessionManager;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.utn.utnphones.security.Constants.SECRET_KEY;
 
 @Service
 public class UserService {
@@ -85,6 +95,28 @@ public class UserService {
 
     public boolean existsById(Integer userId) {
         return userRepository.existsById(userId);
+    }
+
+    public String getJWTToken(Integer userId, String username, UserRole userRole, SessionManager sessionManager) {
+
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList("ROLE_" + userRole);
+
+        String token = Jwts
+                .builder()
+                .setId(userId.toString())
+                .setSubject(username)
+                .claim("authorities",
+                        grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .signWith(SignatureAlgorithm.HS512,
+                        SECRET_KEY.getBytes()).compact();
+
+        sessionManager.addSession(token);
+
+        return token;
     }
 
 }

@@ -11,6 +11,7 @@ import com.utn.utnphones.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
@@ -32,6 +33,7 @@ public class BillController {
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Bill>> getAll() {
         List<Bill> billList = billService.getAll();
 
@@ -43,6 +45,7 @@ public class BillController {
     }
 
     @GetMapping("/{userId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<List<Bill>> getBillsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate", required = false) Date fromDate, @RequestParam(value = "toDate", required = false) Date toDate) throws UserNotFoundException {
         if (!userService.existsById(userId))
             throw new UserNotFoundException();
@@ -62,6 +65,7 @@ public class BillController {
     }
 
     @GetMapping("/{lineId}/{billId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<Bill> getBillById(@PathVariable Integer lineId, @PathVariable Integer billId) throws LineNotFoundException, BillNotFoundException, ValidationException {
         if (!lineService.existsById(lineId))
             throw new LineNotFoundException();
@@ -69,6 +73,7 @@ public class BillController {
     }
 
     @PutMapping("/{lineId}/{billId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity payBill(@PathVariable Integer lineId, @PathVariable Integer billId) throws BillNotFoundException, LineNotFoundException, ValidationException {
         if (!lineService.existsById(lineId))
             throw new LineNotFoundException();

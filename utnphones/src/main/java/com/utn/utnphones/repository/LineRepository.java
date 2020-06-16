@@ -19,7 +19,10 @@ public interface LineRepository extends JpaRepository<Line, Integer> {
 
 
     @Query(value = "select count(c.id_call) from phone_lines as dp inner join calls as c on (dp.id_line = c.id_destination_line) inner join phone_lines as op on (op.id_line = c.id_origin_line) where (op.id_user = ?1) and (dp.id_line = ?2)", nativeQuery = true)
-    Integer getQtyOfCallsToLine(Integer userId,Integer lineId);
+    Integer getQtyOfCallsToLine(Integer userId, Integer lineId);
+
+    @Query(value = "select * from phone_lines where id_user = ?1", nativeQuery = true)
+    List<Line> findByUserId(Integer userId);
 
     /*
     @Query(value = "select count(c.id_call) as qtyOfCalls from phone_lines as dp inner join calls as c on (dp.id_line = c.id_destination_line) inner join phone_lines as op on (op.id_line = c.id_origin_line) where (op.id_user = ?1) group by c.id_destination_line order by count(c.id_destination_line) DESC limit 10", nativeQuery = true)

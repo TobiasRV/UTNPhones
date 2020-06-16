@@ -29,7 +29,7 @@ public class UtnphonesApplication {
             http.csrf().disable()
                     .addFilterAfter(new JWTAuthorizationFilter(new SessionManager()), UsernamePasswordAuthenticationFilter.class)
                     .authorizeRequests()
-                    .antMatchers(HttpMethod.POST, "/api/user/login").permitAll()
+                    .antMatchers(HttpMethod.POST, "/api/user/login","/api/user/").permitAll()
                     .anyRequest().authenticated();
         }
     }

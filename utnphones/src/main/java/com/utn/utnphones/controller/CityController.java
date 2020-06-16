@@ -10,6 +10,7 @@ import com.utn.utnphones.service.ProvinceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -31,6 +32,7 @@ public class CityController {
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<City>> getAll() {
         List<City> cityList = cityService.getAll();
 
@@ -42,17 +44,20 @@ public class CityController {
     }
 
     @GetMapping("/{cityId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<City> getCityById(@PathVariable Integer cityId) throws CityNotFoundException {
         return ResponseEntity.ok(cityService.getCityById(cityId));
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity addCity(@RequestBody @Valid City c) {
         City newCity = cityService.addCity(c);
         return ResponseEntity.created(getLocation(newCity)).build();
     }
 
     @PutMapping("/{cityId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity updateCity(@PathVariable Integer cityId, @RequestBody UpdateCityDto updateCityDtoCity) throws ProvinceNotFoundException, CityNotFoundException {
         if (updateCityDtoCity.getIdProvince() != null) {
             Province province = provinceService.getProvinceById(updateCityDtoCity.getIdProvince());

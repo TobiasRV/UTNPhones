@@ -12,6 +12,7 @@ import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.security.SessionManager;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.UserService;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +28,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import javax.validation.Validation;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.utn.utnphones.security.Constants.SECRET_KEY;
 
 @RestController
 @RequestMapping("/api/user")
@@ -52,7 +56,7 @@ public class UserController {
 
         if (username != null && password != null) {
             User user = userService.getUserByUsernameAndPassword(username, password);
-            String token = getJWTToken(username, user.getRole());
+            String token = userService.getJWTToken(user.getIdUser(), username, user.getRole(), sessionManager);
             userDto.setUsername(username);
             userDto.setToken(token);
 
@@ -61,30 +65,6 @@ public class UserController {
 
         return ResponseEntity.ok(userDto);
     }
-
-    private String getJWTToken(String username, UserRole userRole) {
-
-        String secretKey = "ultraMegaSecuredKey";
-        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                .commaSeparatedStringToAuthorityList("ROLE_" + userRole);
-
-        String token = Jwts
-                .builder()
-                .setId("UTNPhonesToken")
-                .setSubject(username)
-                .claim("authorities",
-                        grantedAuthorities.stream()
-                                .map(GrantedAuthority::getAuthority)
-                                .collect(Collectors.toList()))
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .signWith(SignatureAlgorithm.HS512,
-                        secretKey.getBytes()).compact();
-
-        sessionManager.addSession(token);
-
-        return token;
-    }
-
 
     @GetMapping("/")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -100,7 +80,18 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable Integer userId) throws UserNotFoundException {
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    public ResponseEntity<User> getUserById(@PathVariable Integer userId, @RequestHeader String authorization) throws UserNotFoundException {
+        Claims claims = Jwts.parser().setSigningKey(SECRET_KEY.getBytes()).parseClaimsJws(authorization).getBody();
+
+        List<String> authorities = (ArrayList) claims.get("authorities");
+
+        if (authorities.get(0).equals("ROLE_CLIENT")) {
+            if (!claims.getId().equals(userId.toString())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
+
         User u = userService.getUserById(userId);
         return ResponseEntity.ok(u);
     }
@@ -116,12 +107,23 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public ResponseEntity updateUser(@PathVariable Integer userId, @RequestBody UpdateUserDto u) throws DataIntegrityViolationException, UserNotFoundException {
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    public ResponseEntity updateUser(@PathVariable Integer userId, @RequestBody UpdateUserDto u, @RequestHeader String authorization) throws DataIntegrityViolationException, UserNotFoundException {
+        Claims claims = Jwts.parser().setSigningKey(SECRET_KEY.getBytes()).parseClaimsJws(authorization).getBody();
+
+        List<String> authorities = (ArrayList) claims.get("authorities");
+
+        if (authorities.get(0).equals("ROLE_CLIENT")) {
+            if (!claims.getId().equals(userId.toString())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
         userService.updateUser(userId, u);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{userId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity deleteUser(@PathVariable Integer userId) throws UserNotFoundException {
         userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.OK).build();

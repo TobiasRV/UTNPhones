@@ -13,6 +13,7 @@ import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,6 +33,7 @@ public class RateController {
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Rate>> getAll() {
         List<Rate> rateList = rateService.getAll();
 
@@ -43,12 +45,14 @@ public class RateController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity addRate(@RequestBody @Valid Rate r) {
         rateService.addProvince(r);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/{fromCityId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Rate>> getRateByCities(@PathVariable Integer fromCityId, @RequestParam(value = "toCityId", required = false) Integer toCityId) throws CityNotFoundException {
 
         if (!cityService.existsById(fromCityId))
@@ -70,6 +74,7 @@ public class RateController {
     }
 
     @PutMapping("/{fromCityId}/{toCityId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity updateRate(@PathVariable Integer fromCityId, @PathVariable Integer toCityId, @RequestBody UpdateRateDto updateRateDto) throws CityNotFoundException, RateNotFoundException {
         if (cityService.existsById(fromCityId) && cityService.existsById(toCityId)) {
             rateService.updateRate(fromCityId, toCityId, updateRateDto);

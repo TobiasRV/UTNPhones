@@ -7,6 +7,7 @@ import com.utn.utnphones.service.ProvinceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,6 +25,7 @@ public class ProvinceController {
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Province>> getAll() {
         List<Province> provinceList = provinceService.getAll();
 
@@ -35,16 +37,19 @@ public class ProvinceController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void addProvince(@RequestBody @Valid Province p) {
         provinceService.addProvince(p);
     }
 
     @GetMapping("/{provinceId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Province> getProvinceById(@PathVariable Integer provinceId) throws ProvinceNotFoundException {
         return ResponseEntity.ok(provinceService.getProvinceById(provinceId));
     }
 
     @PutMapping("/{provinceId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity updateProvince(@PathVariable Integer provinceId, @RequestBody UpdateProvinceDto updateProvinceDto) throws ProvinceNotFoundException {
         if (!provinceService.existsById(provinceId))
             throw new ProvinceNotFoundException();

@@ -20,11 +20,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.utn.utnphones.security.Constants.HEADER;
+import static com.utn.utnphones.security.Constants.SECRET_KEY;
+
 @Service
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
-
-    private final String HEADER = "Authorization";
-    private final String SECRET = "ultraMegaSecuredKey";
 
     private final SessionManager sessionManager;
 
@@ -32,8 +32,6 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
     public JWTAuthorizationFilter(SessionManager sessionManager) {
         this.sessionManager = sessionManager;
     }
-
-
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
@@ -58,10 +56,9 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
         }
     }
 
-
     private Claims validateToken(HttpServletRequest request) {
         String jwtToken = request.getHeader(HEADER);
-        return Jwts.parser().setSigningKey(SECRET.getBytes()).parseClaimsJws(jwtToken).getBody();
+        return Jwts.parser().setSigningKey(SECRET_KEY.getBytes()).parseClaimsJws(jwtToken).getBody();
     }
 
     private void setUpSpringAuthentication(Claims claims) {

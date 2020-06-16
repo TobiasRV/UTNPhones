@@ -82,6 +82,10 @@ public class LineService {
         return lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
     }
 
+    public List<Line> getLinesByUserId(Integer userId) {
+        return lineRepository.findByUserId(userId);
+    }
+
     public void deleteLine(Integer lineId) throws LineNotFoundException {
         Line line = lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
         line.setLineStatus(LineStatus.DELETED);

@@ -11,15 +11,21 @@ import com.utn.utnphones.model.User;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.LineService;
 import com.utn.utnphones.service.UserService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.utn.utnphones.security.Constants.SECRET_KEY;
 
 @RestController
 @RequestMapping("/api/line")
@@ -37,6 +43,7 @@ public class LineController {
     }
 
     @GetMapping("/")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<Line>> getAll() {
         List<Line> lineList = lineService.getAll();
 
@@ -48,17 +55,59 @@ public class LineController {
     }
 
     @GetMapping("/{lineId}")
-    private ResponseEntity<Line> getLineById(@PathVariable Integer lineId) throws LineNotFoundException {
-        return ResponseEntity.ok(lineService.getLineById(lineId));
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    public ResponseEntity<Line> getLineById(@PathVariable Integer lineId, @RequestHeader String authorization) throws LineNotFoundException {
+        Line line = lineService.getLineById(lineId);
+
+        Claims claims = Jwts.parser().setSigningKey(SECRET_KEY.getBytes()).parseClaimsJws(authorization).getBody();
+
+        List<String> authorities = (ArrayList) claims.get("authorities");
+
+        if (authorities.get(0).equals("ROLE_CLIENT")) {
+            if (!claims.getId().equals(line.getUser().getIdUser().toString())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
+
+        return ResponseEntity.ok(line);
     }
 
+    @GetMapping("/user/{userId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    public ResponseEntity<List<Line>> getLinesByUserId(@PathVariable Integer userId, @RequestHeader String authorization) throws UserNotFoundException {
+        if (!userService.existsById(userId))
+            throw new UserNotFoundException();
+
+        Claims claims = Jwts.parser().setSigningKey(SECRET_KEY.getBytes()).parseClaimsJws(authorization).getBody();
+
+        List<String> authorities = (ArrayList) claims.get("authorities");
+
+        if (authorities.get(0).equals("ROLE_CLIENT")) {
+            if (!claims.getId().equals(userId.toString())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
+
+        List<Line> lineList = lineService.getLinesByUserId(userId);
+
+        if (lineList.size() > 0) {
+            return ResponseEntity.ok(lineList);
+        } else {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }
+
+    }
+
+
     @PostMapping("/")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity addLine(@RequestBody @Valid Line l) {
         Line newLine = lineService.addLine(l);
         return ResponseEntity.created(getLocation(newLine)).build();
     }
 
     @PutMapping("/{lineId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity updateLine(@PathVariable Integer lineId, @RequestBody @Valid UpdateLineDto updateLineDto) throws LineNotFoundException, UserNotFoundException, CityNotFoundException {
         if (!lineService.existsById(lineId))
             throw new LineNotFoundException();
@@ -74,12 +123,14 @@ public class LineController {
     }
 
     @DeleteMapping("/{lineId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity deleteLine(@PathVariable Integer lineId) throws LineNotFoundException {
         lineService.deleteLine(lineId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/top10Destinations/{userId}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
     public ResponseEntity<List<LineAndQtyOfCallsDto>> getTop10Destinations(@PathVariable Integer userId) throws UserNotFoundException {
 
         if (!userService.existsById(userId))
