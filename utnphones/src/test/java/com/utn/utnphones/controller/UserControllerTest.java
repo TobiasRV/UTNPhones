@@ -61,14 +61,13 @@ public class UserControllerTest {
 
     @Test
     public void getAllEmpty() {
-        List<User> userList = new ArrayList<>();
+        List<User> expected = new ArrayList<>();
 
-        when(userService.getAll()).thenReturn(userList);
+        when(userService.getAll()).thenReturn(expected);
 
-        HttpStatus status = userController.getAll().getStatusCode();
+        List<User> returned = userService.getAll();
 
-        //We spect NO_CONTENT status
-        assertEquals(HttpStatus.NO_CONTENT, status);
+        assertThat(returned.size(), is(0));
     }
 
 

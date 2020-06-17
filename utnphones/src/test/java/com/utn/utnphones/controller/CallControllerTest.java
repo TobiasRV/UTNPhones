@@ -6,6 +6,7 @@ import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.model.Call;
 import com.utn.utnphones.model.Line;
+import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.BillStatus;
 import com.utn.utnphones.service.CallService;
 import com.utn.utnphones.service.UserService;
@@ -13,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.sql.Date;
@@ -22,6 +24,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class CallControllerTest {
@@ -60,6 +63,17 @@ public class CallControllerTest {
 
         assertEquals(returned.getBody(), expected);
 
+    }
+
+    @Test
+    public void getAllEmpty() {
+        List<Call> expected = new ArrayList<>();
+
+        when(callService.getAll()).thenReturn(expected);
+
+        List<Call> returned = callService.getAll();
+
+        assertThat(returned.size(), is(0));
     }
 
     @Test

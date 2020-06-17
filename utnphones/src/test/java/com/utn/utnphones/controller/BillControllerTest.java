@@ -13,6 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -21,6 +23,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.http.ResponseEntity.*;
 
@@ -61,6 +64,17 @@ public class BillControllerTest {
 
         assertEquals(returned, expected);
 
+    }
+
+    @Test
+    public void getAllEmpty() {
+        List<Bill> expected = new ArrayList<>();
+
+        when(billService.getAll()).thenReturn(expected);
+
+        List<Bill> returned = billService.getAll();
+
+        assertThat(returned.size(), is(0));
     }
 
     @Test

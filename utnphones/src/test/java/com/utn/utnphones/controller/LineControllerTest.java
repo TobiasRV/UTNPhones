@@ -1,6 +1,7 @@
 package com.utn.utnphones.controller;
 
 import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
+import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.Line;
 import com.utn.utnphones.model.enums.LineStatus;
@@ -19,6 +20,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class LineControllerTest {
@@ -56,6 +58,17 @@ public class LineControllerTest {
         }
 
         assertEquals(returned, expected);
+    }
+
+    @Test
+    public void getAllEmpty() {
+        List<Line> expected = new ArrayList<>();
+
+        when(lineService.getAll()).thenReturn(expected);
+
+        List<Line> returned = lineService.getAll();
+
+        assertThat(returned.size(), is(0));
     }
 
     // TODO Hacer test

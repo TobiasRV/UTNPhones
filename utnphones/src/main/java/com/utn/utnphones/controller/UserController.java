@@ -57,6 +57,7 @@ public class UserController {
         if (username != null && password != null) {
             User user = userService.getUserByUsernameAndPassword(username, password);
             String token = userService.getJWTToken(user.getIdUser(), username, user.getRole(), sessionManager);
+            userDto.setUserId(user.getIdUser());
             userDto.setUsername(username);
             userDto.setToken(token);
 
