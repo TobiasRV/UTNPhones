@@ -43,7 +43,7 @@ public class LineController {
     }
 
     @GetMapping("/")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<List<Line>> getAll() {
         List<Line> lineList = lineService.getAll();
 
@@ -55,7 +55,7 @@ public class LineController {
     }
 
     @GetMapping("/{lineId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT') or hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<Line> getLineById(@PathVariable Integer lineId, @RequestHeader String authorization) throws LineNotFoundException {
         Line line = lineService.getLineById(lineId);
 
@@ -73,7 +73,7 @@ public class LineController {
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT') or hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<List<Line>> getLinesByUserId(@PathVariable Integer userId, @RequestHeader String authorization) throws UserNotFoundException {
         if (!userService.existsById(userId))
             throw new UserNotFoundException();
@@ -100,14 +100,14 @@ public class LineController {
 
 
     @PostMapping("/")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity addLine(@RequestBody @Valid Line l) {
         Line newLine = lineService.addLine(l);
         return ResponseEntity.created(getLocation(newLine)).build();
     }
 
     @PutMapping("/{lineId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity updateLine(@PathVariable Integer lineId, @RequestBody @Valid UpdateLineDto updateLineDto) throws LineNotFoundException, UserNotFoundException, CityNotFoundException {
         if (!lineService.existsById(lineId))
             throw new LineNotFoundException();
@@ -123,14 +123,14 @@ public class LineController {
     }
 
     @DeleteMapping("/{lineId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity deleteLine(@PathVariable Integer lineId) throws LineNotFoundException {
         lineService.deleteLine(lineId);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/top10Destinations/{userId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT') or hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<List<LineAndQtyOfCallsDto>> getTop10Destinations(@PathVariable Integer userId) throws UserNotFoundException {
 
         if (!userService.existsById(userId))

@@ -33,7 +33,7 @@ public class BillController {
     }
 
     @GetMapping("/")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<List<Bill>> getAll() {
         List<Bill> billList = billService.getAll();
 
@@ -45,7 +45,7 @@ public class BillController {
     }
 
     @GetMapping("/{userId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT') or hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<List<Bill>> getBillsByUser(@PathVariable Integer userId, @RequestParam(value = "fromDate", required = false) Date fromDate, @RequestParam(value = "toDate", required = false) Date toDate) throws UserNotFoundException {
         if (!userService.existsById(userId))
             throw new UserNotFoundException();
@@ -65,7 +65,7 @@ public class BillController {
     }
 
     @GetMapping("/{lineId}/{billId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT') or hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<Bill> getBillById(@PathVariable Integer lineId, @PathVariable Integer billId) throws LineNotFoundException, BillNotFoundException, ValidationException {
         if (!lineService.existsById(lineId))
             throw new LineNotFoundException();

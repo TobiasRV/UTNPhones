@@ -33,7 +33,7 @@ public class RateController {
     }
 
     @GetMapping("/")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<List<Rate>> getAll() {
         List<Rate> rateList = rateService.getAll();
 
@@ -52,7 +52,7 @@ public class RateController {
     }
 
     @GetMapping("/{fromCityId}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<List<Rate>> getRateByCities(@PathVariable Integer fromCityId, @RequestParam(value = "toCityId", required = false) Integer toCityId) throws CityNotFoundException {
 
         if (!cityService.existsById(fromCityId))
