@@ -1,5 +1,6 @@
 package com.utn.utnphones.controller;
 
+import com.utn.utnphones.dto.CallQueryReturnDto;
 import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.model.Province;
 import com.utn.utnphones.service.ProvinceService;
@@ -7,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,17 +54,25 @@ public class ProvinceControllerTest {
 
     @Test
     public void getAllEmpty() {
+        HttpStatus response = null;
         List<Province> expected = new ArrayList<>();
 
         when(provinceService.getAll()).thenReturn(expected);
 
         List<Province> returned = provinceService.getAll();
 
-        assertThat(returned.size(), is(0));
+        if (returned.size() == 0) {
+            response = HttpStatus.NO_CONTENT;
+        }
+
+        assertEquals(HttpStatus.NO_CONTENT, response);
     }
 
     // TODO Hacer test
     @Test
     public void addProvince() {
     }
+
+
+
 }

@@ -67,13 +67,17 @@ public class CallControllerTest {
 
     @Test
     public void getAllEmpty() {
+        HttpStatus response = null;
         List<Call> expected = new ArrayList<>();
 
         when(callService.getAll()).thenReturn(expected);
 
         List<Call> returned = callService.getAll();
 
-        assertThat(returned.size(), is(0));
+        if (returned.size() == 0) {
+            response = HttpStatus.NO_CONTENT;
+        }
+        assertEquals(HttpStatus.NO_CONTENT, response);
     }
 
     @Test
@@ -106,6 +110,22 @@ public class CallControllerTest {
     }
 
     @Test
+    public void getCallsByUserEmpty() {
+        HttpStatus response = null;
+        List<CallQueryReturnDto> expected = new ArrayList<>();
+
+        when(callService.getCallsByUser(1)).thenReturn(expected);
+
+        List<CallQueryReturnDto> returned = callService.getCallsByUser(1);
+
+        if (returned.size() == 0) {
+            response = HttpStatus.NO_CONTENT;
+        }
+
+        assertEquals(HttpStatus.NO_CONTENT, response);
+    }
+
+    @Test
     public void getCallsByUserAndDate() throws UserNotFoundException {
         CallQueryReturnDto c1 = new CallQueryReturnDto(1, null, null, null, null, 20, 20.0, 30.0, 1);
         CallQueryReturnDto c2 = new CallQueryReturnDto(2, null, null, null, null, 20, 20.0, 30.0, 2);
@@ -128,4 +148,21 @@ public class CallControllerTest {
         assertEquals(returned, expected);
 
     }
+
+    @Test
+    public void getCallsByUserAndDateEmpty() {
+        HttpStatus response = null;
+        List<CallQueryReturnDto> expected = new ArrayList<>();
+
+        when(callService.getCallsByUserAndDate(1,null,null)).thenReturn(expected);
+
+        List<CallQueryReturnDto> returned = callService.getCallsByUserAndDate(1,null,null);
+
+        if (returned.size() == 0) {
+            response = HttpStatus.NO_CONTENT;
+        }
+
+        assertEquals(HttpStatus.NO_CONTENT, response);
+    }
+
 }

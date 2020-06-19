@@ -94,7 +94,9 @@ public class UserController {
         }
 
         User u = userService.getUserById(userId);
+
         return ResponseEntity.ok(u);
+
     }
 
     @PostMapping("/")

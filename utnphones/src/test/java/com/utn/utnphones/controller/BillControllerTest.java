@@ -1,6 +1,8 @@
 package com.utn.utnphones.controller;
 
 import com.utn.utnphones.exceptions.BillNotFoundException;
+import com.utn.utnphones.exceptions.LineNotFoundException;
+import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.model.Line;
@@ -68,13 +70,18 @@ public class BillControllerTest {
 
     @Test
     public void getAllEmpty() {
+        HttpStatus response = null;
         List<Bill> expected = new ArrayList<>();
 
         when(billService.getAll()).thenReturn(expected);
 
         List<Bill> returned = billService.getAll();
 
-        assertThat(returned.size(), is(0));
+        if (returned.size() == 0) {
+            response = HttpStatus.NO_CONTENT;
+        }
+
+        assertEquals(HttpStatus.NO_CONTENT, response);
     }
 
     @Test
@@ -101,6 +108,66 @@ public class BillControllerTest {
     }
 
     @Test
+    public void getBillByUserEmpty() {
+
+        HttpStatus response = null;
+
+        List<Bill> expected = new ArrayList<>();
+
+        Mockito.when(billService.getBillsByUser(2)).thenReturn(expected);
+
+        List<Bill> returned = billService.getBillsByUser(2);
+
+        if (returned.size() == 0) {
+            response = HttpStatus.NO_CONTENT;
+        }
+
+        assertEquals(HttpStatus.NO_CONTENT, response);
+
+    }
+
+
+    @Test
+    public void getBillByDate() {
+        Bill b1 = new Bill(1, null, null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
+        Bill b2 = new Bill(2, null, null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
+
+
+        List<Bill> expected = new ArrayList<>();
+        expected.add(b1);
+        expected.add(b2);
+
+        Mockito.when(billService.getBillsByUserAndDate(1, null, null)).thenReturn(expected);
+
+        List<Bill> returned = billService.getBillsByUserAndDate(1, null, null);
+
+        assertThat(returned.size(), is(2));
+        assertEquals(expected, returned);
+    }
+
+
+    @Test
+    public void getBillByDateEmpty() {
+
+        HttpStatus response = null;
+
+        List<Bill> expected = new ArrayList<>();
+
+        Mockito.when(billService.getBillsByUserAndDate(2, null, null)).thenReturn(expected);
+
+        List<Bill> returned = billService.getBillsByUserAndDate(2, null, null);
+
+        if (returned.size() == 0) {
+            response = HttpStatus.NO_CONTENT;
+        }
+
+        assertEquals(HttpStatus.NO_CONTENT, response);
+
+    }
+
+
+
+    @Test
     public void getBillById() throws ValidationException, BillNotFoundException {
         Bill expected = new Bill(1, null, null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
 
@@ -113,6 +180,7 @@ public class BillControllerTest {
         assertNotNull(returned);
         assertEquals(returned, expected);
     }
+
 
 
     // TODO Hacer test

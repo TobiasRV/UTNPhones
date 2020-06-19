@@ -33,8 +33,8 @@ public class LineService {
         return lineRepository.save(l);
     }
 
-    public void setLineStatus(Integer lineId, String action) throws Exception {
-        Line l = lineRepository.findById(lineId).orElseThrow(() -> new Exception("No se encontro"));
+    public void setLineStatus(Integer lineId, String action) throws LineNotFoundException {
+        Line l = lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
 
         if (action.equalsIgnoreCase(LineStatus.ACTIVE.toString())) {
             l.setLineStatus(LineStatus.ACTIVE);

@@ -1,5 +1,6 @@
 package com.utn.utnphones.service;
 
+import com.utn.utnphones.exceptions.RateNotFoundException;
 import com.utn.utnphones.model.Rate;
 import com.utn.utnphones.repository.RateRepository;
 import org.junit.Before;
@@ -78,7 +79,9 @@ public class RateServiceTest {
         assertEquals(returned, expected);
     }
 
-    @Test
-    public void updateRate() {
+    @Test(expected = RateNotFoundException.class)
+    public void updateRateError() throws RateNotFoundException {
+        Mockito.when(rateRepository.findById(1).orElseThrow(RateNotFoundException::new)).thenThrow(new RateNotFoundException());
+        rateRepository.findById(1);
     }
 }

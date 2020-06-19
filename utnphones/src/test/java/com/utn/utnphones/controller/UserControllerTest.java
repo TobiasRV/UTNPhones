@@ -1,5 +1,7 @@
 package com.utn.utnphones.controller;
 
+import com.utn.utnphones.dto.CallQueryReturnDto;
+import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.model.enums.UserStatus;
@@ -9,6 +11,7 @@ import com.utn.utnphones.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
@@ -61,14 +64,38 @@ public class UserControllerTest {
 
     @Test
     public void getAllEmpty() {
+        HttpStatus response = null;
         List<User> expected = new ArrayList<>();
 
         when(userService.getAll()).thenReturn(expected);
 
         List<User> returned = userService.getAll();
 
-        assertThat(returned.size(), is(0));
+        if (returned.size() == 0) {
+            response = HttpStatus.NO_CONTENT;
+        }
+
+        assertEquals(HttpStatus.NO_CONTENT, response);
     }
+
+    @Test
+    public void getUserById() throws UserNotFoundException {
+        User expected = new User(1, "user1", "pass", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
+
+        Mockito.when(userService.getUserById(1)).thenReturn(expected);
+
+        User returned = userService.getUserById(1);
+
+        assertEquals(expected,returned);
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void getUserByIdError() throws UserNotFoundException {
+        Mockito.when(userService.getUserById(134)).thenThrow(new UserNotFoundException());
+        User returned = userService.getUserById(134);
+    }
+
+
 
 
 }

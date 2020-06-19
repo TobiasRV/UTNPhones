@@ -1,6 +1,7 @@
 package com.utn.utnphones.controller;
 
 
+import com.utn.utnphones.dto.CallQueryReturnDto;
 import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.service.CityService;
@@ -62,14 +63,20 @@ public class CityControllerTest {
 
     @Test
     public void getAllEmpty() {
+        HttpStatus response = null;
         List<City> expected = new ArrayList<>();
 
         when(cityService.getAll()).thenReturn(expected);
 
         List<City> returned = cityService.getAll();
 
-       assertThat(returned.size(), is(0));
+        if (returned.size() == 0) {
+            response = HttpStatus.NO_CONTENT;
+        }
+        assertEquals(HttpStatus.NO_CONTENT, response);
     }
+
+
 
     // TODO Hacer test
     @Test

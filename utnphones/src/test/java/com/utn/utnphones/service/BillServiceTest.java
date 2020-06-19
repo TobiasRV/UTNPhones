@@ -1,5 +1,7 @@
 package com.utn.utnphones.service;
 
+import com.utn.utnphones.exceptions.BillNotFoundException;
+import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.model.City;
@@ -89,6 +91,7 @@ public class BillServiceTest {
         assertEquals(returned, expected);
     }
 
+
     @Test
     public void getBillById() {
         Bill expected = new Bill(1, null, null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
@@ -100,6 +103,22 @@ public class BillServiceTest {
 
         assertEquals(expected,returned.get());
     }
+
+    @Test(expected = BillNotFoundException.class)
+    public void getBillByIdNotFoundError() throws BillNotFoundException {
+
+        Mockito.when(billRepository.findById(1).orElseThrow(BillNotFoundException::new)).thenThrow(new BillNotFoundException());
+        billRepository.findById(1);
+    }
+
+
+    @Test(expected = BillNotFoundException.class)
+    public void payBillNotFoundError() throws BillNotFoundException {
+
+        Mockito.when(billRepository.findById(1).orElseThrow(BillNotFoundException::new)).thenThrow(new BillNotFoundException());
+        billRepository.findById(1);
+    }
+
 
     /*
     @Test

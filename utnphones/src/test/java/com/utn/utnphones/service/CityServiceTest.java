@@ -1,5 +1,6 @@
 package com.utn.utnphones.service;
 
+import com.utn.utnphones.exceptions.CityNotFoundException;
 import com.utn.utnphones.model.City;
 import com.utn.utnphones.repository.CityRepository;
 import org.junit.Before;
@@ -69,7 +70,15 @@ public class CityServiceTest {
         assertEquals(expected,returned.get());
     }
 
-    @Test
-    public void updateCity() {
+    @Test(expected = CityNotFoundException.class)
+    public void getCityByIdError() throws CityNotFoundException {
+        Mockito.when(cityRepository.findById(1).orElseThrow(CityNotFoundException::new)).thenThrow(new CityNotFoundException());
+        cityRepository.findById(1);
+    }
+
+    @Test(expected = CityNotFoundException.class)
+    public void updateCityError() throws CityNotFoundException {
+        Mockito.when(cityRepository.findById(1).orElseThrow(CityNotFoundException::new)).thenThrow(new CityNotFoundException());
+        cityRepository.findById(1);
     }
 }

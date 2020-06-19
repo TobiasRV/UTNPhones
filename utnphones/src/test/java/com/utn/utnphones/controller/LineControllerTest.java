@@ -1,6 +1,9 @@
 package com.utn.utnphones.controller;
 
+import com.utn.utnphones.dto.CallQueryReturnDto;
 import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
+import com.utn.utnphones.exceptions.LineNotFoundException;
+import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.Line;
@@ -13,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
@@ -62,13 +66,18 @@ public class LineControllerTest {
 
     @Test
     public void getAllEmpty() {
+        HttpStatus response = null;
         List<Line> expected = new ArrayList<>();
 
         when(lineService.getAll()).thenReturn(expected);
 
         List<Line> returned = lineService.getAll();
 
-        assertThat(returned.size(), is(0));
+        if (returned.size() == 0) {
+            response = HttpStatus.NO_CONTENT;
+        }
+
+        assertEquals(HttpStatus.NO_CONTENT, response);
     }
 
     // TODO Hacer test
@@ -108,4 +117,63 @@ public class LineControllerTest {
 
         assertEquals(returned, expected);
     }
+
+    @Test
+    public void getTop10DestinationsEmpty() {
+        HttpStatus response = null;
+
+        List<LineAndQtyOfCallsDto> expected = new ArrayList<>();
+
+        Mockito.when(lineService.getTop10Destinations(1)).thenReturn(expected);
+
+        List<LineAndQtyOfCallsDto> returned = lineService.getTop10Destinations(1);
+
+        if (returned.size() == 0) {
+            response = HttpStatus.NO_CONTENT;
+        }
+
+        assertEquals(HttpStatus.NO_CONTENT, response);
+    }
+
+
+    @Test
+    public void getLinesByUserId(){
+        Line l1 = new Line(1, null, null, "223-20202020", LineType.MOBILE, LineStatus.ACTIVE);
+        Line l2 = new Line(1, null, null, "223-23232323", LineType.MOBILE, LineStatus.ACTIVE);
+
+        List<Line> expected = new ArrayList<>();
+        expected.add(l1);
+        expected.add(l2);
+
+        Mockito.when(lineService.getLinesByUserId(1)).thenReturn(expected);
+
+        List<Line> returned = lineService.getLinesByUserId(1);
+
+        assertThat(returned.size(),is(2));
+        assertEquals(expected,returned);
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void getLinesByUserIdError() throws UserNotFoundException {
+        Mockito.when(userService.getUserById(1)).thenThrow(new UserNotFoundException());
+        userService.getUserById(1);
+    }
+
+    @Test
+    public void getLineById() throws LineNotFoundException {
+        Line expected = new Line(1, null, null, "223-20202020", LineType.MOBILE, LineStatus.ACTIVE);
+
+        Mockito.when(lineService.getLineById(1)).thenReturn(expected);
+
+        Line returned = lineService.getLineById(1);
+
+        assertEquals(expected,returned);
+    }
+
+    @Test(expected = LineNotFoundException.class)
+    public void getLineByIdError() throws LineNotFoundException{
+        Mockito.when(lineService.getLineById(1)).thenThrow(new LineNotFoundException());
+        lineService.getLineById(1);
+    }
+
 }

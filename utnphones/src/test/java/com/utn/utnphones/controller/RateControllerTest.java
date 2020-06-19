@@ -1,5 +1,6 @@
 package com.utn.utnphones.controller;
 
+import com.utn.utnphones.dto.CallQueryReturnDto;
 import com.utn.utnphones.exceptions.CityNotFoundException;
 import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.model.Rate;
@@ -10,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,13 +61,18 @@ public class RateControllerTest {
 
     @Test
     public void getAllEmpty() {
+        HttpStatus response = null;
         List<Rate> expected = new ArrayList<>();
 
         when(rateService.getAll()).thenReturn(expected);
 
         List<Rate> returned = rateService.getAll();
 
-        assertThat(returned.size(), is(0));
+        if (returned.size() == 0) {
+            response = HttpStatus.NO_CONTENT;
+        }
+
+        assertEquals(HttpStatus.NO_CONTENT, response);
     }
 
     @Test
@@ -89,4 +96,29 @@ public class RateControllerTest {
         assertEquals(returned, expected);
 
     }
+
+    @Test
+    public void getRateByCitiesEmpty() throws CityNotFoundException {
+        HttpStatus response = null;
+
+        List<Rate> expected = new ArrayList<>();
+
+        Mockito.when(rateService.getRateByCities(1, 2)).thenReturn(expected);
+
+        List<Rate> returned = rateService.getRateByCities(1, 2);
+
+        if (returned.size() == 0) {
+            response = HttpStatus.NO_CONTENT;
+        }
+
+        assertEquals(HttpStatus.NO_CONTENT, response);
+
+    }
+
+    @Test(expected = CityNotFoundException.class)
+    public void getRateByCitiesError() throws CityNotFoundException {
+        Mockito.when(cityService.getCityById(5)).thenThrow(new CityNotFoundException());
+        cityService.getCityById(5);
+    }
+
 }
