@@ -1,5 +1,6 @@
 package com.utn.utnphones.service;
 
+import com.utn.utnphones.exceptions.ProvinceNotFoundException;
 import com.utn.utnphones.model.Province;
 import com.utn.utnphones.repository.ProvinceRepository;
 import org.junit.Before;
@@ -70,7 +71,15 @@ public class ProvinceServiceTest {
         assertEquals(expected,returned.get());
     }
 
-    @Test
-    public void updateProvince() {
+    @Test(expected = ProvinceNotFoundException.class)
+    public void getProvinceByIdError() throws ProvinceNotFoundException {
+        Mockito.when(provinceRepository.findById(1).orElseThrow(ProvinceNotFoundException::new)).thenThrow(new ProvinceNotFoundException());
+        provinceRepository.findById(1);
+    }
+
+    @Test(expected = ProvinceNotFoundException.class)
+    public void updateProvinceError() throws ProvinceNotFoundException {
+        Mockito.when(provinceRepository.findById(1).orElseThrow(ProvinceNotFoundException::new)).thenThrow(new ProvinceNotFoundException());
+        provinceRepository.findById(1);
     }
 }

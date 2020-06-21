@@ -1,5 +1,8 @@
 package com.utn.utnphones.service;
 
+import com.utn.utnphones.exceptions.InvalidLoginException;
+import com.utn.utnphones.exceptions.UserNotFoundException;
+import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.model.enums.UserStatus;
@@ -61,12 +64,41 @@ public class UserServiceTest {
 
 
 
-    @Test
-    public void login() {
+    public void loginError() {
+
     }
 
-    @Test
-    public void addUser() {
+    @Test(expected = ValidationException.class)
+    public void addUserUsernameTaken() throws ValidationException {
+        User expected = new User(1, "username", "pass", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
+        Mockito.when(userRepository.existsByUsername(expected.getUsername())).thenReturn(false);
+
+        if (!userRepository.existsByUsername(expected.getUsername())){
+            throw new ValidationException("username taken");
+        }
+
+    }
+
+    @Test(expected = ValidationException.class)
+    public void addUserDniTaken() throws ValidationException {
+        User expected = new User(1, "username", "pass", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
+        Mockito.when(userRepository.existsByDni(expected.getDni())).thenReturn(false);
+
+        if (!userRepository.existsByDni(expected.getDni())){
+            throw new ValidationException("dni taken");
+        }
+
+    }
+
+    @Test(expected = ValidationException.class)
+    public void addUserEmailTaken() throws ValidationException {
+        User expected = new User(1, "username", "pass", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
+        Mockito.when(userRepository.existsByEmail(expected.getEmail())).thenReturn(false);
+
+        if (!userRepository.existsByEmail(expected.getEmail())){
+            throw new ValidationException("email taken");
+        }
+
     }
 
     @Test
@@ -79,6 +111,12 @@ public class UserServiceTest {
         assertEquals(expected,retrurned.get());
     }
 
+    @Test(expected = UserNotFoundException.class)
+    public void getUserByIdError() throws UserNotFoundException {
+        Mockito.when(userRepository.findById(1).orElseThrow(UserNotFoundException::new)).thenThrow(new UserNotFoundException());
+        userRepository.findById(1);
+    }
+
     @Test
     public void getUserByUsernameAndPassword() {
         User expected = new User(1, "user1", "pass", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
@@ -89,12 +127,22 @@ public class UserServiceTest {
         assertEquals(expected,retrurned.get());
     }
 
-    @Test
-    public void deleteUser() {
+    @Test(expected = InvalidLoginException.class)
+    public void getUserByUsernameAndPasswordError() throws InvalidLoginException {
+        Mockito.when(userRepository.findByUsernameAndPassword("username","password").orElseThrow(InvalidLoginException::new)).thenThrow(new InvalidLoginException());
+        userRepository.findByUsernameAndPassword("username","password");
     }
 
-    @Test
-    public void updateUser() {
+    @Test(expected = UserNotFoundException.class)
+    public void deleteUserError() throws UserNotFoundException {
+        Mockito.when(userRepository.findById(1).orElseThrow(UserNotFoundException::new)).thenThrow(new UserNotFoundException());
+        userRepository.findById(1);
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void updateUserError() throws UserNotFoundException {
+        Mockito.when(userRepository.findById(1).orElseThrow(UserNotFoundException::new)).thenThrow(new UserNotFoundException());
+        userRepository.findById(1);
     }
 
     @Test

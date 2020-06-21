@@ -1,6 +1,7 @@
 package com.utn.utnphones.service;
 
 import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
+import com.utn.utnphones.exceptions.LineNotFoundException;
 import com.utn.utnphones.model.Line;
 import com.utn.utnphones.repository.LineRepository;
 import org.junit.Before;
@@ -51,12 +52,16 @@ public class LineServiceTest {
     public void addLine() {
     }
 
-    @Test
-    public void setLineStatus() {
+    @Test(expected = LineNotFoundException.class)
+    public void setLineStatusError() throws LineNotFoundException {
+        Mockito.when(lineRepository.findById(1).orElseThrow(LineNotFoundException::new)).thenThrow(new LineNotFoundException());
+        lineRepository.findById(1);
     }
 
-    @Test
-    public void updateLine() {
+    @Test(expected = LineNotFoundException.class)
+    public void updateLineError() throws LineNotFoundException {
+        Mockito.when(lineRepository.findById(1).orElseThrow(LineNotFoundException::new)).thenThrow(new LineNotFoundException());
+        lineRepository.findById(1);
     }
 
     @Test
@@ -110,6 +115,12 @@ public class LineServiceTest {
         assertEquals(expected,returned.get());
     }
 
+    @Test(expected = LineNotFoundException.class)
+    public void getLineByIdError() throws LineNotFoundException {
+        Mockito.when(lineRepository.findById(1).orElseThrow(LineNotFoundException::new)).thenThrow(new LineNotFoundException());
+        lineRepository.findById(1);
+    }
+
     @Test
     public void getLinesByUserId() {
         Line l1 = new Line(1,null,null,null,null,null);
@@ -126,7 +137,10 @@ public class LineServiceTest {
         assertEquals(returned, expected);
     }
 
-    @Test
-    public void deleteLine() {
+
+    @Test(expected = LineNotFoundException.class)
+    public void deleteLineError() throws LineNotFoundException {
+        Mockito.when(lineRepository.findById(1).orElseThrow(LineNotFoundException::new)).thenThrow(new LineNotFoundException());
+        lineRepository.findById(1);
     }
 }

@@ -94,7 +94,9 @@ public class UserController {
         }
 
         User u = userService.getUserById(userId);
+
         return ResponseEntity.ok(u);
+
     }
 
     @PostMapping("/")
@@ -138,5 +140,6 @@ public class UserController {
                 .buildAndExpand(user.getIdUser())
                 .toUri();
     }
+
 }
 

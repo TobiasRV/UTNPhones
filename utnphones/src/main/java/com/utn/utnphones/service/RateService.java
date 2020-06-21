@@ -30,7 +30,7 @@ public class RateService {
         rateRepository.save(r);
     }
 
-    public List<Rate> getRateByCities(Integer fromCityId, Integer toCityId) throws CityNotFoundException {
+    public List<Rate> getRateByCities(Integer fromCityId, Integer toCityId) {
         if (toCityId != null)
             return rateRepository.getRateByCities(fromCityId, toCityId);
         else
