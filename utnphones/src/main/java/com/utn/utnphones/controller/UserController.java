@@ -140,5 +140,6 @@ public class UserController {
                 .buildAndExpand(user.getIdUser())
                 .toUri();
     }
+
 }
 
