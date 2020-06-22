@@ -2,6 +2,8 @@ package com.utn.utnphones.controller;
 
 import com.utn.utnphones.dto.CallQueryReturnDto;
 import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
+import com.utn.utnphones.dto.UpdateLineDto;
+import com.utn.utnphones.exceptions.CityNotFoundException;
 import com.utn.utnphones.exceptions.LineNotFoundException;
 import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.model.Bill;
@@ -12,6 +14,7 @@ import com.utn.utnphones.model.enums.LineType;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.LineService;
 import com.utn.utnphones.service.UserService;
+import org.hibernate.sql.Update;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,7 +84,7 @@ public class LineControllerTest {
 
 
     @Test
-    public void getTop10Destinations() {
+    public void getTop10Destinations() throws UserNotFoundException {
         Line l1 = new Line(1, null, null, "223-20202020", LineType.MOBILE, LineStatus.ACTIVE);
         Line l2 = new Line(1, null, null, "223-23232323", LineType.MOBILE, LineStatus.ACTIVE);
 
@@ -98,29 +101,32 @@ public class LineControllerTest {
         expected.add(dto2);
 
         Mockito.when(lineService.getTop10Destinations(1)).thenReturn(expected);
+        Mockito.when(userService.existsById(1)).thenReturn(true);
 
-        List<LineAndQtyOfCallsDto> returned = lineService.getTop10Destinations(1);
+        ResponseEntity<List<LineAndQtyOfCallsDto>> returned = controller.getTop10Destinations(1);
 
         assertNotNull(returned);
-        assertThat(returned.size(), is(2));
-        assertEquals(returned, expected);
+        assertThat(returned.getBody().size(), is(2));
+        assertEquals(expected, returned.getBody());
     }
 
     @Test
-    public void getTop10DestinationsEmpty() {
-        HttpStatus response = null;
-
+    public void getTop10DestinationsEmpty() throws UserNotFoundException {
         List<LineAndQtyOfCallsDto> expected = new ArrayList<>();
 
         Mockito.when(lineService.getTop10Destinations(1)).thenReturn(expected);
+        Mockito.when(userService.existsById(1)).thenReturn(true);
 
-        List<LineAndQtyOfCallsDto> returned = lineService.getTop10Destinations(1);
+        ResponseEntity<List<LineAndQtyOfCallsDto>> returned = controller.getTop10Destinations(1);
 
-        if (returned.size() == 0) {
-            response = HttpStatus.NO_CONTENT;
-        }
-        assertNotNull(response);
-        assertEquals(HttpStatus.NO_CONTENT, response);
+        assertNotNull(returned);
+        assertEquals(HttpStatus.NO_CONTENT, returned.getStatusCode());
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void getTop10DestinationsError() throws UserNotFoundException {
+        Mockito.when(userService.existsById(1)).thenReturn(false);
+        controller.getTop10Destinations(1);
     }
 
 
@@ -164,6 +170,47 @@ public class LineControllerTest {
     public void getLineByIdError() throws LineNotFoundException {
         Mockito.when(lineService.getLineById(1)).thenThrow(new LineNotFoundException());
         lineService.getLineById(1);
+    }
+
+
+    @Test
+    public void updateLine() throws UserNotFoundException, CityNotFoundException, LineNotFoundException {
+        UpdateLineDto updateLineDto = new UpdateLineDto(1,"223232", LineType.MOBILE,LineStatus.ACTIVE);
+
+        Mockito.when(lineService.existsById(1)).thenReturn(true);
+
+
+        ResponseEntity result = controller.updateLine(1,updateLineDto);
+        assertNotNull(result);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+
+
+    }
+
+    @Test
+    public void updateLineNullCity() throws UserNotFoundException, CityNotFoundException, LineNotFoundException {
+        UpdateLineDto updateLineDto = new UpdateLineDto(null,"223232", LineType.MOBILE,LineStatus.ACTIVE);
+
+        Mockito.when(lineService.existsById(1)).thenReturn(true);
+
+
+        ResponseEntity result = controller.updateLine(1,updateLineDto);
+        assertNotNull(result);
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
+    @Test(expected = LineNotFoundException.class)
+    public void updateLineError() throws UserNotFoundException, CityNotFoundException, LineNotFoundException {
+        UpdateLineDto updateLineDto = new UpdateLineDto(null,"223232", LineType.MOBILE,LineStatus.ACTIVE);
+        Mockito.when(lineService.existsById(1)).thenReturn(false);
+        controller.updateLine(1,updateLineDto);
+    }
+
+    @Test
+    public void deleteLine() throws LineNotFoundException {
+        ResponseEntity returned = controller.deleteLine(1);
+        assertNotNull(returned);
+        assertEquals(HttpStatus.OK,returned.getStatusCode());
     }
 
     @After

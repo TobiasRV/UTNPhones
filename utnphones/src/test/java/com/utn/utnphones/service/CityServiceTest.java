@@ -1,13 +1,16 @@
 package com.utn.utnphones.service;
 
+import com.utn.utnphones.dto.UpdateCityDto;
 import com.utn.utnphones.exceptions.CityNotFoundException;
 import com.utn.utnphones.model.City;
+import com.utn.utnphones.model.Province;
 import com.utn.utnphones.repository.CityRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.security.core.parameters.P;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +18,7 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class CityServiceTest {
@@ -40,7 +44,7 @@ public class CityServiceTest {
         expected.add(c2);
         Mockito.when(cityRepository.findAll()).thenReturn(expected);
 
-        List<City> returned = cityRepository.findAll();
+        List<City> returned = cityService.getAll();
 
         assertThat(returned.size(), is(2));
         assertEquals(expected,returned);
@@ -48,39 +52,40 @@ public class CityServiceTest {
 
     @Test
     public void addCity() {
+        City c1 = new City(1,"Miramar",null,"2291");
+        cityService.addCity(c1);
     }
 
     @Test
     public void existsByIdTrue() {
         Mockito.when(cityRepository.existsById(1)).thenReturn(true);
-        boolean returned = cityRepository.existsById(1);
+        boolean returned = cityService.existsById(1);
         assertEquals(true,returned);
     }
-    public void existsByIdFalse() {
-        Mockito.when(cityRepository.existsById(1)).thenReturn(false);
-        boolean returned = cityRepository.existsById(1);
-        assertEquals(false,returned);
-    }
+
 
     @Test
-    public void getCityById() {
+    public void getCityById() throws CityNotFoundException {
         City expected = new City(1,"Miramar",null,"2291");
         Mockito.when(cityRepository.findById(1)).thenReturn(java.util.Optional.of(expected));
-        Optional<City> returned = cityRepository.findById(1);
+        City returned = cityService.getCityById(1);
 
-        assertEquals(expected,returned.get());
+        assertEquals(expected,returned);
     }
 
     @Test(expected = CityNotFoundException.class)
     public void getCityByIdError() throws CityNotFoundException {
         Mockito.when(cityRepository.findById(1).orElseThrow(CityNotFoundException::new)).thenThrow(new CityNotFoundException());
-        cityRepository.findById(1);
+        cityService.getCityById(1);
     }
 
+
+    // TODO Terminar metodo
     @Test(expected = CityNotFoundException.class)
-    public void updateCityError() throws CityNotFoundException {
-        Mockito.when(cityRepository.findById(1).orElseThrow(CityNotFoundException::new)).thenThrow(new CityNotFoundException());
-        cityRepository.findById(1);
+    public void UpdateCity() throws CityNotFoundException {
+        UpdateCityDto updateCityDto = new UpdateCityDto("Miramar",1,"2291");
+        Province province = new Province(1,null,null);
+        cityService.updateCity(1,updateCityDto, province);
     }
 
     @After

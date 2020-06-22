@@ -52,7 +52,7 @@ public class BillServiceTest {
 
         Mockito.when(billRepository.findAll()).thenReturn(expected);
 
-        List<Bill> returned = billRepository.findAll();
+        List<Bill> returned = billService.getAll();
 
         assertNotNull(returned);
         assertThat(returned.size(), is(2));
@@ -71,7 +71,7 @@ public class BillServiceTest {
 
         Mockito.when(billRepository.getBillsByUserAndDate(1, null, null)).thenReturn(expected);
 
-        List<Bill> returned = billRepository.getBillsByUserAndDate(1, null, null);
+        List<Bill> returned = billService.getBillsByUserAndDate(1, null, null);
 
         assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
@@ -88,7 +88,7 @@ public class BillServiceTest {
 
         Mockito.when(billRepository.getBillsByUser(1)).thenReturn(expected);
 
-        List<Bill> returned = billRepository.getBillsByUser(1);
+        List<Bill> returned = billService.getBillsByUser(1);
 
         assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
@@ -96,15 +96,30 @@ public class BillServiceTest {
 
 
     @Test
-    public void getBillById() {
-        Bill expected = new Bill(1, null, null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
+    public void getBillById() throws ValidationException, BillNotFoundException {
+        Bill expected = new Bill(1, new Line(1,null,null,null,null,null), null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
 
         Mockito.when(billRepository.findById(1)).thenReturn(Optional.of(expected));
 
-        Optional<Bill> returned = billRepository.findById(1);
+        Bill returned = billService.getBillById(1,1);
 
 
-        assertEquals(expected,returned.get());
+        assertEquals(expected,returned);
+    }
+
+    @Test(expected = BillNotFoundException.class)
+    public void getBillByIdBillNotFoundExeption() throws BillNotFoundException, ValidationException {
+        Bill expected = new Bill(1, new Line(1,null,null,null,null,null), null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
+        Mockito.when(billRepository.findById(1).orElseThrow(BillNotFoundException::new)).thenThrow(new BillNotFoundException());
+
+        billService.getBillById(2,1);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void getBillByIdValidationException () throws ValidationException, BillNotFoundException {
+        Bill expected = new Bill(1, new Line(1,null,null,null,null,null), null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
+        Mockito.when(billRepository.findById(1)).thenReturn(Optional.of(expected));
+        billService.getBillById(2,1);
     }
 
     @Test(expected = BillNotFoundException.class)
@@ -114,31 +129,28 @@ public class BillServiceTest {
         billRepository.findById(1);
     }
 
-    @Test(expected = ValidationException.class)
-    public void getBillByIdValidationException() throws ValidationException {
+    @Test
+    public void payBill() throws ValidationException, BillNotFoundException {
         Bill expected = new Bill(1, new Line(1,null,null,null,null,null), null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
-
-        if (!expected.getLine().getIdLine().equals(2)){
-            throw new ValidationException("");
-        }
-
+        Mockito.when(billRepository.findById(1)).thenReturn(Optional.of(expected));
+        billService.payBill(1,1);
     }
+
+    @Test(expected = ValidationException.class)
+    public void payBillValidationException() throws ValidationException, BillNotFoundException {
+        Bill expected = new Bill(1, new Line(1,null,null,null,null,null), null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
+        Mockito.when(billRepository.findById(1)).thenReturn(Optional.of(expected));
+        billService.payBill(2,1);
+    }
+
 
     @Test(expected = BillNotFoundException.class)
     public void payBillNotFoundError() throws BillNotFoundException {
-
         Mockito.when(billRepository.findById(1).orElseThrow(BillNotFoundException::new)).thenThrow(new BillNotFoundException());
         billRepository.findById(1);
     }
 
-    @Test(expected = ValidationException.class)
-    public void payBillValidationException() throws ValidationException {
-        Bill expected = new Bill(1, new Line(1,null,null,null,null,null), null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
 
-        if (!expected.getLine().getIdLine().equals(2)){
-            throw new ValidationException("");
-        }
-    }
 
 
     @After

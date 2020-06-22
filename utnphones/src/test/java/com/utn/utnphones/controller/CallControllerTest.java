@@ -8,23 +8,35 @@ import com.utn.utnphones.model.Call;
 import com.utn.utnphones.model.Line;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.BillStatus;
+import com.utn.utnphones.model.enums.LineStatus;
+import com.utn.utnphones.model.enums.LineType;
+import com.utn.utnphones.model.enums.UserRole;
+import com.utn.utnphones.security.SessionManager;
 import com.utn.utnphones.service.CallService;
 import com.utn.utnphones.service.UserService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static com.utn.utnphones.security.Constants.SECRET_KEY;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mockitoSession;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -36,6 +48,8 @@ public class CallControllerTest {
     CallService callService;
     @Mock
     UserService userService;
+
+
 
     @Before
     public void setUp() throws Exception {
@@ -65,39 +79,50 @@ public class CallControllerTest {
 
     @Test
     public void getAllEmpty() {
-        HttpStatus response = null;
         List<Call> expected = new ArrayList<>();
-
         when(callService.getAll()).thenReturn(expected);
+        ResponseEntity<List<Call>> returned = controller.getAll();
+        assertNotNull(returned);
+        assertEquals(HttpStatus.NO_CONTENT, returned.getStatusCode());
+    }
 
-        List<Call> returned = callService.getAll();
-
-        if(returned.size() == 0) {
-            response = HttpStatus.NO_CONTENT;
-        }
-        assertNotNull(response);
-        assertEquals(HttpStatus.NO_CONTENT, response);
+    @Test
+    public void addCall(){
+        AddCallDto call = new AddCallDto();
+        ResponseEntity returned = controller.addCall(call);
+        assertNotNull(returned);
+        assertEquals(HttpStatus.CREATED, returned.getStatusCode());
     }
 
 
+    /*
     @Test
-    public void getCallsByUser() {
+    public void getCallsByUserAsClient() throws UserNotFoundException {
         CallQueryReturnDto c1 = new CallQueryReturnDto(1, null, null, null, null, 20, 20.0, 30.0, 1);
         CallQueryReturnDto c2 = new CallQueryReturnDto(2, null, null, null, null, 20, 20.0, 30.0, 2);
+
+
 
         List<CallQueryReturnDto> expected = new ArrayList<>();
         expected.add(c1);
         expected.add(c2);
 
+
+        String token = userService.getJWTToken(1,"user1",UserRole.CLIENT,userController.);
+        System.out.println(token);
+
+
         Mockito.when(callService.getCallsByUser(1)).thenReturn(expected);
 
-        List<CallQueryReturnDto> returned = callService.getCallsByUser(1);
+        ResponseEntity<List<CallQueryReturnDto>> returned = controller.getCallsByUser(1,null,null,token);
 
         assertNotNull(returned);
-        assertThat(returned.size(), is(2));
-        assertEquals(returned, expected);
+        assertThat(returned.getBody().size(), is(2));
+        assertEquals(expected,returned.getBody());
 
     }
+
+     */
 
     @Test
     public void getCallsByUserEmpty() {

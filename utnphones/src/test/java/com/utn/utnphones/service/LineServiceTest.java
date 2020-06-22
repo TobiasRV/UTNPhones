@@ -1,8 +1,12 @@
 package com.utn.utnphones.service;
 
 import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
+import com.utn.utnphones.dto.UpdateLineDto;
 import com.utn.utnphones.exceptions.LineNotFoundException;
+import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.Line;
+import com.utn.utnphones.model.enums.LineStatus;
+import com.utn.utnphones.model.enums.LineType;
 import com.utn.utnphones.repository.LineRepository;
 import org.junit.After;
 import org.junit.Before;
@@ -17,6 +21,7 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class LineServiceTest {
@@ -43,7 +48,7 @@ public class LineServiceTest {
 
         Mockito.when(lineRepository.findAll()).thenReturn(expected);
 
-        List<Line> returned = lineRepository.findAll();
+        List<Line> returned = lineService.getAll();
 
         assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
@@ -51,6 +56,7 @@ public class LineServiceTest {
 
     @Test
     public void addLine() {
+        lineService.addLine(mock(Line.class));
     }
 
     @Test(expected = LineNotFoundException.class)
@@ -62,7 +68,16 @@ public class LineServiceTest {
     @Test(expected = LineNotFoundException.class)
     public void updateLineError() throws LineNotFoundException {
         Mockito.when(lineRepository.findById(1).orElseThrow(LineNotFoundException::new)).thenThrow(new LineNotFoundException());
-        lineRepository.findById(1);
+        lineService.updateLine(1,mock(UpdateLineDto.class),mock(City.class));
+    }
+
+    @Test
+    public void updateLine() throws LineNotFoundException {
+        Line line = new Line(1,null,null,null,null,null);
+        UpdateLineDto updateLineDto = new UpdateLineDto(1,"123123", LineType.MOBILE, LineStatus.ACTIVE);
+        City city = new City(1,null,null,null);
+        Mockito.when(lineRepository.findById(1)).thenReturn(Optional.of(line));
+        lineService.updateLine(1,updateLineDto,city);
     }
 
     @Test

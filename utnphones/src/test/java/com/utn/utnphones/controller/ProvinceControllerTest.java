@@ -1,6 +1,8 @@
 package com.utn.utnphones.controller;
 
 import com.utn.utnphones.dto.CallQueryReturnDto;
+import com.utn.utnphones.dto.UpdateProvinceDto;
+import com.utn.utnphones.exceptions.ProvinceNotFoundException;
 import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.model.Province;
 import com.utn.utnphones.service.ProvinceService;
@@ -10,6 +12,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,27 +47,61 @@ public class ProvinceControllerTest {
 
         Mockito.when(provinceService.getAll()).thenReturn(expected);
 
-        List<Province> returned = provinceService.getAll();
+        ResponseEntity<List<Province>> returned = controller.getAll();
 
         assertNotNull(returned);
-        assertThat(returned.size(), is(2));
-        assertEquals(returned, expected);
+        assertThat(returned.getBody().size(), is(2));
+        assertEquals(expected, returned.getBody());
     }
 
     @Test
     public void getAllEmpty() {
-        HttpStatus response = null;
+
         List<Province> expected = new ArrayList<>();
 
         when(provinceService.getAll()).thenReturn(expected);
 
-        List<Province> returned = provinceService.getAll();
+        ResponseEntity<List<Province>> returned = controller.getAll();
 
-        if (returned.size() == 0) {
-            response = HttpStatus.NO_CONTENT;
-        }
-        assertNotNull(response);
-        assertEquals(HttpStatus.NO_CONTENT, response);
+        assertNotNull(returned);
+        assertEquals(HttpStatus.NO_CONTENT, returned.getStatusCode());
+    }
+
+    @Test
+    public void getProvinceById() throws ProvinceNotFoundException {
+        Province expected = new Province(1,null,null);
+
+        Mockito.when(provinceService.getProvinceById(1)).thenReturn(expected);
+
+        ResponseEntity returned = controller.getProvinceById(1);
+
+        assertNotNull(returned);
+        assertEquals(expected,returned.getBody());
+    }
+
+    @Test
+    public void addProvince(){
+        Province expected = new Province(1,null,null);
+        controller.addProvince(expected);
+    }
+
+    @Test
+    public void updateProvince() throws ProvinceNotFoundException {
+        UpdateProvinceDto updateProvinceDto = new UpdateProvinceDto("Buenos Aires");
+
+        Mockito.when(provinceService.existsById(1)).thenReturn(true);
+
+        ResponseEntity returned = controller.updateProvince(1,updateProvinceDto);
+
+        assertNotNull(returned);
+        assertEquals(HttpStatus.OK, returned.getStatusCode());
+    }
+
+    @Test(expected = ProvinceNotFoundException.class)
+    public void updateProvinceError() throws ProvinceNotFoundException {
+        UpdateProvinceDto updateProvinceDto = new UpdateProvinceDto("Buenos Aires");
+        Mockito.when(provinceService.existsById(1)).thenReturn(false);
+        controller.updateProvince(1,updateProvinceDto);
     }
 
     @After

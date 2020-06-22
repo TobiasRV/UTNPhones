@@ -1,7 +1,11 @@
 package com.utn.utnphones.controller;
 
 import com.utn.utnphones.dto.CallQueryReturnDto;
+import com.utn.utnphones.exceptions.CityNotFoundException;
+import com.utn.utnphones.exceptions.InvalidLoginException;
 import com.utn.utnphones.exceptions.UserNotFoundException;
+import com.utn.utnphones.exceptions.ValidationException;
+import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.model.enums.UserStatus;
@@ -14,6 +18,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,39 +45,37 @@ public class UserControllerTest {
         userController = new UserController(userService, cityService, sessionManager);
     }
 
+
     @Test
-    public void getAllOk() {
+    public void getAll() {
         User u1 = new User(1, "user1", "pass", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
         User u2 = new User(2, "user2", "pass2", "mailfalso@hotmail.com", "name2", "lastname2", 40020328, null, "calle falsa 123", UserRole.CLIENT, UserStatus.ACTIVE, null);
 
-        List<User> userList = new ArrayList<>();
-        userList.add(u1);
-        userList.add(u2);
+        List<User> expected = new ArrayList<>();
+        expected.add(u1);
+        expected.add(u2);
 
-        when(userService.getAll()).thenReturn(userList);
+        when(userService.getAll()).thenReturn(expected);
 
-        List<User> userList2 = userController.getAll().getBody();
+        ResponseEntity<List<User>> returned = userController.getAll();
 
 
-        assertNotNull(userList2);
-        assertThat(userList2.size(), is(2));
-        assertEquals(userList2, userList);
+        assertNotNull(returned);
+        assertThat(returned.getBody().size(), is(2));
+        assertEquals(expected, returned.getBody());
     }
 
     @Test
     public void getAllEmpty() {
-        HttpStatus response = null;
+
         List<User> expected = new ArrayList<>();
 
         when(userService.getAll()).thenReturn(expected);
 
-        List<User> returned = userService.getAll();
+        ResponseEntity<List<User>> returned = userController.getAll();
 
-        if (returned.size() == 0) {
-            response = HttpStatus.NO_CONTENT;
-        }
-        assertNotNull(response);
-        assertEquals(HttpStatus.NO_CONTENT, response);
+        assertNotNull(returned);
+        assertEquals(HttpStatus.NO_CONTENT,returned.getStatusCode());
     }
 
     @Test
@@ -91,6 +94,14 @@ public class UserControllerTest {
     public void getUserByIdError() throws UserNotFoundException {
         Mockito.when(userService.getUserById(134)).thenThrow(new UserNotFoundException());
         User returned = userService.getUserById(134);
+    }
+
+    @Test
+    public void deleteUser() throws UserNotFoundException {
+        ResponseEntity returned = userController.deleteUser(1);
+        assertNotNull(returned);
+        assertEquals(HttpStatus.OK, returned.getStatusCode());
+
     }
 
     @After

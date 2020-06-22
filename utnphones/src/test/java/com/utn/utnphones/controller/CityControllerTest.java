@@ -2,6 +2,7 @@ package com.utn.utnphones.controller;
 
 
 import com.utn.utnphones.dto.CallQueryReturnDto;
+import com.utn.utnphones.exceptions.CityNotFoundException;
 import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.service.CityService;
@@ -60,19 +61,27 @@ public class CityControllerTest {
 
     @Test
     public void getAllEmpty() {
-        HttpStatus response = null;
         List<City> expected = new ArrayList<>();
 
         when(cityService.getAll()).thenReturn(expected);
 
-        List<City> returned = cityService.getAll();
+        ResponseEntity<List<City>> returned = controller.getAll();
 
-        if (returned.size() == 0) {
-            response = HttpStatus.NO_CONTENT;
-        }
-        assertNotNull(response);
-        assertEquals(HttpStatus.NO_CONTENT, response);
+        assertNotNull(returned);
+        assertEquals(HttpStatus.NO_CONTENT, returned.getStatusCode());
     }
+
+    @Test
+    public void getCityById() throws CityNotFoundException {
+        City expected = new City(1, "Miramar", null, "2291");
+        Mockito.when(cityService.getCityById(1)).thenReturn(expected);
+
+        ResponseEntity returned = controller.getCityById(1);
+        assertNotNull(returned);
+        assertEquals(expected, returned.getBody());
+    }
+
+
 
     @After
     public void tearDown() throws Exception {

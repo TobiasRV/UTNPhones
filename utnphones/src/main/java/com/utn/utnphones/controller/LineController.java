@@ -108,7 +108,7 @@ public class LineController {
 
     @PutMapping("/{lineId}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_EMPLOYEE')")
-    public ResponseEntity updateLine(@PathVariable Integer lineId, @RequestBody @Valid UpdateLineDto updateLineDto) throws LineNotFoundException, UserNotFoundException, CityNotFoundException {
+    public ResponseEntity updateLine(@PathVariable Integer lineId, @RequestBody @Valid UpdateLineDto updateLineDto) throws LineNotFoundException, CityNotFoundException {
         if (!lineService.existsById(lineId))
             throw new LineNotFoundException();
 
@@ -117,9 +117,8 @@ public class LineController {
             lineService.updateLine(lineId, updateLineDto, city);
             return ResponseEntity.ok().build();
         }
-
-        lineService.updateLine(lineId, updateLineDto, null);
-        return ResponseEntity.ok().build();
+            lineService.updateLine(lineId, updateLineDto, null);
+            return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{lineId}")
