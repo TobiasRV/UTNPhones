@@ -3,6 +3,7 @@ package com.utn.utnphones.service;
 import com.utn.utnphones.exceptions.CityNotFoundException;
 import com.utn.utnphones.model.City;
 import com.utn.utnphones.repository.CityRepository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -80,5 +81,9 @@ public class CityServiceTest {
     public void updateCityError() throws CityNotFoundException {
         Mockito.when(cityRepository.findById(1).orElseThrow(CityNotFoundException::new)).thenThrow(new CityNotFoundException());
         cityRepository.findById(1);
+    }
+
+    @After
+    public void tearDown() throws Exception {
     }
 }

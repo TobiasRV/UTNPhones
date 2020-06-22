@@ -4,6 +4,7 @@ import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
 import com.utn.utnphones.exceptions.LineNotFoundException;
 import com.utn.utnphones.model.Line;
 import com.utn.utnphones.repository.LineRepository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -142,5 +143,9 @@ public class LineServiceTest {
     public void deleteLineError() throws LineNotFoundException {
         Mockito.when(lineRepository.findById(1).orElseThrow(LineNotFoundException::new)).thenThrow(new LineNotFoundException());
         lineRepository.findById(1);
+    }
+
+    @After
+    public void tearDown() throws Exception {
     }
 }

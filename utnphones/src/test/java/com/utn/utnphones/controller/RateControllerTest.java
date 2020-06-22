@@ -7,6 +7,7 @@ import com.utn.utnphones.model.Rate;
 import com.utn.utnphones.model.enums.BillStatus;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.RateService;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -50,11 +51,8 @@ public class RateControllerTest {
 
         List<Rate> returned = rateService.getAll();
 
-
-        if (returned != null) {
-            assertThat(returned.size(), is(2));
-        }
-
+        assertNotNull(returned);
+        assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
 
     }
@@ -71,12 +69,8 @@ public class RateControllerTest {
         if (returned.size() == 0) {
             response = HttpStatus.NO_CONTENT;
         }
-
+        assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response);
-    }
-
-    @Test
-    public void addRate() {
     }
 
     @Test
@@ -89,10 +83,8 @@ public class RateControllerTest {
 
         List<Rate> returned = rateService.getRateByCities(1, 2);
 
-        if (returned != null) {
-            assertThat(returned.size(), is(1));
-        }
-
+        assertNotNull(returned);
+        assertThat(returned.size(), is(1));
         assertEquals(returned, expected);
 
     }
@@ -110,7 +102,7 @@ public class RateControllerTest {
         if (returned.size() == 0) {
             response = HttpStatus.NO_CONTENT;
         }
-
+        assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response);
 
     }
@@ -121,4 +113,7 @@ public class RateControllerTest {
         cityService.getCityById(5);
     }
 
+    @After
+    public void tearDown() throws Exception {
+    }
 }

@@ -4,6 +4,7 @@ import com.utn.utnphones.dto.CallQueryReturnDto;
 import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.model.Province;
 import com.utn.utnphones.service.ProvinceService;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -34,8 +35,8 @@ public class ProvinceControllerTest {
     @Test
     public void getAll() {
 
-        Province p1 = new Province(1,"Buenos Aires",null);
-        Province p2 = new Province(1,"Tucuman",null);
+        Province p1 = new Province(1, "Buenos Aires", null);
+        Province p2 = new Province(1, "Tucuman", null);
 
         List<Province> expected = new ArrayList<>();
         expected.add(p1);
@@ -45,10 +46,8 @@ public class ProvinceControllerTest {
 
         List<Province> returned = provinceService.getAll();
 
-        if (returned != null) {
-            assertThat(returned.size(), is(2));
-        }
-
+        assertNotNull(returned);
+        assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
     }
 
@@ -64,15 +63,11 @@ public class ProvinceControllerTest {
         if (returned.size() == 0) {
             response = HttpStatus.NO_CONTENT;
         }
-
+        assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response);
     }
 
-    // TODO Hacer test
-    @Test
-    public void addProvince() {
+    @After
+    public void tearDown() throws Exception {
     }
-
-
-
 }

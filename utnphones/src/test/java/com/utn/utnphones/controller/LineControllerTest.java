@@ -12,6 +12,7 @@ import com.utn.utnphones.model.enums.LineType;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.LineService;
 import com.utn.utnphones.service.UserService;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -57,10 +58,8 @@ public class LineControllerTest {
 
         List<Line> returned = lineService.getAll();
 
-        if (returned != null) {
-            assertThat(returned.size(), is(2));
-        }
-
+        assertNotNull(returned);
+        assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
     }
 
@@ -76,19 +75,10 @@ public class LineControllerTest {
         if (returned.size() == 0) {
             response = HttpStatus.NO_CONTENT;
         }
-
+        assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response);
     }
 
-    // TODO Hacer test
-    @Test
-    public void addLine() {
-    }
-
-    @Test
-    public void updateLine() {
-
-    }
 
     @Test
     public void getTop10Destinations() {
@@ -111,10 +101,8 @@ public class LineControllerTest {
 
         List<LineAndQtyOfCallsDto> returned = lineService.getTop10Destinations(1);
 
-        if (returned != null) {
-            assertThat(returned.size(), is(2));
-        }
-
+        assertNotNull(returned);
+        assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
     }
 
@@ -131,13 +119,13 @@ public class LineControllerTest {
         if (returned.size() == 0) {
             response = HttpStatus.NO_CONTENT;
         }
-
+        assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response);
     }
 
 
     @Test
-    public void getLinesByUserId(){
+    public void getLinesByUserId() {
         Line l1 = new Line(1, null, null, "223-20202020", LineType.MOBILE, LineStatus.ACTIVE);
         Line l2 = new Line(1, null, null, "223-23232323", LineType.MOBILE, LineStatus.ACTIVE);
 
@@ -149,8 +137,9 @@ public class LineControllerTest {
 
         List<Line> returned = lineService.getLinesByUserId(1);
 
-        assertThat(returned.size(),is(2));
-        assertEquals(expected,returned);
+        assertNotNull(returned);
+        assertThat(returned.size(), is(2));
+        assertEquals(expected, returned);
     }
 
     @Test(expected = UserNotFoundException.class)
@@ -167,13 +156,18 @@ public class LineControllerTest {
 
         Line returned = lineService.getLineById(1);
 
-        assertEquals(expected,returned);
+        assertNotNull(returned);
+        assertEquals(expected, returned);
     }
 
     @Test(expected = LineNotFoundException.class)
-    public void getLineByIdError() throws LineNotFoundException{
+    public void getLineByIdError() throws LineNotFoundException {
         Mockito.when(lineService.getLineById(1)).thenThrow(new LineNotFoundException());
         lineService.getLineById(1);
+    }
+
+    @After
+    public void tearDown() throws Exception {
     }
 
 }

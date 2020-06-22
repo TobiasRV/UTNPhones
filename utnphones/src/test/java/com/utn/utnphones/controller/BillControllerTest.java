@@ -11,6 +11,7 @@ import com.utn.utnphones.model.enums.BillStatus;
 import com.utn.utnphones.service.BillService;
 import com.utn.utnphones.service.LineService;
 import com.utn.utnphones.service.UserService;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -59,11 +60,8 @@ public class BillControllerTest {
 
         List<Bill> returned = billService.getAll();
 
-
-        if (returned != null) {
-            assertThat(returned.size(), is(2));
-        }
-
+        assertNotNull(returned);
+        assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
 
     }
@@ -81,6 +79,7 @@ public class BillControllerTest {
             response = HttpStatus.NO_CONTENT;
         }
 
+        assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response);
     }
 
@@ -98,12 +97,8 @@ public class BillControllerTest {
 
         List<Bill> returned = billService.getBillsByUser(1);
 
-        //userlist.size must be 2
-        if (returned != null) {
-            assertThat(returned.size(), is(2));
-        }
-
-        //check if userlist contains the same elements
+        assertNotNull(returned);
+        assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
     }
 
@@ -121,7 +116,7 @@ public class BillControllerTest {
         if (returned.size() == 0) {
             response = HttpStatus.NO_CONTENT;
         }
-
+        assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response);
 
     }
@@ -141,6 +136,7 @@ public class BillControllerTest {
 
         List<Bill> returned = billService.getBillsByUserAndDate(1, null, null);
 
+        assertNotNull(returned);
         assertThat(returned.size(), is(2));
         assertEquals(expected, returned);
     }
@@ -160,11 +156,10 @@ public class BillControllerTest {
         if (returned.size() == 0) {
             response = HttpStatus.NO_CONTENT;
         }
-
+        assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response);
 
     }
-
 
 
     @Test
@@ -176,16 +171,12 @@ public class BillControllerTest {
 
         Bill returned = billService.getBillById(1, 1);
 
-
         assertNotNull(returned);
         assertEquals(returned, expected);
     }
 
-
-
-    // TODO Hacer test
-    @Test
-    public void payBill() throws ValidationException, BillNotFoundException {
-
+    @After
+    public void tearDown() throws Exception {
     }
+
 }

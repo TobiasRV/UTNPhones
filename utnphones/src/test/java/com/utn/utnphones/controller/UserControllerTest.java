@@ -8,6 +8,7 @@ import com.utn.utnphones.model.enums.UserStatus;
 import com.utn.utnphones.security.SessionManager;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.UserService;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -18,8 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -53,12 +53,9 @@ public class UserControllerTest {
 
         List<User> userList2 = userController.getAll().getBody();
 
-        //userlist.size must be 2
-        if (userList2 != null) {
-            assertThat(userList2.size(), is(2));
-        }
 
-        //check if userlist contains the same elements
+        assertNotNull(userList2);
+        assertThat(userList2.size(), is(2));
         assertEquals(userList2, userList);
     }
 
@@ -74,7 +71,7 @@ public class UserControllerTest {
         if (returned.size() == 0) {
             response = HttpStatus.NO_CONTENT;
         }
-
+        assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response);
     }
 
@@ -86,6 +83,7 @@ public class UserControllerTest {
 
         User returned = userService.getUserById(1);
 
+        assertNotNull(returned);
         assertEquals(expected,returned);
     }
 
@@ -95,7 +93,9 @@ public class UserControllerTest {
         User returned = userService.getUserById(134);
     }
 
-
+    @After
+    public void tearDown() throws Exception {
+    }
 
 
 }

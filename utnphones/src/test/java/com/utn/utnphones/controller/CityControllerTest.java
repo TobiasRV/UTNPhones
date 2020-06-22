@@ -6,6 +6,7 @@ import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.ProvinceService;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -40,8 +41,8 @@ public class CityControllerTest {
 
     @Test
     public void getAll() {
-        City c1 = new City(1,"Miramar", null,"2291");
-        City c2 = new City(1,"Mar del Plata", null,"223");
+        City c1 = new City(1, "Miramar", null, "2291");
+        City c2 = new City(1, "Mar del Plata", null, "223");
 
 
         List<City> expected = new ArrayList<>();
@@ -52,12 +53,8 @@ public class CityControllerTest {
 
         ResponseEntity<List<City>> returned = controller.getAll();
 
-
-        if (returned != null) {
-            assertThat(returned.getBody().size(), is(2));
-        }
-
-
+        assertNotNull(returned);
+        assertThat(returned.getBody().size(), is(2));
         assertEquals(returned.getBody(), expected);
     }
 
@@ -73,15 +70,11 @@ public class CityControllerTest {
         if (returned.size() == 0) {
             response = HttpStatus.NO_CONTENT;
         }
+        assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response);
     }
 
-
-
-    // TODO Hacer test
-    @Test
-    public void addCity() {
-
-
+    @After
+    public void tearDown() throws Exception {
     }
 }

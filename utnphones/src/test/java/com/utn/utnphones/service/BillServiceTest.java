@@ -11,6 +11,7 @@ import com.utn.utnphones.model.enums.BillStatus;
 import com.utn.utnphones.model.enums.LineStatus;
 import com.utn.utnphones.model.enums.LineType;
 import com.utn.utnphones.repository.BillRepository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -53,9 +54,11 @@ public class BillServiceTest {
 
         List<Bill> returned = billRepository.findAll();
 
+        assertNotNull(returned);
         assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
     }
+
 
     @Test
     public void getBillsByUserAndDate() {
@@ -111,6 +114,15 @@ public class BillServiceTest {
         billRepository.findById(1);
     }
 
+    @Test(expected = ValidationException.class)
+    public void getBillByIdValidationException() throws ValidationException {
+        Bill expected = new Bill(1, new Line(1,null,null,null,null,null), null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
+
+        if (!expected.getLine().getIdLine().equals(2)){
+            throw new ValidationException("");
+        }
+
+    }
 
     @Test(expected = BillNotFoundException.class)
     public void payBillNotFoundError() throws BillNotFoundException {
@@ -119,19 +131,17 @@ public class BillServiceTest {
         billRepository.findById(1);
     }
 
+    @Test(expected = ValidationException.class)
+    public void payBillValidationException() throws ValidationException {
+        Bill expected = new Bill(1, new Line(1,null,null,null,null,null), null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
 
-    /*
-    @Test
-    public void payBill() {
-        Bill b1 = new Bill(1, new Line(1,new User(),new City(),"202020202", LineType.MOBILE, LineStatus.ACTIVE), null, 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
-
-        ValidationException returned;
-        if (!b1.getLine().getIdLine().equals(1)){
-            returned = new ValidationException("The bill id given does not match with the line id");
+        if (!expected.getLine().getIdLine().equals(2)){
+            throw new ValidationException("");
         }
-
-        assertSame();
     }
 
-     */
+
+    @After
+    public void tearDown() throws Exception {
+    }
 }

@@ -10,6 +10,7 @@ import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.BillStatus;
 import com.utn.utnphones.service.CallService;
 import com.utn.utnphones.service.UserService;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -56,11 +57,8 @@ public class CallControllerTest {
 
         ResponseEntity<List<Call>> returned = controller.getAll();
 
-
-        if (returned != null) {
-            assertThat(returned.getBody().size(), is(2));
-        }
-
+        assertNotNull(returned);
+        assertThat(returned.getBody().size(), is(2));
         assertEquals(returned.getBody(), expected);
 
     }
@@ -74,17 +72,13 @@ public class CallControllerTest {
 
         List<Call> returned = callService.getAll();
 
-        if (returned.size() == 0) {
+        if(returned.size() == 0) {
             response = HttpStatus.NO_CONTENT;
         }
+        assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response);
     }
 
-    @Test
-    public void addCall() {
-        AddCallDto c = new AddCallDto("223-23232323", "2291-123123123", null, 30);
-
-    }
 
     @Test
     public void getCallsByUser() {
@@ -99,12 +93,8 @@ public class CallControllerTest {
 
         List<CallQueryReturnDto> returned = callService.getCallsByUser(1);
 
-
-        if (returned != null) {
-            assertThat(returned.size(), is(2));
-        }
-
-        //check if userlist contains the same elements
+        assertNotNull(returned);
+        assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
 
     }
@@ -121,7 +111,7 @@ public class CallControllerTest {
         if (returned.size() == 0) {
             response = HttpStatus.NO_CONTENT;
         }
-
+        assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response);
     }
 
@@ -140,11 +130,8 @@ public class CallControllerTest {
 
         List<CallQueryReturnDto> returned = callService.getCallsByUserAndDate(1, Date.valueOf("2020-05-1"), Date.valueOf("2020-06-1"));
 
-
-        if (returned != null) {
-            assertThat(returned.size(), is(2));
-        }
-
+        assertNotNull(returned);
+        assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
 
     }
@@ -154,15 +141,19 @@ public class CallControllerTest {
         HttpStatus response = null;
         List<CallQueryReturnDto> expected = new ArrayList<>();
 
-        when(callService.getCallsByUserAndDate(1,null,null)).thenReturn(expected);
+        when(callService.getCallsByUserAndDate(1, null, null)).thenReturn(expected);
 
-        List<CallQueryReturnDto> returned = callService.getCallsByUserAndDate(1,null,null);
+        List<CallQueryReturnDto> returned = callService.getCallsByUserAndDate(1, null, null);
 
         if (returned.size() == 0) {
             response = HttpStatus.NO_CONTENT;
         }
-
+        assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response);
+    }
+
+    @After
+    public void tearDown() throws Exception {
     }
 
 }

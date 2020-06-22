@@ -3,6 +3,7 @@ package com.utn.utnphones.service;
 import com.utn.utnphones.exceptions.RateNotFoundException;
 import com.utn.utnphones.model.Rate;
 import com.utn.utnphones.repository.RateRepository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -83,5 +84,9 @@ public class RateServiceTest {
     public void updateRateError() throws RateNotFoundException {
         Mockito.when(rateRepository.findById(1).orElseThrow(RateNotFoundException::new)).thenThrow(new RateNotFoundException());
         rateRepository.findById(1);
+    }
+
+    @After
+    public void tearDown() throws Exception {
     }
 }

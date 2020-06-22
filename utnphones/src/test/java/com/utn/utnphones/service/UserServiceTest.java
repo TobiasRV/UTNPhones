@@ -7,6 +7,7 @@ import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.model.enums.UserStatus;
 import com.utn.utnphones.repository.UserRepository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -162,4 +163,7 @@ public class UserServiceTest {
     public void getJWTToken() {
     }
 
+    @After
+    public void tearDown() throws Exception {
+    }
 }
