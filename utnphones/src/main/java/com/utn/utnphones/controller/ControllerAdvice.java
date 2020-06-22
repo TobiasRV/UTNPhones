@@ -41,14 +41,14 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(CityNotFoundException.class)
     public ErrorResponseDto handleCityNotFound() {
-        return new ErrorResponseDto(4, "City not found");
+        return new ErrorResponseDto(5, "City not found");
     }
 
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(RateNotFoundException.class)
     public ErrorResponseDto handleRateNotFound() {
-        return new ErrorResponseDto(4, "Rate not found");
+        return new ErrorResponseDto(6, "Rate not found");
     }
 
     /*
@@ -59,7 +59,7 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(ValidationException.class)
     public ErrorResponseDto handleValidationException(ValidationException e) {
-        return new ErrorResponseDto(5, e.getMessage());
+        return new ErrorResponseDto(7, e.getMessage());
     }
 
     /*
@@ -70,19 +70,19 @@ public class ControllerAdvice extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(HibernateException.class)
     public ErrorResponseDto handleHibernateError(RuntimeException e) {
-        return new ErrorResponseDto(6, e.getCause().getCause().getMessage());
+        return new ErrorResponseDto(8, e.getCause().getCause().getMessage());
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorResponseDto handleUniqueConstraint() {
-        return new ErrorResponseDto(7, "One or more fields are not valid");
+        return new ErrorResponseDto(9, "One or more fields are not valid");
     }
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(InvalidLoginException.class)
     public ErrorResponseDto handleInvalidLogin() {
-        return new ErrorResponseDto(9, "Username or password are not valid");
+        return new ErrorResponseDto(10, "Username or password are not valid");
     }
 }
 
