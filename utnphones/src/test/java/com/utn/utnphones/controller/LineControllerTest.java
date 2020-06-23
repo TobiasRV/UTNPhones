@@ -1,20 +1,16 @@
 package com.utn.utnphones.controller;
 
-import com.utn.utnphones.dto.CallQueryReturnDto;
 import com.utn.utnphones.dto.LineAndQtyOfCallsDto;
 import com.utn.utnphones.dto.UpdateLineDto;
 import com.utn.utnphones.exceptions.CityNotFoundException;
 import com.utn.utnphones.exceptions.LineNotFoundException;
 import com.utn.utnphones.exceptions.UserNotFoundException;
-import com.utn.utnphones.model.Bill;
-import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.Line;
 import com.utn.utnphones.model.enums.LineStatus;
 import com.utn.utnphones.model.enums.LineType;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.LineService;
 import com.utn.utnphones.service.UserService;
-import org.hibernate.sql.Update;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

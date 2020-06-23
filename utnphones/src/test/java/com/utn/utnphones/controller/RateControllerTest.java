@@ -1,12 +1,9 @@
 package com.utn.utnphones.controller;
 
-import com.utn.utnphones.dto.CallQueryReturnDto;
 import com.utn.utnphones.dto.UpdateRateDto;
 import com.utn.utnphones.exceptions.CityNotFoundException;
 import com.utn.utnphones.exceptions.RateNotFoundException;
-import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.model.Rate;
-import com.utn.utnphones.model.enums.BillStatus;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.RateService;
 import org.junit.After;
@@ -20,9 +17,8 @@ import org.springframework.http.ResponseEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 

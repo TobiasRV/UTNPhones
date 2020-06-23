@@ -5,12 +5,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.utn.utnphones.model.enums.LineStatus;
 import com.utn.utnphones.model.enums.LineType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "phone_lines")

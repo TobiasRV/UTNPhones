@@ -5,38 +5,22 @@ import com.utn.utnphones.dto.CallQueryReturnDto;
 import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.model.Call;
-import com.utn.utnphones.model.Line;
-import com.utn.utnphones.model.User;
-import com.utn.utnphones.model.enums.BillStatus;
-import com.utn.utnphones.model.enums.LineStatus;
-import com.utn.utnphones.model.enums.LineType;
-import com.utn.utnphones.model.enums.UserRole;
-import com.utn.utnphones.security.SessionManager;
 import com.utn.utnphones.service.CallService;
 import com.utn.utnphones.service.UserService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static com.utn.utnphones.security.Constants.SECRET_KEY;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mockitoSession;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 

@@ -1,9 +1,7 @@
 package com.utn.utnphones.controller;
 
-import com.utn.utnphones.dto.CallQueryReturnDto;
 import com.utn.utnphones.dto.UpdateProvinceDto;
 import com.utn.utnphones.exceptions.ProvinceNotFoundException;
-import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.model.Province;
 import com.utn.utnphones.service.ProvinceService;
 import org.junit.After;

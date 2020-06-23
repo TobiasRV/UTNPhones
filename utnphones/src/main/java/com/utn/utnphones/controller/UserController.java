@@ -8,30 +8,23 @@ import com.utn.utnphones.exceptions.InvalidLoginException;
 import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.User;
-import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.security.SessionManager;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import javax.validation.Validation;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.utn.utnphones.security.Constants.SECRET_KEY;
 
@@ -100,12 +93,12 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ResponseEntity addUser(@RequestBody @Valid User u) throws CityNotFoundException, ValidationException {
+    public ResponseEntity addUser(@RequestBody @Valid User user) throws CityNotFoundException, ValidationException {
 
-        if (!cityService.existsById(u.getCity().getIdCity()))
+        if (!cityService.existsById(user.getCity().getIdCity()))
             throw new CityNotFoundException();
 
-        User newUser = userService.addUser(u);
+        User newUser = userService.addUser(user);
         return ResponseEntity.created(getLocation(newUser)).build();
     }
 

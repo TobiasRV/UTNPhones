@@ -1,10 +1,8 @@
 package com.utn.utnphones.controller;
 
 
-import com.utn.utnphones.dto.CallQueryReturnDto;
 import com.utn.utnphones.exceptions.CityNotFoundException;
 import com.utn.utnphones.model.City;
-import com.utn.utnphones.model.User;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.ProvinceService;
 import org.junit.After;
@@ -12,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoSettings;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

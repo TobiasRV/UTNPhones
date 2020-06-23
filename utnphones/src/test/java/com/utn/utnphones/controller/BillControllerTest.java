@@ -5,8 +5,6 @@ import com.utn.utnphones.exceptions.LineNotFoundException;
 import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.Bill;
-import com.utn.utnphones.model.Call;
-import com.utn.utnphones.model.Line;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.BillStatus;
 import com.utn.utnphones.model.enums.UserRole;
@@ -21,23 +19,15 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import javax.persistence.*;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.springframework.http.ResponseEntity.*;
 
 public class BillControllerTest {
 

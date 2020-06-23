@@ -7,7 +7,6 @@ import com.utn.utnphones.exceptions.LineNotFoundException;
 import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.Line;
-import com.utn.utnphones.model.User;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.LineService;
 import com.utn.utnphones.service.UserService;

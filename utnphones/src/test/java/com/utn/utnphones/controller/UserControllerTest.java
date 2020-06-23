@@ -1,11 +1,6 @@
 package com.utn.utnphones.controller;
 
-import com.utn.utnphones.dto.CallQueryReturnDto;
-import com.utn.utnphones.exceptions.CityNotFoundException;
-import com.utn.utnphones.exceptions.InvalidLoginException;
 import com.utn.utnphones.exceptions.UserNotFoundException;
-import com.utn.utnphones.exceptions.ValidationException;
-import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.model.enums.UserStatus;

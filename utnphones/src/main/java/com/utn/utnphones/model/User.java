@@ -1,15 +1,12 @@
 package com.utn.utnphones.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.model.enums.UserStatus;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
 import javax.validation.constraints.NotNull;
 import java.util.List;
 

@@ -1,15 +1,10 @@
 package com.utn.utnphones.service;
 
 import com.utn.utnphones.exceptions.BillNotFoundException;
-import com.utn.utnphones.exceptions.UserNotFoundException;
 import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.Bill;
-import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.Line;
-import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.BillStatus;
-import com.utn.utnphones.model.enums.LineStatus;
-import com.utn.utnphones.model.enums.LineType;
 import com.utn.utnphones.repository.BillRepository;
 import org.junit.After;
 import org.junit.Before;
@@ -17,14 +12,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 

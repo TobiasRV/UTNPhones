@@ -29,7 +29,14 @@ public class UtnphonesApplication {
             http.csrf().disable()
                     .addFilterAfter(new JWTAuthorizationFilter(new SessionManager()), UsernamePasswordAuthenticationFilter.class)
                     .authorizeRequests()
-                    .antMatchers(HttpMethod.POST, "/api/user/login","/api/user/").permitAll()
+                    .antMatchers(HttpMethod.POST, "/api/user/login", "/api/user/").permitAll()
+                    .antMatchers(HttpMethod.GET, "api/city/",
+                            "/v2/api-docs",
+                            "/configuration/ui",
+                            "/swagger-resources/**",
+                            "/configuration/security",
+                            "/swagger-ui.html",
+                            "/webjars/**").permitAll()
                     .anyRequest().authenticated();
         }
     }
