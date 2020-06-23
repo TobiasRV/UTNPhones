@@ -92,6 +92,24 @@ public class RateServiceTest {
         rateService.updateRate(1,2,updateRateDto);
     }
 
+    @Test
+    public void updateRateCostPerMinuteNull() throws RateNotFoundException {
+        UpdateRateDto updateRateDto = new UpdateRateDto(null,2.00);
+        Rate r1 = new Rate(1,null,null,3.00,4.00);
+        Mockito.when(rateRepository.getOnlyOneRateByCities(1,2)).thenReturn(r1);
+        Mockito.when(rateRepository.existsByOriginCityAndDestinationCity(1,2)).thenReturn(true);
+        rateService.updateRate(1,2,updateRateDto);
+    }
+
+    @Test
+    public void updateRatePricePerMinuteNull() throws RateNotFoundException {
+        UpdateRateDto updateRateDto = new UpdateRateDto(1.00,null);
+        Rate r1 = new Rate(1,null,null,3.00,4.00);
+        Mockito.when(rateRepository.getOnlyOneRateByCities(1,2)).thenReturn(r1);
+        Mockito.when(rateRepository.existsByOriginCityAndDestinationCity(1,2)).thenReturn(true);
+        rateService.updateRate(1,2,updateRateDto);
+    }
+
     @Test(expected = RateNotFoundException.class)
     public void updateRateError() throws RateNotFoundException {
         UpdateRateDto updateRateDto = new UpdateRateDto(1.00,2.00);

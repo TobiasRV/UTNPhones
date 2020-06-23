@@ -71,6 +71,44 @@ public class LineServiceTest {
         lineService.updateLine(1,mock(UpdateLineDto.class),mock(City.class));
     }
 
+
+
+    @Test
+    public void updateLineIdCityNull() throws LineNotFoundException {
+        Line line = new Line(1,null,null,null,null,null);
+        UpdateLineDto updateLineDto = new UpdateLineDto(null,"123123", LineType.MOBILE, LineStatus.ACTIVE);
+        City city = new City(1,null,null,null);
+        Mockito.when(lineRepository.findById(1)).thenReturn(Optional.of(line));
+        lineService.updateLine(1,updateLineDto,city);
+    }
+
+    @Test
+    public void updateLinePhoneNumberNull() throws LineNotFoundException {
+        Line line = new Line(1,null,null,null,null,null);
+        UpdateLineDto updateLineDto = new UpdateLineDto(1,null, LineType.MOBILE, LineStatus.ACTIVE);
+        City city = new City(1,null,null,null);
+        Mockito.when(lineRepository.findById(1)).thenReturn(Optional.of(line));
+        lineService.updateLine(1,updateLineDto,city);
+    }
+
+    @Test
+    public void updateLineLineTypeNull() throws LineNotFoundException {
+        Line line = new Line(1,null,null,null,null,null);
+        UpdateLineDto updateLineDto = new UpdateLineDto(1,"123123", null, LineStatus.ACTIVE);
+        City city = new City(1,null,null,null);
+        Mockito.when(lineRepository.findById(1)).thenReturn(Optional.of(line));
+        lineService.updateLine(1,updateLineDto,city);
+    }
+
+    @Test
+    public void updateLineStatusNull() throws LineNotFoundException {
+        Line line = new Line(1,null,null,null,null,null);
+        UpdateLineDto updateLineDto = new UpdateLineDto(1,"123123", LineType.MOBILE, null);
+        City city = new City(1,null,null,null);
+        Mockito.when(lineRepository.findById(1)).thenReturn(Optional.of(line));
+        lineService.updateLine(1,updateLineDto,city);
+    }
+
     @Test
     public void updateLine() throws LineNotFoundException {
         Line line = new Line(1,null,null,null,null,null);
@@ -180,7 +218,16 @@ public class LineServiceTest {
 
         Mockito.when(lineRepository.findById(1)).thenReturn(Optional.of(l1));
 
-        lineService.setLineStatus(1,"suspended");
+        lineService.setLineStatus(1,"SUSPENDED");
+    }
+
+    @Test
+    public void setLineStatusNoOption() throws LineNotFoundException {
+        Line l1 = new Line(1,null,null,null,null,null);
+
+        Mockito.when(lineRepository.findById(1)).thenReturn(Optional.of(l1));
+
+        lineService.setLineStatus(1,"asdasd");
     }
 
     @Test
