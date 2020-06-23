@@ -175,6 +175,16 @@ public class RateControllerTest {
 
     }
 
+    @Test(expected = CityNotFoundException.class)
+    public void updateRateToCityDoentExist() throws RateNotFoundException, CityNotFoundException {
+        UpdateRateDto updateRateDto = new UpdateRateDto(1.00,2.00);
+
+        Mockito.when(cityService.existsById(1)).thenReturn(true);
+        Mockito.when(cityService.existsById(2)).thenReturn(false);
+
+        ResponseEntity returned = controller.updateRate(1,2,updateRateDto);
+    }
+
     @After
     public void tearDown() throws Exception {
     }

@@ -78,13 +78,56 @@ public class CityServiceTest {
     }
 
 
-    // TODO Terminar metodo
-    @Test(expected = CityNotFoundException.class)
+
+    @Test
     public void UpdateCity() throws CityNotFoundException {
         UpdateCityDto updateCityDto = new UpdateCityDto("Miramar",1,"2291");
         Province province = new Province(1,null,null);
+        City city = new City(1,"Mar del Plata",province,"223");
+        Mockito.when(cityRepository.findById(1)).thenReturn(java.util.Optional.of(city));
+
         cityService.updateCity(1,updateCityDto, province);
     }
+
+    @Test
+    public void UpdateCityProvinceNull() throws CityNotFoundException {
+        UpdateCityDto updateCityDto = new UpdateCityDto("Miramar",1,"2291");
+        Province province = new Province(1,null,null);
+        City city = new City(1,"Mar del Plata",province,"223");
+        Mockito.when(cityRepository.findById(1)).thenReturn(java.util.Optional.of(city));
+        cityService.updateCity(1,updateCityDto, null);
+    }
+
+    @Test
+    public void UpdateCityNameNull() throws CityNotFoundException {
+        UpdateCityDto updateCityDto = new UpdateCityDto(null,1,"2291");
+        Province province = new Province(1,null,null);
+        City city = new City(1,"Miramar",province,"223");
+        Mockito.when(cityRepository.findById(1)).thenReturn(java.util.Optional.of(city));
+        cityService.updateCity(1,updateCityDto, province);
+    }
+
+    @Test
+    public void UpdateCityPrefixNull() throws CityNotFoundException {
+        UpdateCityDto updateCityDto = new UpdateCityDto("Miramar",1,null);
+        Province province = new Province(1,null,null);
+        City city = new City(1,"Miramar",province,"223");
+        Mockito.when(cityRepository.findById(1)).thenReturn(java.util.Optional.of(city));
+        cityService.updateCity(1,updateCityDto, province);
+    }
+
+    @Test
+    public void UpdateCityAllNull() throws CityNotFoundException {
+        UpdateCityDto updateCityDto = new UpdateCityDto(null,1,null);
+        Province province = new Province(1,null,null);
+        City city = new City(1,"Miramar",province,"223");
+        Mockito.when(cityRepository.findById(1)).thenReturn(java.util.Optional.of(city));
+        cityService.updateCity(1,updateCityDto, null);
+    }
+
+
+
+
 
     @After
     public void tearDown() throws Exception {

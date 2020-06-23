@@ -44,6 +44,8 @@ public class LineControllerTest {
         controller = new LineController(lineService, userService, cityService);
     }
 
+
+
     @Test
     public void getAll() {
         Line l1 = new Line(1, null, null, "223-20202020", LineType.MOBILE, LineStatus.ACTIVE);

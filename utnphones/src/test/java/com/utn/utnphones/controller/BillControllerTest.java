@@ -151,6 +151,26 @@ public class BillControllerTest {
 
     }
 
+    @Test
+    public void getBillByDateOneDateEmpty() throws UserNotFoundException {
+        Bill b1 = new Bill(1, null, new User(1, "user1", "pass", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null), 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
+        Bill b2 = new Bill(2, null, new User(1, "user1", "pass", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null), 5, 1.00, 2.00, null, null, BillStatus.UNPAID);
+
+
+        List<Bill> expected = new ArrayList<>();
+        expected.add(b1);
+        expected.add(b2);
+
+        Mockito.when(billService.getBillsByUser(1)).thenReturn(expected);
+        Mockito.when(billService.getBillsByUserAndDate(1, new Date(2020,2,4),new Date(2020,3,20))).thenReturn(expected);
+        Mockito.when(userService.existsById(1)).thenReturn(true);
+        ResponseEntity<List<Bill>> returned = controller.getBillsByUser(1, new Date(2020,2,4),null);
+
+        assertNotNull(returned);
+        assertThat(returned.getBody().size(), is(2));
+        assertEquals(expected, returned.getBody());
+    }
+
 
     @Test
     public void getBillById() throws ValidationException, BillNotFoundException, LineNotFoundException {

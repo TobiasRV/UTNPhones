@@ -1,5 +1,7 @@
 package com.utn.utnphones.service;
 
+import com.utn.utnphones.dto.UpdateLineDto;
+import com.utn.utnphones.dto.UpdateProvinceDto;
 import com.utn.utnphones.exceptions.ProvinceNotFoundException;
 import com.utn.utnphones.model.Province;
 import com.utn.utnphones.repository.ProvinceRepository;
@@ -41,7 +43,7 @@ public class ProvinceServiceTest {
         expected.add(p2);
 
         Mockito.when(provinceRepository.findAll()).thenReturn(expected);
-        List<Province> returned = provinceRepository.findAll();
+        List<Province> returned = provinceService.getAll();
 
         assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
@@ -49,40 +51,54 @@ public class ProvinceServiceTest {
 
     @Test
     public void addProvince() {
+        Province p1 = new Province(1,null,null);
+        provinceService.addProvince(p1);
     }
 
     @Test
-    public void existsByIdTrue() {
+    public void existsById() {
         Mockito.when(provinceRepository.existsById(1)).thenReturn(true);
-        boolean returned = provinceRepository.existsById(1);
+        boolean returned = provinceService.existsById(1);
         assertEquals(true,returned);
     }
-    @Test
-    public void existsByIdFalse() {
-        Mockito.when(provinceRepository.existsById(233)).thenReturn(false);
-        boolean returned = provinceRepository.existsById(233);
-        assertEquals(false,returned);
-    }
+
 
     @Test
-    public void getProvinceById() {
+    public void getProvinceById() throws ProvinceNotFoundException {
         Province expected = new Province(1,null,null);
-        Mockito.when(provinceRepository.findById(1)).thenReturn(java.util.Optional.of(expected));
-        Optional<Province> returned = provinceRepository.findById(1);
+        Mockito.when(provinceRepository.findById(1)).thenReturn(Optional.of(expected));
+        Province returned = provinceService.getProvinceById(1);
 
-        assertEquals(expected,returned.get());
+        assertEquals(expected,returned);
     }
 
     @Test(expected = ProvinceNotFoundException.class)
     public void getProvinceByIdError() throws ProvinceNotFoundException {
         Mockito.when(provinceRepository.findById(1).orElseThrow(ProvinceNotFoundException::new)).thenThrow(new ProvinceNotFoundException());
-        provinceRepository.findById(1);
+        provinceService.getProvinceById(1);
+    }
+
+    @Test
+    public void updateProvince() throws ProvinceNotFoundException {
+        Province p1 = new Province(1,null,null);
+        Mockito.when(provinceRepository.findById(1)).thenReturn(Optional.of(p1));
+        UpdateProvinceDto updateProvinceDto = new UpdateProvinceDto("Buenos Aires");
+        provinceService.updateProvince(1,updateProvinceDto);
+    }
+
+    @Test
+    public void updateProvinceDtoNull() throws ProvinceNotFoundException {
+        Province p1 = new Province(1,null,null);
+        Mockito.when(provinceRepository.findById(1)).thenReturn(Optional.of(p1));
+        UpdateProvinceDto updateProvinceDto = new UpdateProvinceDto(null);
+        provinceService.updateProvince(1,updateProvinceDto);
     }
 
     @Test(expected = ProvinceNotFoundException.class)
     public void updateProvinceError() throws ProvinceNotFoundException {
         Mockito.when(provinceRepository.findById(1).orElseThrow(ProvinceNotFoundException::new)).thenThrow(new ProvinceNotFoundException());
-        provinceRepository.findById(1);
+        UpdateProvinceDto updateProvinceDto = new UpdateProvinceDto("Buenos Aires");
+        provinceService.updateProvince(1,updateProvinceDto);
     }
 
     @After

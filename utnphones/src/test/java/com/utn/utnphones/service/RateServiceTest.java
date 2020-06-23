@@ -1,5 +1,6 @@
 package com.utn.utnphones.service;
 
+import com.utn.utnphones.dto.UpdateRateDto;
 import com.utn.utnphones.exceptions.RateNotFoundException;
 import com.utn.utnphones.model.Rate;
 import com.utn.utnphones.repository.RateRepository;
@@ -40,7 +41,7 @@ public class RateServiceTest {
         expected.add(r2);
 
         Mockito.when(rateRepository.findAll()).thenReturn(expected);
-        List<Rate> returned = rateRepository.findAll();
+        List<Rate> returned = rateService.getAll();
 
         assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
@@ -48,25 +49,26 @@ public class RateServiceTest {
 
     @Test
     public void addProvince() {
+        Rate r1 = new Rate(1,null,null,null,null);
+        rateService.addProvince(r1);
     }
 
     @Test
     public void getRateByCities() {
         Rate r1 = new Rate(1,null,null,null,null);
-        Rate r2 = new Rate(2,null,null,null,null);
 
         List<Rate> expected = new ArrayList<>();
         expected.add(r1);
-        expected.add(r2);
+
 
         Mockito.when(rateRepository.getRateByCities(1,2)).thenReturn(expected);
-        List<Rate> returned = rateRepository.getRateByCities(1,2);
+        List<Rate> returned = rateService.getRateByCities(1,2);
 
-        assertThat(returned.size(), is(2));
+        assertThat(returned.size(), is(1));
         assertEquals(returned, expected);
     }
     @Test
-    public void getRateByCity() {
+    public void getRateByCitiesToCityNull() {
         Rate r1 = new Rate(1,null,null,null,null);
         Rate r2 = new Rate(2,null,null,null,null);
 
@@ -75,16 +77,27 @@ public class RateServiceTest {
         expected.add(r2);
 
         Mockito.when(rateRepository.getRateByCity(1)).thenReturn(expected);
-        List<Rate> returned = rateRepository.getRateByCity(1);
+        List<Rate> returned = rateService.getRateByCities(1,null);
 
         assertThat(returned.size(), is(2));
         assertEquals(returned, expected);
     }
 
+    @Test
+    public void updateRate() throws RateNotFoundException {
+        UpdateRateDto updateRateDto = new UpdateRateDto(1.00,2.00);
+        Rate r1 = new Rate(1,null,null,3.00,4.00);
+        Mockito.when(rateRepository.getOnlyOneRateByCities(1,2)).thenReturn(r1);
+        Mockito.when(rateRepository.existsByOriginCityAndDestinationCity(1,2)).thenReturn(true);
+        rateService.updateRate(1,2,updateRateDto);
+    }
+
     @Test(expected = RateNotFoundException.class)
     public void updateRateError() throws RateNotFoundException {
-        Mockito.when(rateRepository.findById(1).orElseThrow(RateNotFoundException::new)).thenThrow(new RateNotFoundException());
-        rateRepository.findById(1);
+        UpdateRateDto updateRateDto = new UpdateRateDto(1.00,2.00);
+
+        Mockito.when(rateRepository.existsByOriginCityAndDestinationCity(1,2)).thenReturn(false);
+        rateService.updateRate(1,2,updateRateDto);
     }
 
     @After

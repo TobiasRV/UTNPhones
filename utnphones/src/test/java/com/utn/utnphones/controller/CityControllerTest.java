@@ -1,8 +1,11 @@
 package com.utn.utnphones.controller;
 
 
+import com.utn.utnphones.dto.UpdateCityDto;
 import com.utn.utnphones.exceptions.CityNotFoundException;
+import com.utn.utnphones.exceptions.ProvinceNotFoundException;
 import com.utn.utnphones.model.City;
+import com.utn.utnphones.model.Province;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.ProvinceService;
 import org.junit.After;
@@ -78,7 +81,21 @@ public class CityControllerTest {
         assertEquals(expected, returned.getBody());
     }
 
+    @Test
+    public void updateCity() throws ProvinceNotFoundException, CityNotFoundException {
+        UpdateCityDto updateCityDto = new UpdateCityDto("Miramar",1,"2291");
+        Province p1 = new Province(1,null,null);
+        Mockito.when(provinceService.getProvinceById(1)).thenReturn(p1);
+        ResponseEntity returned = controller.updateCity(1,updateCityDto);
+        assertEquals(HttpStatus.OK, returned.getStatusCode());
+    }
 
+    @Test
+    public void updateCityProvinceNull() throws ProvinceNotFoundException, CityNotFoundException {
+        UpdateCityDto updateCityDto = new UpdateCityDto("Miramar",null,"2291");
+        ResponseEntity returned = controller.updateCity(1,updateCityDto);
+        assertEquals(HttpStatus.OK, returned.getStatusCode());
+    }
 
     @After
     public void tearDown() throws Exception {

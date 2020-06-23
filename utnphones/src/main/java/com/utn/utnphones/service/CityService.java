@@ -42,9 +42,9 @@ public class CityService {
 
         if (province != null)
             oldCity.setProvince(province);
-        if (oldCity.getCityName() != null)
+        if (updateCityDtoCity.getCityName() != null)
             oldCity.setCityName(updateCityDtoCity.getCityName());
-        if (oldCity.getPrefix() != null)
+        if (updateCityDtoCity.getPrefix() != null)
             oldCity.setPrefix(updateCityDtoCity.getPrefix());
 
         cityRepository.save(oldCity);

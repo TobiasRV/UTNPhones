@@ -102,6 +102,8 @@ public class LineServiceTest {
             returned.add(dto);
         }
 
+        lineService.getTop10Destinations(1);
+
         assertThat(returned.size(), is(2));
         assertEquals(l1,returned.get(0).getLine());
         assertEquals(l2,returned.get(1).getLine());
@@ -110,31 +112,26 @@ public class LineServiceTest {
     }
 
     @Test
-    public void existsByIdTrue() {
+    public void existsById() {
         Mockito.when(lineRepository.existsById(1)).thenReturn(true);
-        boolean returned = lineRepository.existsById(1);
+        boolean returned = lineService.existsById(1);
         assertEquals(true,returned);
     }
-    @Test
-    public void existsByIdFalse() {
-        Mockito.when(lineRepository.existsById(233)).thenReturn(false);
-        boolean returned = lineRepository.existsById(233);
-        assertEquals(false,returned);
-    }
+
 
     @Test
-    public void getLineById() {
+    public void getLineById() throws LineNotFoundException {
         Line expected = new Line(1,null,null,null,null,null);
 
         Mockito.when(lineRepository.findById(1)).thenReturn(java.util.Optional.of(expected));
-        Optional<Line> returned = lineRepository.findById(1);
-        assertEquals(expected,returned.get());
+        Line returned = lineService.getLineById(1);
+        assertEquals(expected,returned);
     }
 
     @Test(expected = LineNotFoundException.class)
     public void getLineByIdError() throws LineNotFoundException {
         Mockito.when(lineRepository.findById(1).orElseThrow(LineNotFoundException::new)).thenThrow(new LineNotFoundException());
-        lineRepository.findById(1);
+        lineService.getLineById(1);
     }
 
     @Test
@@ -147,17 +144,52 @@ public class LineServiceTest {
         expected.add(l2);
 
         Mockito.when(lineRepository.findByUserId(1)).thenReturn(expected);
-        List<Line> returned = lineRepository.findByUserId(1);
+        List<Line> returned = lineService.getLinesByUserId(1);
 
         assertThat(returned.size(),is(2));
         assertEquals(returned, expected);
     }
 
 
+    @Test
+    public void deleteLine() throws LineNotFoundException {
+        Line l1 = new Line(1,null,null,null,null,null);
+        Mockito.when(lineRepository.findById(1)).thenReturn(java.util.Optional.of(l1));
+        lineService.deleteLine(1);
+    }
+
     @Test(expected = LineNotFoundException.class)
     public void deleteLineError() throws LineNotFoundException {
         Mockito.when(lineRepository.findById(1).orElseThrow(LineNotFoundException::new)).thenThrow(new LineNotFoundException());
         lineRepository.findById(1);
+    }
+
+
+    @Test
+    public void setLineStatusActive() throws LineNotFoundException {
+        Line l1 = new Line(1,null,null,null,null,null);
+
+        Mockito.when(lineRepository.findById(1)).thenReturn(Optional.of(l1));
+
+        lineService.setLineStatus(1,"active");
+    }
+
+    @Test
+    public void setLineStatusSuspended() throws LineNotFoundException {
+        Line l1 = new Line(1,null,null,null,null,null);
+
+        Mockito.when(lineRepository.findById(1)).thenReturn(Optional.of(l1));
+
+        lineService.setLineStatus(1,"suspended");
+    }
+
+    @Test
+    public void setLineStatusDeleted() throws LineNotFoundException {
+        Line l1 = new Line(1,null,null,null,null,null);
+
+        Mockito.when(lineRepository.findById(1)).thenReturn(Optional.of(l1));
+
+        lineService.setLineStatus(1,"deleted");
     }
 
     @After
