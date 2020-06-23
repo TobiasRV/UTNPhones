@@ -97,7 +97,4 @@ public class CityControllerTest {
         assertEquals(HttpStatus.OK, returned.getStatusCode());
     }
 
-    @After
-    public void tearDown() throws Exception {
-    }
 }

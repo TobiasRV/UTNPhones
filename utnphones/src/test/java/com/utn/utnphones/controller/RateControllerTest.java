@@ -185,7 +185,4 @@ public class RateControllerTest {
         ResponseEntity returned = controller.updateRate(1,2,updateRateDto);
     }
 
-    @After
-    public void tearDown() throws Exception {
-    }
 }

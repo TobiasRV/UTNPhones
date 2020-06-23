@@ -68,7 +68,7 @@ public class CallController {
         if (!userService.existsById(userId))
             throw new UserNotFoundException();
 
-        List<CallQueryReturnDto> lc = null;
+        List<CallQueryReturnDto> lc;
 
         if (fromDate != null && toDate != null) {
             lc = callService.getCallsByUserAndDate(userId, fromDate, toDate);

@@ -7,18 +7,23 @@ import com.utn.utnphones.model.Bill;
 import com.utn.utnphones.model.Call;
 import com.utn.utnphones.service.CallService;
 import com.utn.utnphones.service.UserService;
-import org.junit.After;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static com.utn.utnphones.security.Constants.SECRET_KEY;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
@@ -26,7 +31,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class CallControllerTest {
 
-    CallController controller;
+    CallController callController;
 
     @Mock
     CallService callService;
@@ -34,11 +39,10 @@ public class CallControllerTest {
     UserService userService;
 
 
-
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        controller = new CallController(callService, userService);
+        callController = new CallController(callService, userService);
     }
 
     @Test
@@ -53,7 +57,7 @@ public class CallControllerTest {
 
         Mockito.when(callService.getAll()).thenReturn(expected);
 
-        ResponseEntity<List<Call>> returned = controller.getAll();
+        ResponseEntity<List<Call>> returned = callController.getAll();
 
         assertNotNull(returned);
         assertThat(returned.getBody().size(), is(2));
@@ -65,104 +69,147 @@ public class CallControllerTest {
     public void getAllEmpty() {
         List<Call> expected = new ArrayList<>();
         when(callService.getAll()).thenReturn(expected);
-        ResponseEntity<List<Call>> returned = controller.getAll();
+        ResponseEntity<List<Call>> returned = callController.getAll();
         assertNotNull(returned);
         assertEquals(HttpStatus.NO_CONTENT, returned.getStatusCode());
     }
 
     @Test
-    public void addCall(){
+    public void addCall() {
         AddCallDto call = new AddCallDto();
-        ResponseEntity returned = controller.addCall(call);
+        ResponseEntity returned = callController.addCall(call);
         assertNotNull(returned);
         assertEquals(HttpStatus.CREATED, returned.getStatusCode());
     }
 
-
-    /*
     @Test
-    public void getCallsByUserAsClient() throws UserNotFoundException {
-        CallQueryReturnDto c1 = new CallQueryReturnDto(1, null, null, null, null, 20, 20.0, 30.0, 1);
-        CallQueryReturnDto c2 = new CallQueryReturnDto(2, null, null, null, null, 20, 20.0, 30.0, 2);
+    public void getCallsByUser() throws UserNotFoundException {
+        CallQueryReturnDto callQueryReturnDto = new CallQueryReturnDto(1, null, null, null, 1, 10, 15.0, 30.3, 1);
+        CallQueryReturnDto callQueryReturnDto2 = new CallQueryReturnDto(2, null, null, null, 1, 10, 15.0, 30.3, 1);
 
+        List<CallQueryReturnDto> callQueryReturnDtoList = new ArrayList<>();
+        callQueryReturnDtoList.add(callQueryReturnDto);
+        callQueryReturnDtoList.add(callQueryReturnDto2);
 
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList("ROLE_CLIENT");
 
-        List<CallQueryReturnDto> expected = new ArrayList<>();
-        expected.add(c1);
-        expected.add(c2);
+        String token = Jwts
+                .builder()
+                .setId("1")
+                .setSubject("siderjonas")
+                .claim("authorities",
+                        grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new java.util.Date(System.currentTimeMillis()))
+                .signWith(SignatureAlgorithm.HS512,
+                        SECRET_KEY.getBytes()).compact();
 
+        when(userService.existsById(1)).thenReturn(true);
+        when(callService.getCallsByUserAndDate(1, Date.valueOf("2020-05-1"), Date.valueOf("2020-05-1"))).thenReturn(callQueryReturnDtoList);
 
-        String token = userService.getJWTToken(1,"user1",UserRole.CLIENT,userController.);
-        System.out.println(token);
-
-
-        Mockito.when(callService.getCallsByUser(1)).thenReturn(expected);
-
-        ResponseEntity<List<CallQueryReturnDto>> returned = controller.getCallsByUser(1,null,null,token);
-
-        assertNotNull(returned);
-        assertThat(returned.getBody().size(), is(2));
-        assertEquals(expected,returned.getBody());
-
-    }
-
-     */
-
-    @Test
-    public void getCallsByUserEmpty() {
-        HttpStatus response = null;
-        List<CallQueryReturnDto> expected = new ArrayList<>();
-
-        when(callService.getCallsByUser(1)).thenReturn(expected);
-
-        List<CallQueryReturnDto> returned = callService.getCallsByUser(1);
-
-        if (returned.size() == 0) {
-            response = HttpStatus.NO_CONTENT;
-        }
-        assertNotNull(response);
-        assertEquals(HttpStatus.NO_CONTENT, response);
-    }
-
-    @Test
-    public void getCallsByUserAndDate() throws UserNotFoundException {
-        CallQueryReturnDto c1 = new CallQueryReturnDto(1, null, null, null, null, 20, 20.0, 30.0, 1);
-        CallQueryReturnDto c2 = new CallQueryReturnDto(2, null, null, null, null, 20, 20.0, 30.0, 2);
-
-
-        List<CallQueryReturnDto> expected = new ArrayList<>();
-        expected.add(c1);
-        expected.add(c2);
-
-
-        Mockito.when(callService.getCallsByUserAndDate(1, Date.valueOf("2020-05-1"), Date.valueOf("2020-06-1"))).thenReturn(expected);
-
-        List<CallQueryReturnDto> returned = callService.getCallsByUserAndDate(1, Date.valueOf("2020-05-1"), Date.valueOf("2020-06-1"));
-
-        assertNotNull(returned);
-        assertThat(returned.size(), is(2));
-        assertEquals(returned, expected);
+        assertEquals(ResponseEntity.ok(callQueryReturnDtoList), callController.getCallsByUser(1, Date.valueOf("2020-05-1"), Date.valueOf("2020-05-1"), token));
 
     }
 
     @Test
-    public void getCallsByUserAndDateEmpty() {
-        HttpStatus response = null;
-        List<CallQueryReturnDto> expected = new ArrayList<>();
+    public void getCallsByUserForbidden() throws UserNotFoundException {
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList("ROLE_CLIENT");
 
-        when(callService.getCallsByUserAndDate(1, null, null)).thenReturn(expected);
+        String token = Jwts
+                .builder()
+                .setId("2")
+                .setSubject("siderjonas")
+                .claim("authorities",
+                        grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new java.util.Date(System.currentTimeMillis()))
+                .signWith(SignatureAlgorithm.HS512,
+                        SECRET_KEY.getBytes()).compact();
 
-        List<CallQueryReturnDto> returned = callService.getCallsByUserAndDate(1, null, null);
-
-        if (returned.size() == 0) {
-            response = HttpStatus.NO_CONTENT;
-        }
-        assertNotNull(response);
-        assertEquals(HttpStatus.NO_CONTENT, response);
+        assertEquals(ResponseEntity.status(HttpStatus.FORBIDDEN).build(), callController.getCallsByUser(1, Date.valueOf("2020-05-1"), Date.valueOf("2020-05-1"), token));
     }
 
-    @After
-    public void tearDown() throws Exception {
+    @Test(expected = UserNotFoundException.class)
+    public void getCallsByUserNotExist() throws UserNotFoundException {
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList("ROLE_ADMIN");
+
+        String token = Jwts
+                .builder()
+                .setId("1")
+                .setSubject("siderjonas")
+                .claim("authorities",
+                        grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new java.util.Date(System.currentTimeMillis()))
+                .signWith(SignatureAlgorithm.HS512,
+                        SECRET_KEY.getBytes()).compact();
+
+        when(userService.existsById(1)).thenReturn(false);
+        callController.getCallsByUser(1, Date.valueOf("2020-05-1"), Date.valueOf("2020-05-1"), token);
     }
 
+    @Test
+    public void getCallsByUserNullParameters() throws UserNotFoundException {
+        CallQueryReturnDto callQueryReturnDto = new CallQueryReturnDto(1, null, null, null, 1, 10, 15.0, 30.3, 1);
+        CallQueryReturnDto callQueryReturnDto2 = new CallQueryReturnDto(2, null, null, null, 1, 10, 15.0, 30.3, 1);
+
+        List<CallQueryReturnDto> callQueryReturnDtoList = new ArrayList<>();
+        callQueryReturnDtoList.add(callQueryReturnDto);
+        callQueryReturnDtoList.add(callQueryReturnDto2);
+
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList("ROLE_CLIENT");
+
+        String token = Jwts
+                .builder()
+                .setId("1")
+                .setSubject("siderjonas")
+                .claim("authorities",
+                        grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new java.util.Date(System.currentTimeMillis()))
+                .signWith(SignatureAlgorithm.HS512,
+                        SECRET_KEY.getBytes()).compact();
+
+        when(userService.existsById(1)).thenReturn(true);
+        when(callService.getCallsByUser(1)).thenReturn(callQueryReturnDtoList);
+
+        assertEquals(ResponseEntity.ok(callQueryReturnDtoList), callController.getCallsByUser(1, null, null, token));
+
+    }
+
+
+    @Test
+    public void getCallsByUserNoContent() throws UserNotFoundException {
+
+        List<CallQueryReturnDto> callQueryReturnDtoList = new ArrayList<>();
+
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList("ROLE_CLIENT");
+
+        String token = Jwts
+                .builder()
+                .setId("1")
+                .setSubject("siderjonas")
+                .claim("authorities",
+                        grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new java.util.Date(System.currentTimeMillis()))
+                .signWith(SignatureAlgorithm.HS512,
+                        SECRET_KEY.getBytes()).compact();
+
+        when(userService.existsById(1)).thenReturn(true);
+        when(callService.getCallsByUser(1)).thenReturn(callQueryReturnDtoList);
+
+        assertEquals(ResponseEntity.status(HttpStatus.NO_CONTENT).build(), callController.getCallsByUser(1, null, null, token));
+
+    }
 }

@@ -102,7 +102,4 @@ public class ProvinceControllerTest {
         controller.updateProvince(1,updateProvinceDto);
     }
 
-    @After
-    public void tearDown() throws Exception {
-    }
 }
