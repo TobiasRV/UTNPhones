@@ -1,23 +1,32 @@
 package com.utn.utnphones.controller;
 
+import com.utn.utnphones.dto.UpdateUserDto;
+import com.utn.utnphones.dto.UserLoginDto;
+import com.utn.utnphones.exceptions.InvalidLoginException;
 import com.utn.utnphones.exceptions.UserNotFoundException;
+import com.utn.utnphones.exceptions.ValidationException;
 import com.utn.utnphones.model.User;
 import com.utn.utnphones.model.enums.UserRole;
 import com.utn.utnphones.model.enums.UserStatus;
 import com.utn.utnphones.security.SessionManager;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.UserService;
-import org.junit.After;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static com.utn.utnphones.security.Constants.SECRET_KEY;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
@@ -70,25 +79,7 @@ public class UserControllerTest {
         ResponseEntity<List<User>> returned = userController.getAll();
 
         assertNotNull(returned);
-        assertEquals(HttpStatus.NO_CONTENT,returned.getStatusCode());
-    }
-
-    @Test
-    public void getUserById() throws UserNotFoundException {
-        User expected = new User(1, "user1", "pass", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
-
-        Mockito.when(userService.getUserById(1)).thenReturn(expected);
-
-        User returned = userService.getUserById(1);
-
-        assertNotNull(returned);
-        assertEquals(expected,returned);
-    }
-
-    @Test(expected = UserNotFoundException.class)
-    public void getUserByIdError() throws UserNotFoundException {
-        Mockito.when(userService.getUserById(134)).thenThrow(new UserNotFoundException());
-        User returned = userService.getUserById(134);
+        assertEquals(HttpStatus.NO_CONTENT, returned.getStatusCode());
     }
 
     @Test
@@ -96,12 +87,130 @@ public class UserControllerTest {
         ResponseEntity returned = userController.deleteUser(1);
         assertNotNull(returned);
         assertEquals(HttpStatus.OK, returned.getStatusCode());
+    }
+
+    @Test
+    public void loginOk() throws InvalidLoginException, ValidationException {
+        User returnedUser = new User(1, "siderjonas", "pastrana", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
+
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList("ROLE_CLIENT");
+
+        String token = Jwts
+                .builder()
+                .setId("1")
+                .setSubject("siderjonas")
+                .claim("authorities",
+                        grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .signWith(SignatureAlgorithm.HS512,
+                        SECRET_KEY.getBytes()).compact();
+
+        UserLoginDto userDto = new UserLoginDto(1, "siderjonas", token);
+
+        when(userService.getUserByUsernameAndPassword("siderjonas", "pastrana")).thenReturn(returnedUser);
+        when(userService.getJWTToken(1, "siderjonas", UserRole.CLIENT, sessionManager)).thenReturn(token);
+
+        assertEquals(ResponseEntity.ok(userDto), userController.login("siderjonas", "pastrana"));
+    }
+
+    @Test(expected = ValidationException.class)
+    public void loginError() throws InvalidLoginException, ValidationException {
+        userController.login(null, null);
+    }
+
+    @Test
+    public void getUserByIdOk() throws UserNotFoundException {
+        User returnedUser = new User(1, "siderjonas", "pastrana", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
+
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList("ROLE_CLIENT");
+
+        String token = Jwts
+                .builder()
+                .setId("1")
+                .setSubject("siderjonas")
+                .claim("authorities",
+                        grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .signWith(SignatureAlgorithm.HS512,
+                        SECRET_KEY.getBytes()).compact();
+
+        when(userService.getUserById(1)).thenReturn(returnedUser);
+
+        assertEquals(ResponseEntity.ok(returnedUser), userController.getUserById(1, token));
 
     }
 
-    @After
-    public void tearDown() throws Exception {
+    @Test
+    public void getUserByIdError() throws UserNotFoundException {
+        User returnedUser = new User(1, "siderjonas", "pastrana", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
+
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList("ROLE_CLIENT");
+
+        String token = Jwts
+                .builder()
+                .setId("2")
+                .setSubject("siderjonas")
+                .claim("authorities",
+                        grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .signWith(SignatureAlgorithm.HS512,
+                        SECRET_KEY.getBytes()).compact();
+
+        assertEquals(ResponseEntity.status(HttpStatus.FORBIDDEN).build(), userController.getUserById(1, token));
+
     }
 
+    @Test
+    public void updateUser() throws UserNotFoundException {
+        UpdateUserDto updateUserDto = new UpdateUserDto("siderjonas", "pastrana", "Christian", "Soldano", 40020327, null, UserRole.CLIENT, UserStatus.ACTIVE);
+
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList("ROLE_CLIENT");
+
+        String token = Jwts
+                .builder()
+                .setId("1")
+                .setSubject("siderjonas")
+                .claim("authorities",
+                        grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .signWith(SignatureAlgorithm.HS512,
+                        SECRET_KEY.getBytes()).compact();
+
+        assertEquals(ResponseEntity.ok().build(), userController.updateUser(1, updateUserDto, token));
+    }
+
+    @Test
+    public void updateUserError() throws UserNotFoundException {
+        UpdateUserDto updateUserDto = new UpdateUserDto("siderjonas", "pastrana", "Christian", "Soldano", 40020327, null, UserRole.CLIENT, UserStatus.ACTIVE);
+
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList("ROLE_CLIENT");
+
+        String token = Jwts
+                .builder()
+                .setId("2")
+                .setSubject("siderjonas")
+                .claim("authorities",
+                        grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .signWith(SignatureAlgorithm.HS512,
+                        SECRET_KEY.getBytes()).compact();
+
+        assertEquals(ResponseEntity.status(HttpStatus.FORBIDDEN).build(), userController.updateUser(1, updateUserDto, token));
+    }
 
 }
