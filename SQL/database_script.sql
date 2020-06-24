@@ -24,7 +24,7 @@ create table cities(
 create table users(
   id_user int unsigned auto_increment,
   username varchar(50),
-  password varchar(50),
+  password varchar(72),
   email varchar(50),
   name varchar(50),
   lastname varchar(50),

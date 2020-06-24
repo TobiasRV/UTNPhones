@@ -62,14 +62,6 @@ public class UserServiceTest {
         assertEquals(userList, userList2);
     }
 
-    @Test
-    public void login() throws UserNotFoundException {
-        User expected = new User(1, "user1", "pass", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
-        Mockito.when(userRepository.getByUsernamePassword("user1", "pass")).thenReturn(expected);
-        User returned = userService.login("user1", "pass");
-        assertEquals(expected, returned);
-    }
-
 
     @Test
     public void addUser() throws ValidationException {
@@ -120,20 +112,22 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getUserByUsernameAndPassword() throws InvalidLoginException {
+    public void getUserByUsername() throws UserNotFoundException {
         User expected = new User(1, "user1", "pass", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
-
-        when(userRepository.findByUsernameAndPassword("user1", "pass")).thenReturn(Optional.of(expected));
-        User retrurned = userService.getUserByUsernameAndPassword("user1", "pass");
-
-        assertEquals(expected, retrurned);
+        when(userRepository.findByUsername("user1")).thenReturn(Optional.of(expected));
+        assertEquals(expected, userService.getUserByUsername("user1"));
     }
 
-    @Test(expected = InvalidLoginException.class)
-    public void getUserByUsernameAndPasswordError() throws InvalidLoginException {
-        when(userRepository.findByUsernameAndPassword("username", "password").orElseThrow(InvalidLoginException::new)).thenThrow(new InvalidLoginException());
-        userService.getUserByUsernameAndPassword("username", "password");
+    @Test(expected = UserNotFoundException.class)
+    public void getUserByUsernameError() throws UserNotFoundException {
+        when(userRepository.findByUsername("user1").orElseThrow(UserNotFoundException::new)).thenThrow(new UserNotFoundException());
+        userService.getUserByUsername("user1");
     }
+
+//    public User getUserByUsername(String username) throws InvalidLoginException {
+//        return userRepository.findByUsername(username).orElseThrow(InvalidLoginException::new);
+//    }
+
 
     @Test
     public void deleteUser() throws UserNotFoundException {
@@ -254,7 +248,7 @@ public class UserServiceTest {
 
         String actualToken = userService.getJWTToken(1, "siderjonas", UserRole.CLIENT, sessionManager);
 
-        assertEquals(expectedToken,actualToken);
+        assertEquals(expectedToken, actualToken);
     }
 
 }

@@ -18,6 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -44,11 +45,14 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserLoginDto> login(@RequestParam("username") String username, @RequestParam("password") String password) throws InvalidLoginException, ValidationException {
+    public ResponseEntity<UserLoginDto> login(@RequestParam("username") String username, @RequestParam("password") String password) throws InvalidLoginException, ValidationException, UserNotFoundException {
         UserLoginDto userDto = new UserLoginDto();
-
         if (username != null && password != null) {
-            User user = userService.getUserByUsernameAndPassword(username, password);
+            BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+            User user = userService.getUserByUsername(username);
+            if (!bCryptPasswordEncoder.matches(password, user.getPassword()))
+                throw new InvalidLoginException();
+
             String token = userService.getJWTToken(user.getIdUser(), username, user.getRole(), sessionManager);
             userDto.setUserId(user.getIdUser());
             userDto.setUsername(username);

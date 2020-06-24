@@ -134,10 +134,12 @@
                 <configuration>
                     <excludes>
                         <exclude>**/config/**</exclude>
+                        <exclude>**/controller/ControllerAdvice.class</exclude>
                         <exclude>**/security/**</exclude>
                         <exclude>**/model/**</exclude>
                         <exclude>**/exceptions/**</exclude>
                         <exclude>**/dto/**</exclude>
+                        <exclude>**/UtnphonesApplication.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

@@ -20,6 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -87,38 +90,6 @@ public class UserControllerTest {
         ResponseEntity returned = userController.deleteUser(1);
         assertNotNull(returned);
         assertEquals(HttpStatus.OK, returned.getStatusCode());
-    }
-
-    @Test
-    public void loginOk() throws InvalidLoginException, ValidationException {
-        User returnedUser = new User(1, "siderjonas", "pastrana", "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
-
-        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                .commaSeparatedStringToAuthorityList("ROLE_CLIENT");
-
-        String token = Jwts
-                .builder()
-                .setId("1")
-                .setSubject("siderjonas")
-                .claim("authorities",
-                        grantedAuthorities.stream()
-                                .map(GrantedAuthority::getAuthority)
-                                .collect(Collectors.toList()))
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .signWith(SignatureAlgorithm.HS512,
-                        SECRET_KEY.getBytes()).compact();
-
-        UserLoginDto userDto = new UserLoginDto(1, "siderjonas", token);
-
-        when(userService.getUserByUsernameAndPassword("siderjonas", "pastrana")).thenReturn(returnedUser);
-        when(userService.getJWTToken(1, "siderjonas", UserRole.CLIENT, sessionManager)).thenReturn(token);
-
-        assertEquals(ResponseEntity.ok(userDto), userController.login("siderjonas", "pastrana"));
-    }
-
-    @Test(expected = ValidationException.class)
-    public void loginError() throws InvalidLoginException, ValidationException {
-        userController.login(null, null);
     }
 
     @Test
@@ -211,6 +182,65 @@ public class UserControllerTest {
                         SECRET_KEY.getBytes()).compact();
 
         assertEquals(ResponseEntity.status(HttpStatus.FORBIDDEN).build(), userController.updateUser(1, updateUserDto, token));
+    }
+
+    @Test
+    public void loginOk() throws InvalidLoginException, ValidationException, UserNotFoundException {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String fakePassword = bCryptPasswordEncoder.encode("pastrana");
+        User fakeUser = new User(1, "siderjonas", fakePassword, "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
+
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList("ROLE_CLIENT");
+
+        String token = Jwts
+                .builder()
+                .setId("1")
+                .setSubject("siderjonas")
+                .claim("authorities",
+                        grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .signWith(SignatureAlgorithm.HS512,
+                        SECRET_KEY.getBytes()).compact();
+
+        when(userService.getUserByUsername("siderjonas")).thenReturn(fakeUser);
+        when(userService.getJWTToken(1, "siderjonas", UserRole.CLIENT, sessionManager)).thenReturn(token);
+        UserLoginDto userDto = new UserLoginDto(1, "siderjonas", token);
+
+        assertEquals(ResponseEntity.ok(userDto), userController.login("siderjonas", "pastrana"));
+    }
+
+    @Test(expected = ValidationException.class)
+    public void loginEmptyFields() throws InvalidLoginException, ValidationException, UserNotFoundException {
+        userController.login(null, null);
+    }
+
+    @Test(expected = InvalidLoginException.class)
+    public void loginInvalidPassword() throws InvalidLoginException, ValidationException, UserNotFoundException {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String fakePassword = bCryptPasswordEncoder.encode("pastrana");
+        User fakeUser = new User(1, "siderjonas", fakePassword, "soldanochristian@hotmail.com", "name1", "lastname1", 40020327, null, "Manuel Acevedo 2685", UserRole.CLIENT, UserStatus.ACTIVE, null);
+
+        List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+                .commaSeparatedStringToAuthorityList("ROLE_CLIENT");
+
+        String token = Jwts
+                .builder()
+                .setId("1")
+                .setSubject("siderjonas")
+                .claim("authorities",
+                        grantedAuthorities.stream()
+                                .map(GrantedAuthority::getAuthority)
+                                .collect(Collectors.toList()))
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .signWith(SignatureAlgorithm.HS512,
+                        SECRET_KEY.getBytes()).compact();
+
+        when(userService.getUserByUsername("siderjonas")).thenReturn(fakeUser);
+
+        userController.login("siderjonas", "asdasd");
     }
 
 }

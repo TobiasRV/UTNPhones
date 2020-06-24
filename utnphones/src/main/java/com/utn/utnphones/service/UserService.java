@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -34,11 +35,6 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User login(String username, String password) throws UserNotFoundException {
-        User user = userRepository.getByUsernamePassword(username, password);
-        return Optional.ofNullable(user).orElseThrow(UserNotFoundException::new);
-    }
-
     public List<User> getAll() {
         return userRepository.findAll();
     }
@@ -52,6 +48,10 @@ public class UserService {
         if (userRepository.existsByEmail(u.getEmail()))
             throw new ValidationException("Email already exists");
 
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String newPassword = bCryptPasswordEncoder.encode(u.getPassword());
+        u.setPassword(newPassword);
+
         return userRepository.save(u);
     }
 
@@ -59,8 +59,8 @@ public class UserService {
         return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
     }
 
-    public User getUserByUsernameAndPassword(String username, String password) throws InvalidLoginException {
-        return userRepository.findByUsernameAndPassword(username, password).orElseThrow(InvalidLoginException::new);
+    public User getUserByUsername(String username) throws UserNotFoundException {
+        return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
     }
 
     public void deleteUser(Integer userId) throws UserNotFoundException {
@@ -75,8 +75,11 @@ public class UserService {
 
         if (u.getUsername() != null)
             oldUser.setUsername(u.getUsername());
-        if (u.getPassword() != null)
-            oldUser.setPassword(u.getPassword());
+        if (u.getPassword() != null) {
+            BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+            String newPassword = bCryptPasswordEncoder.encode(u.getPassword());
+            oldUser.setPassword(newPassword);
+        }
         if (u.getName() != null)
             oldUser.setName(u.getName());
         if (u.getLastname() != null)
