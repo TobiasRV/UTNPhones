@@ -18,6 +18,8 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+import static com.utn.utnphones.utils.RestUtils.getCityLocation;
+
 @RestController
 @RequestMapping("/api/city")
 public class CityController {
@@ -50,9 +52,11 @@ public class CityController {
 
     @PostMapping("/")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity addCity(@RequestBody @Valid City c) {
+    public ResponseEntity addCity(@RequestBody @Valid City c) throws ProvinceNotFoundException {
+        if (!provinceService.existsById(c.getProvince().getIdProvince()))
+            throw new ProvinceNotFoundException();
         City newCity = cityService.addCity(c);
-        return ResponseEntity.created(getLocation(newCity)).build();
+        return ResponseEntity.created(getCityLocation(newCity)).build();
     }
 
     @PutMapping("/{cityId}")
@@ -65,13 +69,5 @@ public class CityController {
             cityService.updateCity(cityId, updateCityDtoCity, null);
 
         return ResponseEntity.ok().build();
-    }
-
-    private URI getLocation(City city) {
-        return ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{cityId}")
-                .buildAndExpand(city.getIdCity())
-                .toUri();
     }
 }

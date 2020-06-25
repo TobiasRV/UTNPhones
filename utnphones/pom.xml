@@ -134,6 +134,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/config/**</exclude>
+                        <exclude>**/utils/**</exclude>
                         <exclude>**/controller/ControllerAdvice.class</exclude>
                         <exclude>**/security/**</exclude>
                         <exclude>**/model/**</exclude>

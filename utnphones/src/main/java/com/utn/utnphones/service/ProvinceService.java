@@ -24,8 +24,8 @@ public class ProvinceService {
         return provinceRepository.findAll();
     }
 
-    public void addProvince(final Province p) {
-        provinceRepository.save(p);
+    public Province addProvince(final Province p) {
+        return provinceRepository.save(p);
     }
 
     public boolean existsById(Integer idProvince) {

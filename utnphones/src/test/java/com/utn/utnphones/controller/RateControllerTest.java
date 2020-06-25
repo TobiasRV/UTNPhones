@@ -73,11 +73,7 @@ public class RateControllerTest {
 
     @Test
     public void addRate(){
-        Rate r1 = new Rate(1, null, null, 2.00, 2.00);
-        ResponseEntity returned = controller.addRate(r1);
 
-        assertNotNull(returned);
-        assertEquals(HttpStatus.CREATED, returned.getStatusCode());
     }
 
     @Test

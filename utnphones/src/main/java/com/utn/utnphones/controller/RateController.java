@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+import static com.utn.utnphones.utils.RestUtils.getProvinceLocation;
+import static com.utn.utnphones.utils.RestUtils.getRateLocation;
+
 @RestController
 @RequestMapping("/api/rate")
 public class RateController {
@@ -43,8 +46,8 @@ public class RateController {
     @PostMapping("/")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity addRate(@RequestBody @Valid Rate r) {
-        rateService.addProvince(r);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        Rate newRate = rateService.addRate(r);
+        return ResponseEntity.created(getRateLocation(newRate)).build();
     }
 
     @GetMapping("/{fromCityId}")

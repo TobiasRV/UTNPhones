@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.utn.utnphones.security.Constants.SECRET_KEY;
+import static com.utn.utnphones.utils.RestUtils.getUserLocation;
 
 @RestController
 @RequestMapping("/api/user")
@@ -103,7 +104,7 @@ public class UserController {
             throw new CityNotFoundException();
 
         User newUser = userService.addUser(user);
-        return ResponseEntity.created(getLocation(newUser)).build();
+        return ResponseEntity.created(getUserLocation(newUser)).build();
     }
 
     @PutMapping("/{userId}")
@@ -127,15 +128,6 @@ public class UserController {
     public ResponseEntity deleteUser(@PathVariable Integer userId) throws UserNotFoundException {
         userService.deleteUser(userId);
         return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    //returns the location of the last inserted user through a header
-    private URI getLocation(User user) {
-        return ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{userId}")
-                .buildAndExpand(user.getIdUser())
-                .toUri();
     }
 
 }

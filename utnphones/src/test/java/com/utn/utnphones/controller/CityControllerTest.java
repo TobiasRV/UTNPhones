@@ -8,7 +8,6 @@ import com.utn.utnphones.model.City;
 import com.utn.utnphones.model.Province;
 import com.utn.utnphones.service.CityService;
 import com.utn.utnphones.service.ProvinceService;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -26,7 +25,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class CityControllerTest {
 
-    CityController controller;
+    CityController cityController;
 
     @Mock
     CityService cityService;
@@ -37,7 +36,7 @@ public class CityControllerTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        controller = new CityController(cityService, provinceService);
+        cityController = new CityController(cityService, provinceService);
     }
 
     @Test
@@ -52,7 +51,7 @@ public class CityControllerTest {
 
         Mockito.when(cityService.getAll()).thenReturn(expected);
 
-        ResponseEntity<List<City>> returned = controller.getAll();
+        ResponseEntity<List<City>> returned = cityController.getAll();
 
         assertNotNull(returned);
         assertThat(returned.getBody().size(), is(2));
@@ -65,7 +64,7 @@ public class CityControllerTest {
 
         when(cityService.getAll()).thenReturn(expected);
 
-        ResponseEntity<List<City>> returned = controller.getAll();
+        ResponseEntity<List<City>> returned = cityController.getAll();
 
         assertNotNull(returned);
         assertEquals(HttpStatus.NO_CONTENT, returned.getStatusCode());
@@ -76,25 +75,27 @@ public class CityControllerTest {
         City expected = new City(1, "Miramar", null, "2291");
         Mockito.when(cityService.getCityById(1)).thenReturn(expected);
 
-        ResponseEntity returned = controller.getCityById(1);
+        ResponseEntity returned = cityController.getCityById(1);
         assertNotNull(returned);
         assertEquals(expected, returned.getBody());
     }
 
     @Test
     public void updateCity() throws ProvinceNotFoundException, CityNotFoundException {
-        UpdateCityDto updateCityDto = new UpdateCityDto("Miramar",1,"2291");
-        Province p1 = new Province(1,null,null);
+        UpdateCityDto updateCityDto = new UpdateCityDto("Miramar", 1, "2291");
+        Province p1 = new Province(1, null, null);
         Mockito.when(provinceService.getProvinceById(1)).thenReturn(p1);
-        ResponseEntity returned = controller.updateCity(1,updateCityDto);
+        ResponseEntity returned = cityController.updateCity(1, updateCityDto);
         assertEquals(HttpStatus.OK, returned.getStatusCode());
     }
 
     @Test
     public void updateCityProvinceNull() throws ProvinceNotFoundException, CityNotFoundException {
-        UpdateCityDto updateCityDto = new UpdateCityDto("Miramar",null,"2291");
-        ResponseEntity returned = controller.updateCity(1,updateCityDto);
+        UpdateCityDto updateCityDto = new UpdateCityDto("Miramar", null, "2291");
+        ResponseEntity returned = cityController.updateCity(1, updateCityDto);
         assertEquals(HttpStatus.OK, returned.getStatusCode());
     }
+
+
 
 }
