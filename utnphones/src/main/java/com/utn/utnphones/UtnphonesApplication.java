@@ -30,7 +30,7 @@ public class UtnphonesApplication {
                     .addFilterAfter(new JWTAuthorizationFilter(new SessionManager()), UsernamePasswordAuthenticationFilter.class)
                     .authorizeRequests()
                     .antMatchers(HttpMethod.POST, "/api/user/login", "/api/user/").permitAll()
-                    .antMatchers(HttpMethod.GET, "api/city/",
+                    .antMatchers(HttpMethod.GET, "/api/city/",
                             "/v2/api-docs",
                             "/configuration/ui",
                             "/swagger-resources/**",

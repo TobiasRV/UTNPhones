@@ -32,7 +32,6 @@ public class CityController {
     }
 
     @GetMapping("/")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<City>> getAll() {
         List<City> cityList = cityService.getAll();
 
