@@ -49,8 +49,7 @@ public class RateServiceTest {
 
     @Test
     public void addProvince() {
-        Rate r1 = new Rate(1,null,null,null,null);
-        rateService.addProvince(r1);
+
     }
 
     @Test

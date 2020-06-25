@@ -17,14 +17,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.utn.utnphones.security.Constants.SECRET_KEY;
+import static com.utn.utnphones.utils.RestUtils.getLineLocation;
 
 @RestController
 @RequestMapping("/api/line")
@@ -102,7 +101,7 @@ public class LineController {
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity addLine(@RequestBody @Valid Line l) {
         Line newLine = lineService.addLine(l);
-        return ResponseEntity.created(getLocation(newLine)).build();
+        return ResponseEntity.created(getLineLocation(newLine)).build();
     }
 
     @PutMapping("/{lineId}")
@@ -141,14 +140,6 @@ public class LineController {
         } else {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }
-    }
-
-    private URI getLocation(Line line) {
-        return ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{lineId}")
-                .buildAndExpand(line.getIdLine())
-                .toUri();
     }
 
 }

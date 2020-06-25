@@ -26,8 +26,8 @@ public class RateService {
         return rateRepository.findAll();
     }
 
-    public void addProvince(final Rate r) {
-        rateRepository.save(r);
+    public Rate addRate(final Rate r) {
+        return rateRepository.save(r);
     }
 
     public List<Rate> getRateByCities(Integer fromCityId, Integer toCityId) {

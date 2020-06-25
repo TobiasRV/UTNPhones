@@ -79,8 +79,7 @@ public class ProvinceControllerTest {
 
     @Test
     public void addProvince(){
-        Province expected = new Province(1,null,null);
-        controller.addProvince(expected);
+
     }
 
     @Test

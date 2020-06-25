@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+import static com.utn.utnphones.utils.RestUtils.getCityLocation;
+import static com.utn.utnphones.utils.RestUtils.getProvinceLocation;
+
 @RestController
 @RequestMapping("/api/province")
 public class ProvinceController {
@@ -38,8 +41,9 @@ public class ProvinceController {
 
     @PostMapping("/")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void addProvince(@RequestBody @Valid Province p) {
-        provinceService.addProvince(p);
+    public ResponseEntity addProvince(@RequestBody @Valid Province p) {
+        Province newProvince = provinceService.addProvince(p);
+        return ResponseEntity.created(getProvinceLocation(newProvince)).build();
     }
 
     @GetMapping("/{provinceId}")
