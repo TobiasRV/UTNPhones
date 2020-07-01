@@ -34,6 +34,7 @@ public class CallService {
         List<Call> callList = callRepository.getCallsByUserAndDate(userId, fromDate, toDate);
         List<CallQueryReturnDto> callQueryReturnDtoList = new ArrayList<>();
 
+        //TODO checkear bill vacia
         for (Call c : callList) {
             callQueryReturnDtoList.add(
                     CallQueryReturnDto.builder().idCall(c.getIdCall()).originLine(c.getOriginLine())

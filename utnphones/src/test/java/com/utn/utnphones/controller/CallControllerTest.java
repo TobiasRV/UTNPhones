@@ -214,20 +214,20 @@ public class CallControllerTest {
     }
 
     //    @Test
-//    public void addCity() throws ProvinceNotFoundException {
-//        PowerMockito.mockStatic(RestUtils.class);
-//        Province p1 = new Province(1, null, null);
-//        City expected = new City(1, "Miramar", p1, "2291");
-//
-//        when(provinceService.existsById(1)).thenReturn(true);
-//        when(cityService.addCity(expected)).thenReturn(expected);
-//
-//        when(RestUtils.getCityLocation(expected)).thenReturn(URI.create("miUri.com"));
-//
-//        ResponseEntity<City> responseEntity = cityController.addCity(expected);
-//
-//        List<String> headers = responseEntity.getHeaders().get("location");
-//        assertEquals(headers.get(0), "miUri.com");
-//        assertEquals(expected, responseEntity.getBody());
-//    }
+    //    public void addCity() throws ProvinceNotFoundException {
+    //        PowerMockito.mockStatic(RestUtils.class);
+    //        Province p1 = new Province(1, null, null);
+    //        City expected = new City(1, "Miramar", p1, "2291");
+    //
+    //        when(provinceService.existsById(1)).thenReturn(true);
+    //        when(cityService.addCity(expected)).thenReturn(expected);
+    //
+    //        when(RestUtils.getCityLocation(expected)).thenReturn(URI.create("miUri.com"));
+    //
+    //        ResponseEntity<City> responseEntity = cityController.addCity(expected);
+    //
+    //        List<String> headers = responseEntity.getHeaders().get("location");
+    //        assertEquals(headers.get(0), "miUri.com");
+    //        assertEquals(expected, responseEntity.getBody());
+    //    }
 }
