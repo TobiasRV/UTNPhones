@@ -369,3 +369,41 @@ delimiter ;
 
 -- INDEX
 create index idx_calls_user_date on calls(id_origin_line, call_date) using btree;
+
+
+#################################################### USERS ####################################################
+## User
+drop user if exists 'client'@'%';
+create user 'client'@'%' identified by 'userpassword';
+
+grant select,update on utnphones.users to 'client'@'%';
+grant select on utnphones.phone_lines to 'client'@'%';
+grant select on utnphones.calls to 'client'@'%';
+grant select on utnphones.bills to 'client'@'%';
+
+
+## Backoffice
+drop user if exists 'backoffice'@'%';
+create user 'backoffice'@'%' identified by 'backofficepassword';
+
+grant select,insert,update,delete on utnphones.users to 'backoffice'@'%';
+grant select,insert,update,delete on utnphones.phone_lines to 'backoffice'@'%';
+grant select,insert,update,delete on utnphones.rates to 'backoffice'@'%';
+grant select on utnphones.calls to 'backoffice'@'%';
+grant select on utnphones.bills to 'backoffice'@'%';
+
+
+## Infraestructure
+drop user if exists 'infraestructure'@'%';
+create user 'infraestructure'@'%' identified by 'infraestructurepassword';
+
+GRANT EXECUTE ON PROCEDURE utnphones.sp_insert_call TO 'infraestructure'@'%';
+
+
+## Billing
+drop user if exists 'billing'@'%';
+create user 'billing'@'%' identified by 'billingpassword';
+
+GRANT EXECUTE ON PROCEDURE utnphones.sp_generate_bills TO 'billing'@'%';
+
+grant event on utnphones.* to 'billing'@'%';
