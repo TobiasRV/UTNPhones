@@ -97,6 +97,15 @@ create table calls(
   constraint fk_id_bill_calls foreign key (id_bill) references bills(id_bill)
 );
 
+
+
+
+
+
+
+
+
+
 -- FUNCION QUE DEVUELVE EL ID DE UN NUMERO DE TELEFONO
 delimiter //
 create function getLineId(pIdCity int, pLineNumer varchar(10))
@@ -188,7 +197,65 @@ begin
 end //
 delimiter ;
 
--- STORED PROCEDURE QUE INSERTA UNA NUEVA CALL
+
+
+
+
+
+
+
+-- STORED PROCEDURE INSERT BILLS 
+drop procedure if exists sp_generate_bills;
+delimiter //
+create procedure sp_generate_bills()
+begin
+  DECLARE vIdLine INTEGER;
+  DECLARE vIdUser INTEGER;
+  DECLARE vFinished BOOLEAN DEFAULT FALSE;
+  DECLARE vQtyCalls INTEGER default 0;
+  DECLARE vTotalProductionCost double default 0;
+  DECLARE vTotalPrice double default 0;
+  
+  DECLARE select_active_lines CURSOR FOR
+  select id_line, id_user from phone_lines where status = "ACTIVE";
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET vFinished = TRUE;
+
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+    
+  OPEN select_active_lines;
+    insert_bill: LOOP
+      set autocommit=0;
+      start transaction;
+
+      FETCH select_active_lines into vIdLine, vIdUser;
+      if `vFinished` THEN LEAVE insert_bill; END IF;
+
+      select count(c.id_call), sum(c.call_price), sum(c.call_cost) into vQtyCalls, vTotalPrice, vTotalProductionCost
+      from calls c where (c.id_origin_line = vIdLine) and (id_bill is null);
+      
+      if(vQtyCalls > 0) then
+        insert into bills(id_line, id_user, qty_calls, total_production_cost, total_price, issue_date, expiration_date) values
+        (vIdLine, vIdUser, vQtyCalls, vTotalProductionCost, vTotalPrice, curdate(), (curdate() + interval 15 day));
+      else 
+        insert into bills(id_line, id_user, qty_calls, total_production_cost, total_price, issue_date, expiration_date) values
+        (vIdLine, vIdUser, 0, 0, 0, curdate(), (curdate() + interval 15 day));
+      end if;
+
+      update calls set id_bill = LAST_INSERT_ID() where id_origin_line = vIdLine;
+
+      commit;
+    END LOOP insert_bill;
+  CLOSE select_active_lines;
+
+end //
+delimiter ;
+
+
+
+-- ORIGINAL SP INSERT CALLS 
 delimiter //
 create procedure sp_insert_call(pOriginNumber varchar(16), pDestinationNumber varchar(16), pDate datetime, pDuration int)
 begin
@@ -218,6 +285,95 @@ begin
 
 end //
 delimiter ;
+
+
+
+
+
+
+
+
+-- EVENTS 
+delimiter //
+CREATE EVENT create_bills
+ON SCHEDULE EVERY 1 MONTH STARTS date_format (date_add(subdate(now(), dayofmonth(now()) - 1), interval 1 month),'%Y-%m-%d 00:00:00')
+DO BEGIN
+set autocommit = 0;
+start transaction;
+call sp_generate_bills();
+commit;
+END //
+delimiter;
+
+delimiter //
+CREATE EVENT expire_unpaid_bills
+ON SCHEDULE EVERY 1 MONTH STARTS date_format (date_add(subdate(now(), dayofmonth(now()) - 1), interval 14 DAY),'%Y-%m-%d 00:00:00')
+DO BEGIN
+  set autocommit = 0;
+  start transaction;
+  update bills set status = 'EXPIRED' where (status = 'UNPAID') and (expiration_date - interval 1 day);
+  commit;
+END //
+delimiter ;
+
+
+
+
+
+
+-- INDEX
+create index idx_calls_user_date on calls(id_origin_line, call_date) using btree;
+create index idx_bills_user on bills(id_user) using btree;
+create index idx_bills_user_date on bills(id_user, issue_date) using btree;
+
+
+
+
+
+
+-- USERS 
+-- ## Client
+drop user if exists 'client'@'%';
+create user 'client'@'%' identified by 'userpassword';
+
+grant select,update on utnphones.users to 'client'@'%';
+grant select on utnphones.phone_lines to 'client'@'%';
+grant select on utnphones.calls to 'client'@'%';
+grant select on utnphones.bills to 'client'@'%';
+
+
+-- ## Backoffice
+drop user if exists 'backoffice'@'%';
+create user 'backoffice'@'%' identified by 'backofficepassword';
+
+grant select,insert,update,delete on utnphones.users to 'backoffice'@'%';
+grant select,insert,update,delete on utnphones.phone_lines to 'backoffice'@'%';
+grant select,insert,update,delete on utnphones.rates to 'backoffice'@'%';
+grant select on utnphones.calls to 'backoffice'@'%';
+grant select on utnphones.bills to 'backoffice'@'%';
+
+
+-- ## Infraestructure
+drop user if exists 'infraestructure'@'%';
+create user 'infraestructure'@'%' identified by 'infraestructurepassword';
+GRANT EXECUTE ON PROCEDURE utnphones.sp_insert_call TO 'infraestructure'@'%';
+
+
+-- ## Billing
+drop user if exists 'billing'@'%';
+create user 'billing'@'%' identified by 'billingpassword';
+GRANT EXECUTE ON PROCEDURE utnphones.sp_generate_bills TO 'billing'@'%';
+grant event on utnphones.* to 'billing'@'%';
+
+
+
+
+
+
+
+
+
+
 
 
 -- INSERTS PROVINCES
@@ -256,154 +412,3 @@ call sp_insert_call("223-6363325","2291-412505",now(),60);
 call sp_insert_call("223-6363325","2291-412505",now(),60);
 call sp_insert_call("2291-412505","223-6363325",now(),60);
 call sp_insert_call("2291-412505","223-6363325",now(),60);
-
-
-delimiter //
-create procedure sp_generate_bills()
-begin
-  DECLARE vIdLine INTEGER;
-  DECLARE vIdUser INTEGER;
-  DECLARE vFinished BOOLEAN DEFAULT FALSE;
-
-  DECLARE select_active_lines CURSOR FOR
-  select id_line, id_user from phone_lines where status = "ACTIVE";
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET vFinished = TRUE;
-	DECLARE EXIT HANDLER FOR SQLEXCEPTION
-		BEGIN
-			ROLLBACK;
-		END;
-set autocommit=0;
-start transaction;
-  OPEN select_active_lines;
-  insert_bill: LOOP
-  FETCH select_active_lines into vIdLine, vIdUser;
-  if `vFinished` THEN LEAVE insert_bill; END IF;
-
-  insert into bills(id_line,id_user,issue_date, expiration_date) values (vIdLine,vIdUser,curdate(),(curdate() + interval 15 day));
-  END LOOP insert_bill;
-  CLOSE select_active_lines;
-
-  call sp_loop_unregistered_bills();
-commit;
-end //
-delimiter ;
-
-delimiter //
-create procedure sp_loop_unregistered_bills()
-BEGIN
-  DECLARE vIdBill INTEGER;
-  DECLARE vIdLine INTEGER;
-
-  DECLARE vFinished BOOLEAN DEFAULT FALSE;
-
-  -- CURSOR DE LAS FACTURAS
-  DECLARE select_incomplete_bills CURSOR FOR
-  select id_bill, id_line from bills where (issue_date = curdate());
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET vFinished = TRUE;
-
-  OPEN select_incomplete_bills;
-  complete_bill: LOOP
-
-  FETCH select_incomplete_bills into vIdBill, vIdLine;
-  if `vFinished` THEN LEAVE complete_bill; END IF;
-
-  call sp_complete_bills(vIdBill,vIdLine);
-
-  END LOOP complete_bill;
-  CLOSE select_incomplete_bills;
-
-end //
-delimiter ;
-
-
-delimiter //
-create procedure sp_complete_bills(pIdBill INTEGER, pIdLine INTEGER)
-BEGIN
-
-DECLARE vCallListFinished BOOLEAN DEFAULT FALSE;
-DECLARE vCallPrice double default 0;
-DECLARE vCallCost double default 0;
-DECLARE vIdCall INTEGER;
-DECLARE vQtyCalls INTEGER;
-
-DECLARE call_data CURSOR FOR select id_call, call_cost, call_price from calls where (id_origin_line = pIdLine) and (id_bill is null);
-DECLARE CONTINUE HANDLER FOR NOT FOUND SET vCallListFinished = TRUE;
-
-OPEN call_data;
-select FOUND_ROWS() into vQtyCalls;
-search_calls: LOOP
-
-  FETCH call_data into vIdCall, vCallCost, vCallPrice;
-    if `vCallListFinished` THEN LEAVE search_calls; END IF;
-
-    update bills set total_production_cost = total_production_cost + vCallCost, total_price = total_price + vCallPrice, qty_calls = vQtyCalls where id_bill = pIdBill;
-    update calls set id_bill = pIdBill where id_call = vIdCall;
-
-END LOOP search_calls;
-CLOSE call_data;
-
-end //
-delimiter ;
-
-delimiter //
-CREATE EVENT create_bills
-ON SCHEDULE EVERY 1 MONTH STARTS date_format (date_add(subdate(now(), dayofmonth(now()) - 1), interval 1 month),'%Y-%m-%d 00:00:00')
-DO BEGIN
-set autocommit = 0;
-start transaction;
-call sp_generate_bills();
-commit;
-END //
-delimiter;
-
-delimiter //
-CREATE EVENT expire_unpaid_bills
-ON SCHEDULE EVERY 1 MONTH STARTS date_format (date_add(subdate(now(), dayofmonth(now()) - 1), interval 14 DAY),'%Y-%m-%d 00:00:00')
-DO BEGIN
-  set autocommit = 0;
-  start transaction;
-  update bills set status = 'EXPIRED' where (status = 'UNPAID') and (expiration_date - interval 1 day);
-  commit;
-END //
-delimiter ;
-
--- INDEX
-create index idx_calls_user_date on calls(id_origin_line, call_date) using btree;
-
-
-#################################################### USERS ####################################################
-## User
-drop user if exists 'client'@'%';
-create user 'client'@'%' identified by 'userpassword';
-
-grant select,update on utnphones.users to 'client'@'%';
-grant select on utnphones.phone_lines to 'client'@'%';
-grant select on utnphones.calls to 'client'@'%';
-grant select on utnphones.bills to 'client'@'%';
-
-
-## Backoffice
-drop user if exists 'backoffice'@'%';
-create user 'backoffice'@'%' identified by 'backofficepassword';
-
-grant select,insert,update,delete on utnphones.users to 'backoffice'@'%';
-grant select,insert,update,delete on utnphones.phone_lines to 'backoffice'@'%';
-grant select,insert,update,delete on utnphones.rates to 'backoffice'@'%';
-grant select on utnphones.calls to 'backoffice'@'%';
-grant select on utnphones.bills to 'backoffice'@'%';
-
-
-## Infraestructure
-drop user if exists 'infraestructure'@'%';
-create user 'infraestructure'@'%' identified by 'infraestructurepassword';
-
-GRANT EXECUTE ON PROCEDURE utnphones.sp_insert_call TO 'infraestructure'@'%';
-
-
-## Billing
-drop user if exists 'billing'@'%';
-create user 'billing'@'%' identified by 'billingpassword';
-
-GRANT EXECUTE ON PROCEDURE utnphones.sp_generate_bills TO 'billing'@'%';
-
-grant event on utnphones.* to 'billing'@'%';
