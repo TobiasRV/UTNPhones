@@ -98,7 +98,7 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ResponseEntity addUser(@RequestBody @Valid User user) throws CityNotFoundException, ValidationException {
+    public ResponseEntity addUser(@RequestBody User user) throws CityNotFoundException, ValidationException {
 
         if (!cityService.existsById(user.getCity().getIdCity()))
             throw new CityNotFoundException();

@@ -52,12 +52,21 @@ public class CallService {
         List<CallQueryReturnDto> callQueryReturnDtoList = new ArrayList<>();
 
         for (Call c : callList) {
-            callQueryReturnDtoList.add(
-                    CallQueryReturnDto.builder().idCall(c.getIdCall()).originLine(c.getOriginLine())
-                            .destinationLine(c.getDestinationLine()).callDate(c.getCallDate())
-                            .idRate(c.getRate().getIdRate()).callDuration(c.getCallDuration())
-                            .callCost(c.getCallCost()).callPrice(c.getCallPrice())
-                            .idBill(c.getBill().getIdBill()).build());
+            if (c.getBill() != null) {
+                callQueryReturnDtoList.add(
+                        CallQueryReturnDto.builder().idCall(c.getIdCall()).originLine(c.getOriginLine())
+                                .destinationLine(c.getDestinationLine()).callDate(c.getCallDate())
+                                .idRate(c.getRate().getIdRate()).callDuration(c.getCallDuration())
+                                .callCost(c.getCallCost()).callPrice(c.getCallPrice())
+                                .idBill(c.getBill().getIdBill()).build());
+            } else {
+                callQueryReturnDtoList.add(
+                        CallQueryReturnDto.builder().idCall(c.getIdCall()).originLine(c.getOriginLine())
+                                .destinationLine(c.getDestinationLine()).callDate(c.getCallDate())
+                                .idRate(c.getRate().getIdRate()).callDuration(c.getCallDuration())
+                                .callCost(c.getCallCost()).callPrice(c.getCallPrice()).build());
+            }
+
         }
 
         return callQueryReturnDtoList;

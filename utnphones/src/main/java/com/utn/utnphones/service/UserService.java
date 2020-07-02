@@ -51,7 +51,8 @@ public class UserService {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String newPassword = bCryptPasswordEncoder.encode(u.getPassword());
         u.setPassword(newPassword);
-
+        u.setStatus(UserStatus.ACTIVE);
+        u.setRole(UserRole.CLIENT);
         return userRepository.save(u);
     }
 
